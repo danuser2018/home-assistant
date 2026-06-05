@@ -1,0 +1,62 @@
+services:
+
+  interaction-manager:
+    image: danuser2018/interaction-manager:latest
+    container_name: interaction-manager
+    environment:
+      STT_BASE_URL: http://stt:8000
+      ORCHESTRATOR_BASE_URL: http://orchestrator:8000
+      TTS_BASE_URL: http://tts:8000
+      INPUT_DIR: /data/input
+      PROCESSING_DIR: /data/processing
+      OUTPUT_DIR: /data/output
+      ERROR_DIR: /data/error
+      POLL_INTERVAL_SECONDS: 1
+      DEFAULT_LANGUAGE: auto
+      LOG_LEVEL: INFO
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    depends_on:
+      - stt
+      - orchestrator
+      - tts
+    networks:
+      - assistant-net
+
+  stt:
+    image: danuser2018/stt-capability:latest
+    container_name: stt-capability
+    env_file:
+      - config/assistant.env
+    ports:
+      - "8001:8000"  # Expuesto para healthcheck y depuración local
+    restart: unless-stopped
+    networks:
+      - assistant-net
+
+  orchestrator:
+    image: danuser2018/orchestrator:latest
+    container_name: orchestrator
+    env_file:
+      - config/assistant.env
+    ports:
+      - "8002:8000"  # Expuesto para healthcheck y depuración local
+    restart: unless-stopped
+    networks:
+      - assistant-net
+
+  tts:
+    image: danuser2018/tts-capability:latest
+    container_name: tts-capability
+    env_file:
+      - config/assistant.env
+    ports:
+      - "8003:8000"  # Expuesto para healthcheck y depuración local
+    restart: unless-stopped
+    networks:
+      - assistant-net
+
+networks:
+  assistant-net:
+    driver: bridge

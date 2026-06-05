@@ -1,0 +1,19 @@
+[Unit]
+Description=Microphone recording daemon for Home Assistant
+Documentation=https://github.com/danuser2018/mic-daemon
+After=default.target pipewire.service pipewire-pulse.service
+
+[Service]
+Type=simple
+# La ruta al EnvironmentFile y al ejecutable se establecen durante la instalación
+# mediante el script scripts/install.sh. No edites este archivo directamente;
+# el archivo real instalado en ~/.config/systemd/user/ contiene las rutas absolutas.
+EnvironmentFile=__MIC_DAEMON_ENV_FILE__
+ExecStart=__MIC_DAEMON_VENV_PYTHON__ __MIC_DAEMON_DIR__/src/mic_daemon.py
+Restart=on-failure
+RestartSec=3s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
