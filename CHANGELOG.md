@@ -29,6 +29,7 @@ Los cambios se agrupan en las siguientes categorías:
 - Fichero `CHANGELOG.md` con el formato Keep a Changelog v1.1.0 en castellano.
 - Scaffolding del servicio (carpetas, archivos que deben existir vacíos).
 - Documentos rellenos (arquitectura, instalación, servicios, troubleshooting).
+- Implementación del servicio (docker-compose, services y scripts de instalación y mantenimiento).
 
 ---
 
