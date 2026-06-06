@@ -91,7 +91,7 @@ check_http() {
 
 check_http "STT /health"         "http://localhost:8001/health"
 check_http "STT /ready"          "http://localhost:8001/ready"
-check_http "Orchestrator /health" "http://localhost:8002/health" || \
+check_http "Orchestrator /health" "http://localhost:8002/api/v1/health" || \
     warn "Orchestrator: el endpoint /health puede no estar disponible según la versión"
 check_http "TTS /health"         "http://localhost:8003/health" || \
     warn "TTS: el endpoint /health puede no estar disponible según la versión"
