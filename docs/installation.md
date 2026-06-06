@@ -66,11 +66,20 @@ sudo usermod -aG docker $USER
 
 ---
 
-## Paso 2: Clonar el repositorio
+## Paso 2: Clonar los repositorios
 
 ```bash
 git clone https://github.com/danuser2018/home-assistant.git
+git clone https://github.com/danuser2018/mic-daemon.git
+git clone https://github.com/danuser2018/speaker-watchdog.git
 cd home-assistant
+```
+
+---
+
+## Paso 2: Crea la carpeta de datos
+```bash
+mkdir data
 ```
 
 ---

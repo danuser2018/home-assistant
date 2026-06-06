@@ -46,24 +46,27 @@ Los servicios del host se instalan como **systemd user services** para tener acc
 ### Pasos
 
 ```bash
-# 1. Clonar el repositorio
+# 1. Clonar los repositorios
 git clone https://github.com/danuser2018/home-assistant.git
+git clone https://github.com/danuser2018/mic-daemon.git
+git clone https://github.com/danuser2018/speaker-watchdog.git
+
+# 2. Muévete al directorio raiz de home-assistant
 cd home-assistant
 
-# 2. Copiar y editar la configuración
+# 3. Crear el directorio data
+mkdir data
+
+# 4. Copiar y editar la configuración
 cp .env.example .env
-# Edita .env y ajusta HOME_ASSISTANT_DATA_DIR a tu ruta
 
-# 3. Editar la configuración de los daemons
-nano config/mic-daemon.env        # Configurar MIC_OUTPUT_DIR
-nano config/speaker-watchdog.env  # Configurar WATCHDOG_DIR
+# 5. Edita .env y ajusta HOME_ASSISTANT_DATA_DIR a tu ruta
+nano .env
 
-# 4. Instalar los servicios del host (mic-daemon y speaker-watchdog)
+# 6. Instalar los servicios del host (mic-daemon y speaker-watchdog)
 chmod +x scripts/install.sh
 ./scripts/install.sh
 
-# 5. Arrancar los servicios Docker
-docker compose up -d
 ```
 
 > La guía completa paso a paso, incluyendo la configuración del hotkey para GNOME, KDE, sxhkd e Hyprland, está en [docs/installation.md](docs/installation.md).
