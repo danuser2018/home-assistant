@@ -31,6 +31,11 @@ Los cambios se agrupan en las siguientes categorías:
 - Documentos rellenos (arquitectura, instalación, servicios, troubleshooting).
 - Implementación del servicio (docker-compose, services y scripts de instalación y mantenimiento).
 
+### Cambiado
+
+- Correcciones al instalador
+- Se actualiza el endpoint de healthcheck del orchestrator
+
 ---
 
 <!-- Plantilla para nuevas versiones:
