@@ -34,7 +34,7 @@ DATA_DIR="$PROJECT_DIR/data"
 MIC_DAEMON_DIR="$WORKSPACE_DIR/mic-daemon"
 SPEAKER_WATCHDOG_DIR="$WORKSPACE_DIR/speaker-watchdog"
 
-MIC_DAEMON_VENV="$MIC_DAEMON_DIR/.venv"
+MIC_DAEMON_VENV="$MIC_DAEMON_DIR/venv"
 SPEAKER_WATCHDOG_VENV="$SPEAKER_WATCHDOG_DIR/venv"
 
 SYSTEMD_USER_DIR="$HOME/.config/systemd/user"
@@ -191,10 +191,12 @@ After=default.target pipewire.service pipewire-pulse.service
 
 [Service]
 Type=simple
+WorkingDirectory=$MIC_DAEMON_DIR
 EnvironmentFile=$PROJECT_DIR/config/mic-daemon.env
 ExecStart=$MIC_DAEMON_VENV/bin/python $MIC_DAEMON_DIR/src/mic_daemon.py
 Restart=on-failure
 RestartSec=3s
+Environment=PYTHONPATH=$MIC_DAEMON_DIR
 StandardOutput=journal
 StandardError=journal
 
