@@ -32,7 +32,7 @@ WORKSPACE_DIR="$(dirname "$PROJECT_DIR")"
 MIC_DAEMON_DIR="$WORKSPACE_DIR/mic-daemon"
 SPEAKER_WATCHDOG_DIR="$WORKSPACE_DIR/speaker-watchdog"
 
-MIC_DAEMON_VENV="$MIC_DAEMON_DIR/.venv"
+MIC_DAEMON_VENV="$MIC_DAEMON_DIR/venv"
 SPEAKER_WATCHDOG_VENV="$SPEAKER_WATCHDOG_DIR/venv"
 
 # ─── Banner ───────────────────────────────────────────────────────────────────
