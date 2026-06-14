@@ -152,6 +152,7 @@ docker compose logs interaction-manager
 docker compose logs stt-capability
 docker compose logs orchestrator
 docker compose logs tts-capability
+docker compose logs system-service
 ```
 
 ### La carpeta `data/` no está montada correctamente
@@ -262,7 +263,7 @@ ls -la data/error/
 | El servicio STT no estaba listo (aún cargando el modelo) | Esperar más tiempo tras el arranque y volver a intentarlo |
 | El audio era demasiado corto o no tenía voz | Hablar con más claridad y durante más tiempo |
 | El audio estaba corrupto | Revisar la configuración del micrófono |
-| El servicio Orchestrator o TTS no responde | Comprobar `docker compose ps` y los logs |
+| El servicio Orchestrator, TTS o system-service no responde | Comprobar `docker compose ps` y los logs |
 
 ---
 
