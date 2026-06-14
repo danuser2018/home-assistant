@@ -22,6 +22,8 @@ Los cambios se agrupan en las siguientes categorías:
 ## [Sin publicar]
 
 ### Añadido
+- Inclusión de la carpeta `data` en .gitignore.
+- Nueva imagen de cover para `README.md`
 - Inclusión del microservicio `system-service` para exponer información de identidad del sistema (Nova).
 - Documentación completa para el nuevo microservicio Python dockerizado `system-service` en `README.md` y en los documentos de arquitectura, catálogo de servicios, instalación y solución de problemas.
 - Fichero `CONTRIBUTING.md` con el flujo de trabajo Trunk Based Development,
