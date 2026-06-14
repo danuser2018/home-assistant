@@ -32,6 +32,8 @@ services:
     ports:
       - "8001:8000"  # Expuesto para healthcheck y depuración local
     restart: unless-stopped
+    volumes:
+      - ./models/stt:/root/.cache/huggingface
     networks:
       - assistant-net
 

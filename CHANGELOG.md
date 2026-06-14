@@ -22,6 +22,7 @@ Los cambios se agrupan en las siguientes categorías:
 ## [Sin publicar]
 
 ### Añadido
+- Nuevo volumen para cachear el modelo whisper (stt) y no descargarlo cada vez.
 - Inclusión de la carpeta `data` en .gitignore.
 - Nueva imagen de cover para `README.md`
 - Inclusión del microservicio `system-service` para exponer información de identidad del sistema (Nova).

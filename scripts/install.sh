@@ -30,6 +30,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 WORKSPACE_DIR="$(dirname "$PROJECT_DIR")"
 DATA_DIR="$PROJECT_DIR/data"
+STT_MODEL_DIR="$PROJECT_DIR/models/stt"
 
 MIC_DAEMON_DIR="$WORKSPACE_DIR/mic-daemon"
 SPEAKER_WATCHDOG_DIR="$WORKSPACE_DIR/speaker-watchdog"
@@ -104,6 +105,7 @@ echo ""
 log_info "Creando estructura de carpetas de datos..."
 mkdir -p "$DATA_DIR/input" "$DATA_DIR/processing" "$DATA_DIR/output" "$DATA_DIR/error"
 mkdir -p /tmp/voice_assistant
+mkdir -p "$STT_MODEL_DIR"
 log_ok "Carpetas creadas en $DATA_DIR"
 echo ""
 
