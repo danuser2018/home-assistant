@@ -181,7 +181,7 @@ Deberías ver `Active: active (running)` en ambos.
 
 ## Paso 6: Arrancar los servicios Docker
 
-Descarga las imágenes de DockerHub y arranca los 4 contenedores:
+Descarga las imágenes de DockerHub y arranca los 5 contenedores:
 
 ```bash
 docker compose up -d
@@ -192,13 +192,14 @@ Esto descargará automáticamente las siguientes imágenes (la primera vez tarda
 - `danuser2018/stt-capability:latest`
 - `danuser2018/orchestrator:latest`
 - `danuser2018/tts-capability:latest`
+- `danuser2018/system-service:latest`
 
 Verifica que todos los contenedores están en funcionamiento:
 ```bash
 docker compose ps
 ```
 
-Deberías ver 4 contenedores con estado `Up`.
+Deberías ver 5 contenedores con estado `Up`.
 
 ---
 

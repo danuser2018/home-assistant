@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **6 microservicios** con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **7 microservicios** con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -14,6 +14,7 @@ El sistema Home Assistant está compuesto por **6 microservicios** con responsab
 | `stt-capability` | Docker | `danuser2018/stt-capability:latest` | Convierte voz a texto (STT) |
 | `orchestrator` | Docker | `danuser2018/orchestrator:latest` | Selecciona y ejecuta la acción adecuada |
 | `tts-capability` | Docker | `danuser2018/tts-capability:latest` | Convierte texto a voz (TTS) |
+| `system-service` | Docker | `danuser2018/system-service:latest` | Expone información de identidad del sistema (Nova) |
 
 ---
 
@@ -221,19 +222,78 @@ Content-Type: application/json
 
 ---
 
+### system-service
+
+**Imagen:** `danuser2018/system-service:latest`  
+**Puerto interno:** `8000` (expuesto en puerto host `8004`)
+
+**Propósito:** Servicio de información de identidad. Expone información básica del asistente Nova en formato JSON. Es consumido exclusivamente por el `Orchestrator` a través del `Identity Plugin` para responder preguntas de identidad del usuario (ej. "¿quién eres?").
+
+**Variables de entorno:**
+
+| Variable | Valor por defecto | Descripción |
+|---|---|---|
+| `NOVA_NAME` | `Nova` | Nombre del asistente |
+| `NOVA_AUTHOR` | `David` | Nombre del creador/autor |
+| `NOVA_VERSION` | `0.1.0` | Versión del sistema |
+| `NOVA_DESCRIPTION` | `Asistente personal de voz y automatización` | Descripción corta de la plataforma |
+
+**Endpoints principales:**
+
+#### 1. Obtener información del sistema
+```http
+GET /system/info
+```
+
+**Respuesta:**
+```json
+{
+  "name": "Nova",
+  "author": "David",
+  "version": "0.1.0",
+  "description": "Asistente personal de voz y automatización"
+}
+```
+
+#### 2. Health check
+```http
+GET /health
+```
+
+**Respuesta:**
+```json
+{
+  "status": "ok"
+}
+```
+
+**Configuración de Healthcheck en Docker:**
+```yaml
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+  interval: 30s
+  timeout: 5s
+  retries: 3
+```
+
+---
+
 ## Comunicación entre Servicios
 
 ```text
-                    ┌─────────────────────────────────┐
-                    │    Red Docker: assistant-net     │
-                    │                                 │
-                    │  interaction-manager            │
-                    │      │                          │
-                    │      ├──► stt:8001              │
-                    │      ├──► orchestrator:8002     │
-                    │      └──► tts:8003              │
-                    │                                 │
-                    └─────────────────────────────────┘
+                    ┌──────────────────────────────────────────────────┐
+                    │      Red Docker: assistant-net                   │
+                    │                                                  │
+                    │  interaction-manager                             │
+                    │      │                                           │
+                    │      ├──► stt:8001                               │
+                    │      ├──► orchestrator:8002 ───┐                 │
+                    │      │                         │                 │
+                    │      │                         ▼                 │
+                    │      │                   system-service:8004     │
+                    │      └──► tts:8003                               │
+                    │                                                  │
+                    └──────────────────────────────────────────────────┘
                               │           │
                         Volumen Docker: ./data
                               │           │

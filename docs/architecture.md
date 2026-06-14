@@ -13,7 +13,7 @@ El sistema se divide en dos planos de ejecución:
 | Plano | Tipo | Servicios |
 |---|---|---|
 | **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog` |
-| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability` |
+| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service` |
 
 ### ¿Por qué esta separación?
 
@@ -45,30 +45,33 @@ Esta arquitectura tiene ventajas clave:
 ## Diagrama de Secuencia (Flujo End-to-End)
 
 ```text
-Usuario          mic-daemon        data/input   interaction-manager   stt-capability   orchestrator   tts-capability   data/output   speaker-watchdog
-   |                  |                 |                |                    |               |              |               |                |
-   |-- Presiona ----->|                 |                |                    |               |              |               |                |
-   |   hotkey y habla |                 |                |                    |               |              |               |                |
-   |                  |--- graba y ---->|                |                    |               |              |               |                |
-   |                  |    guarda .wav  |                |                    |               |              |               |                |
-   |                  |                 |-- inotify ---->|                    |               |              |               |                |
-   |                  |                 |   evento       |-- mueve a -------->|               |              |               |                |
-   |                  |                 |                |   /processing      |               |              |               |                |
-   |                  |                 |                |-- POST ----------->|               |              |               |                |
-   |                  |                 |                |   /v1/transcriptions|              |              |               |                |
-   |                  |                 |                |<-- {"text": "..."} |               |              |               |                |
-   |                  |                 |                |-- POST ------------|-------------->|              |               |                |
-   |                  |                 |                |   /api/v1/execute  |               |              |               |                |
-   |                  |                 |                |<------------------ |{"speech":"..."}|             |               |                |
-   |                  |                 |                |-- POST ------------|---------------|------------->|               |                |
-   |                  |                 |                |   /synthesize      |               |              |               |                |
-   |                  |                 |                |<--  audio/wav  ----|---------------|------------- |               |                |
-   |                  |                 |                |-- guarda ----------|---------------|--------------|-------------->|                |
-   |                  |                 |                |   respuesta .wav   |               |              |               |                |
-   |                  |                 |                |                    |               |              |               |-- inotify ----->|
-   |                  |                 |                |                    |               |              |               |   evento       |
-   |<-- Escucha audio |                 |                |                    |               |              |               |                |-- mpv reproduce
-   |   del altavoz    |                 |                |                    |               |              |               |                |   y elimina .wav
+Usuario          mic-daemon        data/input   interaction-manager   stt-capability   orchestrator   system-service   tts-capability   data/output   speaker-watchdog
+   |                  |                 |                |                    |               |                |              |               |                |
+   |-- Presiona ----->|                 |                |                    |               |                |              |               |                |
+   |   hotkey y habla |                 |                |                    |               |                |              |               |                |
+   |                  |--- graba y ---->|                |                    |               |                |              |               |                |
+   |                  |    guarda .wav  |                |                    |               |                |              |               |                |
+   |                  |                 |-- inotify ---->|                    |               |                |              |               |                |
+   |                  |                 |   evento       |-- mueve a -------->|               |                |              |               |                |
+   |                  |                 |                |   /processing      |               |                |              |               |                |
+   |                  |                 |                |-- POST ----------->|               |                |              |               |                |
+   |                  |                 |                |   /v1/transcriptions|              |                |              |               |                |
+   |                  |                 |                |<-- {"text": "..."} |               |                |              |               |                |
+   |                  |                 |                |-- POST ------------|-------------->|                |              |               |                |
+   |                  |                 |                |   /api/v1/execute  |               |                |              |               |                |
+   |                  |                 |                |                    |               |-- GET -------->|              |               |                |
+   |                  |                 |                |                    |               |   /system/info |              |               |                |
+   |                  |                 |                |                    |               |<-- JSON -------|              |               |                |
+   |                  |                 |                |<------------------ |{"speech":"..."}|                |              |               |                |
+   |                  |                 |                |-- POST ------------|---------------|----------------|-------------->|               |                |
+   |                  |                 |                |   /synthesize      |               |                |              |               |                |
+   |                  |                 |                |<--  audio/wav  ----|---------------|----------------|------------- |               |                |
+   |                  |                 |                |-- guarda ----------|---------------|----------------|--------------|-------------->|                |
+   |                  |                 |                |   respuesta .wav   |               |                |              |               |                |
+   |                  |                 |                |                    |               |                |              |               |-- inotify ----->|
+   |                  |                 |                |                    |               |                |              |               |   evento       |
+   |<-- Escucha audio |                 |                |                    |               |                |              |               |                |-- mpv reproduce
+   |   del altavoz    |                 |                |                    |               |                |              |               |                |   y elimina .wav
 ```
 
 ---
@@ -111,6 +114,12 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **API:** `POST /api/v1/execute` (JSON `{"text": "..."}`)
 - **Extensibilidad:** Se pueden añadir nuevos plugins sin tocar el núcleo del orquestador.
 
+#### `system-service`
+- **Imagen:** `danuser2018/system-service:latest`
+- **Puerto interno:** `8000` (expuesto en puerto host `8004`)
+- **Rol:** Servicio de información de identidad. Expone datos estáticos sobre el asistente Nova. Consumido exclusivamente por el `orchestrator` mediante el `Identity Plugin`.
+- **API:** `GET /system/info` (devuelve información del sistema en formato JSON) y `GET /health` (estado de salud).
+
 #### `tts-capability`
 - **Imagen:** `danuser2018/tts-capability:latest`
 - **Puerto interno:** `8003`
@@ -130,6 +139,7 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 │  interaction-manager ──► stt:8001           │
 │                      ──► orchestrator:8002  │
 │                      ──► tts:8003           │
+│  orchestrator        ──► system-service:8004│
 │                                             │
 └─────────────────────────────────────────────┘
 ```
