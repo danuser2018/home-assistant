@@ -37,6 +37,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Correcciones al desinstalador
 - Correcciones al instalador
 - Se actualiza el endpoint de healthcheck del orchestrator
 - Se corrige el script de actualización (update.sh). El nombre del entorno virtual estaba mal.
