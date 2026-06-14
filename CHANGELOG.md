@@ -22,7 +22,7 @@ Los cambios se agrupan en las siguientes categorías:
 ## [Sin publicar]
 
 ### Añadido
-
+- Inclusión del microservicio `system-service` para exponer información de identidad del sistema (Nova).
 - Documentación completa para el nuevo microservicio Python dockerizado `system-service` en `README.md` y en los documentos de arquitectura, catálogo de servicios, instalación y solución de problemas.
 - Fichero `CONTRIBUTING.md` con el flujo de trabajo Trunk Based Development,
   convenciones de commits, guía de Pull Requests y buenas prácticas para
