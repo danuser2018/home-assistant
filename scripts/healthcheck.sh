@@ -62,6 +62,7 @@ declare -A CONTAINERS=(
     ["stt-capability"]="stt-capability"
     ["orchestrator"]="orchestrator"
     ["tts-capability"]="tts-capability"
+    ["system-service"]="system-service"
 )
 
 for name in "${!CONTAINERS[@]}"; do
@@ -89,12 +90,13 @@ check_http() {
     fi
 }
 
-check_http "STT /health"         "http://localhost:8001/health"
-check_http "STT /ready"          "http://localhost:8001/ready"
+check_http "STT /health"          "http://localhost:8001/health"
+check_http "STT /ready"           "http://localhost:8001/ready"
 check_http "Orchestrator /health" "http://localhost:8002/api/v1/health" || \
     warn "Orchestrator: el endpoint /health puede no estar disponible según la versión"
-check_http "TTS /health"         "http://localhost:8003/health" || \
+check_http "TTS /health"          "http://localhost:8003/health" || \
     warn "TTS: el endpoint /health puede no estar disponible según la versión"
+check_http "System Service /health" "http://localhost:8004/health"
 
 # ─── Carpetas de datos ────────────────────────────────────────────────────────
 header "Carpetas de datos"

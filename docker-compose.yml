@@ -40,9 +40,29 @@ services:
     container_name: orchestrator
     env_file:
       - config/assistant.env
+    environment:
+      SYSTEM_SERVICE_BASE_URL: http://system-service:8000
     ports:
       - "8002:8000"  # Expuesto para healthcheck y depuración local
     restart: unless-stopped
+    depends_on:
+      - system-service
+    networks:
+      - assistant-net
+
+  system-service:
+    image: danuser2018/system-service:latest
+    container_name: system-service
+    env_file:
+      - config/assistant.env
+    ports:
+      - "8004:8000"  # Expuesto para healthcheck y depuración local
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - assistant-net
 
