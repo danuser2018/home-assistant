@@ -1,3 +1,5 @@
+![nova-2](assets/nova-2.png)
+
 # 🏠 Home Assistant
 
 Asistente de voz **100% local** para Linux. Procesa tu voz sin conexión a Internet, sin servicios en la nube y sin LLMs pesados. Diseñado para funcionar en hardware de consumo modesto con un tiempo de respuesta bajo.
