@@ -41,6 +41,7 @@ Los cambios se agrupan en las siguientes categorías:
 - Correcciones al instalador
 - Se actualiza el endpoint de healthcheck del orchestrator
 - Se corrige el script de actualización (update.sh). El nombre del entorno virtual estaba mal.
+- Se cambian los datos de Nova. Versión básica, autor.
 
 ---
 
