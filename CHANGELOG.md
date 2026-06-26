@@ -22,6 +22,7 @@ Los cambios se agrupan en las siguientes categorías:
 ## [Sin publicar]
 
 ### Añadido
+
 - Documentación completa para el nuevo microservicio `mail-watchdog` en `README.md` y en los documentos de arquitectura, catálogo de servicios, instalación y solución de problemas.
 - Nuevo volumen para cachear el modelo whisper (stt) y no descargarlo cada vez.
 - Inclusión de la carpeta `data` en .gitignore.
@@ -38,6 +39,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Correcciones al formato del archivo `docs/services.md`
 - Correcciones al desinstalador
 - Correcciones al instalador
 - Se actualiza el endpoint de healthcheck del orchestrator
