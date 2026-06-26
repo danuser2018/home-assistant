@@ -271,6 +271,7 @@ GET /health
 **Configuración de Healthcheck en Docker:**
 ```yaml
 healthcheck:
+```
 ---
 
 ### mail-watchdog
