@@ -13,7 +13,7 @@ El sistema se divide en dos planos de ejecución:
 | Plano | Tipo | Servicios |
 |---|---|---|
 | **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog` |
-| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service` |
+| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog` |
 
 ### ¿Por qué esta separación?
 
@@ -25,14 +25,18 @@ El resto de servicios, al no necesitar acceso hardware, se ejecutan perfectament
 
 ## Integración: El Filesystem como Bus de Mensajes
 
-La comunicación entre el plano de hardware y el plano de procesamiento se realiza a través del sistema de ficheros. El directorio `data/` del proyecto actúa como un **bus de mensajes asíncrono y observable**:
+La comunicación entre los componentes también aprovecha el sistema de ficheros. Además de los archivos de audio en `data/`, se añade el subdirectorio `data/mail/` que funciona como bandeja de salida asíncrona para el servicio `mail-watchdog`:
 
 ```text
 home-assistant/data/
 ├── input/       ← mic-daemon deposita aquí los .wav grabados
 ├── processing/  ← interaction-manager mueve aquí los archivos mientras los procesa
 ├── output/      ← interaction-manager deposita aquí las respuestas de audio
-└── error/       ← interaction-manager mueve aquí los archivos fallidos
+├── error/       ← interaction-manager mueve aquí los archivos fallidos
+└── mail/        ← Directorio de trabajo de mail-watchdog
+    ├── pending/    ← Archivos JSON de correos pendientes de envío
+    ├── processing/ ← Archivos JSON en proceso de envío
+    └── failed/     ← Archivos JSON que fallaron tras todos los reintentos
 ```
 
 Esta arquitectura tiene ventajas clave:
@@ -126,6 +130,13 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Rol:** Servicio stateless de Text-to-Speech basado en **Piper TTS**. Recibe texto y devuelve audio binario PCM 16-bit mono a 16000 Hz empaquetado en formato WAV.
 - **API:** `POST /synthesize` (JSON `{"msg": "..."}`)
 
+#### `mail-watchdog`
+- **Imagen:** `danuser2018/mail-watchdog:latest`
+- **Puerto:** Ninguno expuesto al host.
+- **Rol:** Servicio de envío asíncrono de correos electrónicos vía SMTP. Observa la carpeta `/shared/mail/pending` y envía los mensajes estructurados en formato JSON.
+- **Entrada:** Archivos JSON que representan los correos en `data/mail/pending/`.
+- **Salida:** Envío de correo a través del servidor SMTP configurado y eliminación del archivo JSON (o traslado a `failed/` en caso de error definitivo).
+
 ---
 
 ## Red Interna de Docker
@@ -140,6 +151,7 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 │                      ──► orchestrator:8002  │
 │                      ──► tts:8003           │
 │  orchestrator        ──► system-service:8004│
+│  mail-watchdog (salida SMTP al exterior)    │
 │                                             │
 └─────────────────────────────────────────────┘
 ```

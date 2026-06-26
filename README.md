@@ -19,7 +19,7 @@ Todo ocurre en tu equipo, en pocos segundos.
 
 ## Arquitectura
 
-El sistema está formado por **7 microservicios** con responsabilidades bien delimitadas:
+El sistema está formado por **8 microservicios** con responsabilidades bien delimitadas:
 
 | Servicio | Tipo | Función |
 |---|---|---|
@@ -30,6 +30,7 @@ El sistema está formado por **7 microservicios** con responsabilidades bien del
 | `orchestrator` | Docker | Selecciona y ejecuta la acción correcta |
 | `tts-capability` | Docker | Convierte texto a voz con Piper TTS |
 | `system-service` | Docker | Expone información de identidad del sistema (Nova) |
+| `mail-watchdog` | Docker | Envía correos electrónicos de forma asíncrona mediante SMTP leyendo archivos JSON |
 
 Los servicios del host se instalan como **systemd user services** para tener acceso directo al servidor de audio. Los servicios Docker se gestionan con un único `docker-compose.yml` y sus imágenes están disponibles en DockerHub.
 
@@ -81,7 +82,7 @@ chmod +x scripts/install.sh
 | Documento | Descripción |
 |---|---|
 | [docs/architecture.md](docs/architecture.md) | Arquitectura del sistema, componentes y decisiones de diseño |
-| [docs/services.md](docs/services.md) | Catálogo de los 7 servicios con sus APIs y configuración |
+| [docs/services.md](docs/services.md) | Catálogo de los 8 servicios con sus APIs y configuración |
 | [docs/installation.md](docs/installation.md) | Guía de instalación paso a paso |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Solución a los problemas más comunes |
 

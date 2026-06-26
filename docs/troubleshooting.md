@@ -16,6 +16,7 @@ Esta guía recoge los problemas más comunes que puedes encontrar durante la ins
 8. [El hotkey no hace nada](#8-el-hotkey-no-hace-nada)
 9. [El asistente no entiende lo que digo](#9-el-asistente-no-entiende-lo-que-digo)
 10. [El asistente responde "no he entendido" a todo](#10-el-asistente-responde-no-he-entendido-a-todo)
+11. [El servicio de correo (mail-watchdog) no envía correos](#11-el-servicio-de-correo-mail-watchdog-no-envía-correos)
 
 ---
 
@@ -406,6 +407,38 @@ Consulta la documentación del Orchestrator para ver cómo añadir nuevos plugin
 
 ---
 
+## 11. El servicio de correo (mail-watchdog) no envía correos
+
+**Síntoma:** Los archivos JSON de correo se quedan en `data/mail/pending/` o aparecen en `data/mail/failed/` sin llegar a su destinatario.
+
+### Verificar logs de mail-watchdog
+
+El contenedor docker registrará cualquier error de conexión SMTP o validación de JSON:
+```bash
+docker compose logs mail-watchdog
+```
+
+### Causas comunes y soluciones
+
+#### 1. Configuración SMTP incorrecta
+Verifica que las variables en `config/assistant.env` coinciden con los requisitos de tu proveedor de correo:
+- Comprueba el host (`SMTP_HOST`) y el puerto (`SMTP_PORT`).
+- Para la mayoría de los servidores con cifrado STARTTLS el puerto es `587`. Para SSL/TLS implícito suele ser `465`.
+
+#### 2. Error de autenticación (Credenciales incorrectas)
+- Si utilizas proveedores populares como Gmail, Outlook o Yahoo, recuerda que **no puedes usar tu contraseña principal**. Debes generar una **contraseña de aplicación** (App Password / Contraseña de un solo uso) en los ajustes de seguridad de tu cuenta.
+
+#### 3. Puerto bloqueado por el ISP o Cortafuegos
+- Algunos proveedores de internet (ISP) bloquean el puerto saliente `25` o incluso el `587` para prevenir spam. Prueba la conexión desde el host usando `telnet` o `nc`:
+  ```bash
+  nc -zv smtp.gmail.com 587
+  ```
+
+#### 4. JSON mal formado
+Si un plugin escribe un archivo en `/pending` que no sigue el formato requerido (faltan campos obligatorios como `to`, `subject` o `body`), el servicio lo rechazará. Revisa el contenido del archivo JSON movido a `failed/` para verificar su estructura.
+
+---
+
 ## Comandos de Diagnóstico Rápido
 
 ```bash
@@ -419,7 +452,7 @@ docker compose logs -f
 systemctl --user status mic-daemon speaker-watchdog
 
 # Contenido de las carpetas de datos (para ver el flujo)
-watch -n 1 "ls -la data/input/ data/processing/ data/output/ data/error/"
+watch -n 1 "ls -la data/input/ data/processing/ data/output/ data/error/ data/mail/pending/ data/mail/failed/"
 
 # Reinicio completo del sistema
 docker compose restart
