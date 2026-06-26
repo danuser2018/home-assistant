@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **7 microservicios** con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **8 microservicios** con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -15,6 +15,7 @@ El sistema Home Assistant está compuesto por **7 microservicios** con responsab
 | `orchestrator` | Docker | `danuser2018/orchestrator:latest` | Selecciona y ejecuta la acción adecuada |
 | `tts-capability` | Docker | `danuser2018/tts-capability:latest` | Convierte texto a voz (TTS) |
 | `system-service` | Docker | `danuser2018/system-service:latest` | Expone información de identidad del sistema (Nova) |
+| `mail-watchdog` | Docker | `danuser2018/mail-watchdog:latest` | Envía correos electrónicos asíncronos vía SMTP |
 
 ---
 
@@ -270,10 +271,64 @@ GET /health
 **Configuración de Healthcheck en Docker:**
 ```yaml
 healthcheck:
-  test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-  interval: 30s
-  timeout: 5s
-  retries: 3
+---
+
+### mail-watchdog
+
+**Imagen:** `danuser2018/mail-watchdog:latest`  
+**Puerto:** No expuesto al host.
+
+**Propósito:** Procesar solicitudes de envío de emails de forma asíncrona mediante SMTP. Sigue el diseño desacoplado de Nova de *capabilities* basadas en watchdog del sistema de ficheros.
+
+**Cómo funciona:**
+1. Escucha de forma continua el directorio `/shared/mail/pending` en busca de archivos JSON de mensajes.
+2. Lee, parsea y valida el JSON según el contrato establecido.
+3. Intenta enviar el correo electrónico vía SMTP utilizando la configuración cargada.
+4. Si el envío es exitoso, elimina el archivo JSON de forma segura.
+5. Si ocurre un fallo en la conexión SMTP, reintenta el envío aplicando un backoff exponencial.
+6. Si se agotan los reintentos configurados, mueve el archivo a `/shared/mail/failed/` para análisis y depuración manual.
+
+**Contrato de Entrada (JSON):**
+El servicio consume archivos `.json` con la siguiente estructura:
+```json
+{
+  "id": "mail-12345",
+  "to": "user@example.com",
+  "subject": "Asunto del mensaje",
+  "body": "Cuerpo o contenido del mensaje",
+  "content_type": "text/plain"
+}
+```
+* **Campos obligatorios:** `id` (identificador único), `to` (destinatario), `subject` (asunto), `body` (contenido).
+* **Campos opcionales:** `content_type` (`"text/plain"` o `"text/html"`, por defecto `text/plain`).
+
+**Estructura de Directorios Compartidos:**
+El volumen montado en el contenedor bajo `/shared/mail` debe tener la siguiente estructura en el host:
+* `pending/`: Carpeta de entrada para los correos a enviar.
+* `processing/`: Estado transitorio durante el envío (opcional).
+* `failed/`: Contiene los mensajes que fallaron permanentemente tras agotar los intentos.
+
+**Variables de entorno relevantes:**
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `SMTP_HOST` | ✅ Sí | — | Dirección del servidor SMTP (ej. `smtp.gmail.com`) |
+| `SMTP_PORT` | ✅ Sí | — | Puerto del servidor SMTP (normalmente `587` o `465`) |
+| `SMTP_USER` | ✅ Sí | — | Usuario / Email de autenticación SMTP |
+| `SMTP_PASSWORD` | ✅ Sí | — | Contraseña de autenticación (se recomienda usar contraseñas de aplicación) |
+| `SMTP_FROM` | ❌ No | (Mismo que usuario) | Nombre y dirección de origen (ej. `"Nova <user@example.com>"`) |
+| `MAIL_POLL_INTERVAL` | ❌ No | `2` | Intervalo de sondeo en segundos |
+| `MAIL_MAX_RETRIES` | ❌ No | `3` | Límite máximo de intentos de envío |
+| `MAIL_BACKOFF_BASE` | ❌ No | `2` | Factor de multiplicación para el backoff exponencial |
+
+**Observabilidad (Logs):**
+Ejemplo de flujo registrado por el contenedor:
+```text
+[INFO] Processing mail mail-12345
+[INFO] Sending to user@example.com
+[WARN] SMTP retry 1/3
+[ERROR] Mail failed after retries
+[INFO] Moved to /failed/mail-12345.json
 ```
 
 ---
@@ -293,15 +348,16 @@ healthcheck:
                     │      │                   system-service:8004     │
                     │      └──► tts:8003                               │
                     │                                                  │
+                    │  mail-watchdog ──► Servidor SMTP (exterior)      │
                     └──────────────────────────────────────────────────┘
                               │           │
-                        Volumen Docker: ./data
+                         Volumen Docker: ./data
                               │           │
                     ┌─────────┴───────────┴──────────┐
                     │         HOST (Linux)             │
                     │                                 │
                     │  mic-daemon ──► data/input/     │
                     │  speaker-watchdog ◄── data/output/│
-                    │                                 │
+                    │  plugins ──► data/mail/pending/  │
                     └─────────────────────────────────┘
 ```

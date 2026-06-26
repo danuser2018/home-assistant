@@ -79,7 +79,7 @@ cd home-assistant
 
 ## Paso 2: Crea la carpeta de datos
 ```bash
-mkdir data
+mkdir -p data/mail/{pending,processing,failed}
 ```
 
 ---
@@ -181,7 +181,7 @@ Deberías ver `Active: active (running)` en ambos.
 
 ## Paso 6: Arrancar los servicios Docker
 
-Descarga las imágenes de DockerHub y arranca los 5 contenedores:
+Descarga las imágenes de DockerHub y arranca los 6 contenedores:
 
 ```bash
 docker compose up -d
@@ -193,13 +193,17 @@ Esto descargará automáticamente las siguientes imágenes (la primera vez tarda
 - `danuser2018/orchestrator:latest`
 - `danuser2018/tts-capability:latest`
 - `danuser2018/system-service:latest`
+- `danuser2018/mail-watchdog:latest`
+
+> [!NOTE]
+> Para que el servicio `mail-watchdog` funcione correctamente, debes configurar los parámetros SMTP de tu servidor de correo en el archivo `config/assistant.env` antes de levantar los contenedores. Consulta [docs/services.md](services.md) para ver la lista de variables requeridas.
 
 Verifica que todos los contenedores están en funcionamiento:
 ```bash
 docker compose ps
 ```
 
-Deberías ver 5 contenedores con estado `Up`.
+Deberías ver 6 contenedores con estado `Up`.
 
 ---
 
@@ -305,12 +309,16 @@ home-assistant/
 ├── config/
 │   ├── mic-daemon.env          ← Configuración del daemon de grabación
 │   ├── speaker-watchdog.env    ← Configuración del daemon de reproducción
-│   └── assistant.env           ← Configuración global de los contenedores Docker
+│   └── assistant.env           ← Configuración global de los contenedores Docker (incluido SMTP)
 ├── data/
 │   ├── input/                  ← mic-daemon deposita aquí los .wav grabados
 │   ├── processing/             ← interaction-manager procesa aquí los archivos
 │   ├── output/                 ← Respuestas de audio listas para reproducir
-│   └── error/                  ← Archivos que fallaron durante el procesamiento
+│   ├── error/                  ← Archivos que fallaron durante el procesamiento
+│   └── mail/                   ← Carpeta de trabajo de mail-watchdog
+│       ├── pending/            ← Emails pendientes de envío (formato JSON)
+│       ├── processing/         ← Emails en proceso de envío (opcional)
+│       └── failed/             ← Emails que fallaron permanentemente
 ├── docs/                       ← Esta documentación
 ├── scripts/
 │   ├── install.sh
