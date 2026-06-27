@@ -23,6 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Integración del servicio `mail-watchdog` en `docker-compose.yml` y configuración de variables SMTP en `config/assistant.env`.
+- Creación automática de directorios de correo en `scripts/install.sh` y comprobaciones de estado y conteo de emails en `scripts/healthcheck.sh`.
 - Documentación completa para el nuevo microservicio `mail-watchdog` en `README.md` y en los documentos de arquitectura, catálogo de servicios, instalación y solución de problemas.
 - Nuevo volumen para cachear el modelo whisper (stt) y no descargarlo cada vez.
 - Inclusión de la carpeta `data` en .gitignore.

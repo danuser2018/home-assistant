@@ -63,6 +63,7 @@ declare -A CONTAINERS=(
     ["orchestrator"]="orchestrator"
     ["tts-capability"]="tts-capability"
     ["system-service"]="system-service"
+    ["mail-watchdog"]="mail-watchdog"
 )
 
 for name in "${!CONTAINERS[@]}"; do
@@ -116,6 +117,25 @@ for dir in input processing output error; do
         fail "$dir/ — no existe"
     fi
 done
+
+# Verificar carpetas de mail
+if [ -d "$DATA_DIR/mail" ]; then
+    ok "mail/ — existe"
+    for maildir in pending processing failed; do
+        full_path="$DATA_DIR/mail/$maildir"
+        if [ -d "$full_path" ]; then
+            count=$(find "$full_path" -maxdepth 1 -name "*.json" 2>/dev/null | wc -l)
+            ok "mail/$maildir/ — existe ($count archivos .json)"
+            if [ "$maildir" = "failed" ] && [ "$count" -gt 0 ]; then
+                warn "Hay $count correo(s) en mail/failed/ — revisa los logs de mail-watchdog"
+            fi
+        else
+            fail "mail/$maildir/ — no existe"
+        fi
+    done
+else
+    fail "mail/ — no existe"
+fi
 
 # ─── Flag de grabación ────────────────────────────────────────────────────────
 header "Estado del micrófono"
