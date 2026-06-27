@@ -184,6 +184,21 @@ curl http://localhost:8001/ready     # {"status": "ready"}
 - Cada plugin define sus propias keywords y regex para ser seleccionado.
 - Si ningún plugin supera el umbral mínimo, responde el `FallbackPlugin`.
 
+**Plugin de Capacidades (CapabilitiesPlugin):**
+Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones disponibles.
+1. Consulta las capacidades registradas en `system-service` llamando a `GET /system/capabilities`.
+2. Ordena las capacidades alfabéticamente por su descripción.
+3. Escribe un archivo JSON con el correo formateado en `MAIL_PENDING_DIR` (por defecto `/shared/mail/pending`) siguiendo el contrato del servicio `mail-watchdog`.
+4. El envío del correo se gestiona de forma asíncrona y transparente por `mail-watchdog`.
+
+**Variables de entorno relevantes:**
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `SYSTEM_SERVICE_BASE_URL` | ❌ No | `http://system-service:8000` | URL del servicio `system-service` para consultar identidad y capacidades |
+| `USER_EMAIL` | ✅ Sí | `user@example.com` | Dirección de correo del usuario destinatario para las notificaciones del `CapabilitiesPlugin` |
+| `MAIL_PENDING_DIR` | ❌ No | `/shared/mail/pending` | Directorio compartido donde se escriben los correos pendientes para que los procese `mail-watchdog` |
+
 **Endpoint principal:**
 ```http
 POST /api/v1/execute
