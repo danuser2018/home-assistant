@@ -25,7 +25,7 @@ El resto de servicios, al no necesitar acceso hardware, se ejecutan perfectament
 
 ## Integración: El Filesystem como Bus de Mensajes
 
-La comunicación entre los componentes también aprovecha el sistema de ficheros. Además de los archivos de audio en `data/`, se añade el subdirectorio `data/mail/` que funciona como bandeja de salida asíncrona para el servicio `mail-watchdog`:
+La comunicación entre los componentes también aprovecha el sistema de ficheros. Además de los archivos de audio en `data/`, se añade el subdirectorio `data/mail/` que funciona como bandeja de salida asíncrona para el servicio `mail-watchdog`. Esta bandeja de salida es escrita por el servicio `orchestrator` (cuando ejecuta el plugin `capabilities`) y consumida por `mail-watchdog`:
 
 ```text
 home-assistant/data/
@@ -115,6 +115,7 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Imagen:** `danuser2018/orchestrator:latest`
 - **Puerto interno:** `8002`
 - **Rol:** Motor de intenciones determinista. Evalúa el texto recibido contra las keywords y expresiones regulares de cada plugin cargado, selecciona el plugin con mayor puntuación y ejecuta su lógica.
+- **Integraciones externas:** Además de conectarse a `system-service` para consultar identidad y capacidades, monta el volumen compartido `data/mail` para interactuar de forma asíncrona con `mail-watchdog` escribiendo peticiones de correo cuando se ejecuta el plugin `capabilities`.
 - **API:** `POST /api/v1/execute` (JSON `{"text": "..."}`)
 - **Extensibilidad:** Se pueden añadir nuevos plugins sin tocar el núcleo del orquestador.
 

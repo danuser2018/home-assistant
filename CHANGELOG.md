@@ -23,6 +23,9 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Configuración para el plugin `capabilities` en el `orchestrator`, incluyendo las variables de entorno `USER_EMAIL` y `MAIL_PENDING_DIR` en `config/assistant.env`.
+- Montaje del volumen `./data/mail:/shared/mail` para el servicio `orchestrator` en `docker-compose.yml` para posibilitar el envío asíncrono de correos mediante `mail-watchdog`.
+- Documentación detallada del plugin `capabilities` y sus variables asociadas en `docs/services.md` y `docs/architecture.md`.
 - Integración del servicio `mail-watchdog` en `docker-compose.yml` y configuración de variables SMTP en `config/assistant.env`.
 - Creación automática de directorios de correo en `scripts/install.sh` y comprobaciones de estado y conteo de emails en `scripts/healthcheck.sh`.
 - Documentación completa para el nuevo microservicio `mail-watchdog` en `README.md` y en los documentos de arquitectura, catálogo de servicios, instalación y solución de problemas.
