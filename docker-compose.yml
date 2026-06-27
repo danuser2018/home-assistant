@@ -79,6 +79,18 @@ services:
     networks:
       - assistant-net
 
+  mail-watchdog:
+    image: danuser2018/mail-watchdog:latest
+    container_name: mail-watchdog
+    env_file:
+      - config/assistant.env
+    volumes:
+      - ./data/mail:/shared/mail
+    restart: unless-stopped
+    networks:
+      - assistant-net
+
 networks:
   assistant-net:
     driver: bridge
+

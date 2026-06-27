@@ -104,6 +104,7 @@ echo ""
 # ─── Crear carpetas de datos ──────────────────────────────────────────────────
 log_info "Creando estructura de carpetas de datos..."
 mkdir -p "$DATA_DIR/input" "$DATA_DIR/processing" "$DATA_DIR/output" "$DATA_DIR/error"
+mkdir -p "$DATA_DIR/mail/pending" "$DATA_DIR/mail/processing" "$DATA_DIR/mail/failed"
 mkdir -p /tmp/voice_assistant
 mkdir -p "$STT_MODEL_DIR"
 log_ok "Carpetas creadas en $DATA_DIR"
