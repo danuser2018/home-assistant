@@ -47,6 +47,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Ajuste en las skills para que tengan en cuenta los ADRs
 - Correcciones al formato del archivo `docs/services.md`
 - Correcciones al desinstalador
 - Correcciones al instalador

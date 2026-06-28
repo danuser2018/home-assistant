@@ -32,3 +32,4 @@ Captura del micrófono, PipeWire/PulseAudio, encolamiento secuencial de audios d
 ## Referencias
 - [mic-daemon/README.md](file:///home/danuser2018/workspace/mic-daemon/README.md) (Control del micrófono a través de hilos nativos).
 - [speaker-watchdog/README.md](file:///home/danuser2018/workspace/speaker-watchdog/README.md) (Uso del reproductor CLI y control de colas FIFO en Python).
+- [ADR-002: Modularización de Servicios](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-002.md) (Host para Hardware y Docker para Procesamiento).
