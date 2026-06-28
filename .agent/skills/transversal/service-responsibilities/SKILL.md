@@ -32,4 +32,4 @@ Definición de dependencias, fuentes de verdad (*sources of truth*) y propiedad 
 
 ## Referencias
 - [architecture.md](file:///home/danuser2018/workspace/home-assistant/docs/architecture.md) (Definición del plano de host y plano de procesamiento).
-- [ADR-002: Modularización de Servicios] (Explica la decisión de aislar servicios de hardware del host de la lógica Docker).
+- [ADR-002: Modularización de Servicios](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-002.md) (Explica la decisión de aislar servicios de hardware del host de la lógica Docker).

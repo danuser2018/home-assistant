@@ -82,6 +82,7 @@ chmod +x scripts/install.sh
 | Documento | Descripción |
 |---|---|
 | [docs/architecture.md](docs/architecture.md) | Arquitectura del sistema, componentes y decisiones de diseño |
+| [docs/adr/](docs/adr/) | Registro de Decisiones Arquitectónicas (ADRs) |
 | [docs/services.md](docs/services.md) | Catálogo de los 8 servicios con sus APIs y configuración |
 | [docs/installation.md](docs/installation.md) | Guía de instalación paso a paso |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Solución a los problemas más comunes |
