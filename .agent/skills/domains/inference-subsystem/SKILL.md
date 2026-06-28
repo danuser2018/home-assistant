@@ -32,3 +32,4 @@ Carga inicial de pesos del modelo de IA, conversión de audio binario a texto, s
 ## Referencias
 - [stt-capability/README.md](file:///home/danuser2018/workspace/stt-capability/README.md) (Configuraciones de Faster-Whisper locales).
 - [tts-capability/README.md](file:///home/danuser2018/workspace/tts-capability/README.md) (Configuraciones y síntesis local Piper TTS).
+- [ADR-002: Modularización de Servicios](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-002.md) (Host para Hardware y Docker para Procesamiento).

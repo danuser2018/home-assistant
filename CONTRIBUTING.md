@@ -12,9 +12,10 @@ Bienvenido al proyecto. Este documento describe las normas y flujos de trabajo q
 4. [Pull Requests](#pull-requests)
 5. [Code Review](#code-review)
 6. [Desarrollo asistido con IA](#desarrollo-asistido-con-ia)
-7. [Estándares de código](#estándares-de-código)
-8. [Testing](#testing)
-9. [Gestión de secretos y seguridad](#gestión-de-secretos-y-seguridad)
+7. [Decisiones de Arquitectura (ADRs)](#decisiones-de-arquitectura-adrs)
+8. [Estándares de código](#estándares-de-código)
+9. [Testing](#testing)
+10. [Gestión de secretos y seguridad](#gestión-de-secretos-y-seguridad)
 
 ---
 
@@ -245,6 +246,17 @@ Requisito claro → Prompt preciso → Revisión crítica → Tests → Commit
 ### Prompts como artefactos
 
 - Para funcionalidades complejas, considera guardar el prompt principal usado en el desarrollo dentro del directorio `docs/prompts/` con nombre descriptivo. Esto facilita reproducir o iterar sobre decisiones de diseño en el futuro.
+
+---
+
+## Decisiones de Arquitectura (ADRs)
+
+Toda decisión estructural, tecnológica o de integración crítica en el ecosistema está formalizada mediante **Architectural Decision Records (ADRs)** en el directorio [docs/adr/](docs/adr/).
+
+### Reglas para Colaboradores y Asistentes de IA:
+- **Consulta obligatoria:** Antes de desarrollar cualquier funcionalidad, realizar una refactorización o modificar interfaces de comunicación, es obligatorio consultar el registro de ADRs para conocer las restricciones vigentes.
+- **Resolución de conflictos:** Si dos ADRs entran en conflicto y ambos están en estado Aceptado, prevalece siempre el que posea la fecha de registro posterior (campo `Fecha` en formato `DD-MM-YYYY`).
+- **Registro de nuevas decisiones:** Cualquier cambio estructural o tecnológico de envergadura requiere proponer e implementar un nuevo ADR numerado secuencialmente en dicho directorio.
 
 ---
 

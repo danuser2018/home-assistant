@@ -31,3 +31,4 @@ Scoring determinista de intenciones, coincidencia de keywords/regex, descripció
 
 ## Referencias
 - [TONE_GUIDE.md](file:///home/danuser2018/workspace/orchestrator/TONE_GUIDE.md) (Reglas fundamentales de estilo, brevedad y respuestas por categoría).
+- [ADR-003: Scoring Determinista de Plugins de Intenciones](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-003.md)

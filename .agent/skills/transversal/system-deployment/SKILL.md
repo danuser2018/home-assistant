@@ -33,3 +33,5 @@ Despliegue, configuraciones de red, variables globales y montaje de recursos.
 ## Referencias
 - [installation.md](file:///home/danuser2018/workspace/home-assistant/docs/installation.md) (Guía de instalación rápida y dependencias nativas).
 - [docker-compose.yml](file:///home/danuser2018/workspace/home-assistant/docker-compose.yml) (Configuración actual de redes y variables de entorno).
+- [ADR-002: Modularización de Servicios](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-002.md) (Host para Hardware y Docker para Procesamiento).
+- [ADR-005: Distribución mediante Imágenes Precompiladas en DockerHub](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-005.md).

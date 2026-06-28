@@ -25,6 +25,9 @@ Evaluar el impacto estructural de cambios e indicar la necesidad de documentarlo
     - Modifica contratos públicos o APIs de comunicación del sistema (`api-contracts`).
     - Introduce un nuevo patrón de diseño o arquitectura estructural (p. ej., migrar de filesystem a Redis).
     - Altera los patrones de comunicación física o red entre componentes (`communication-patterns`).
+- **Sincronización de referencias en Skills:** Al crear o actualizar un ADR:
+    - Identificar todas las skills transversales o de dominio que se vean afectadas por la decisión e incluir una referencia explícita al nuevo ADR en su sección de `Referencias`.
+    - Si el nuevo ADR entra en conflicto o reemplaza la validez de un ADR anterior (según la regla de resolución por fecha posterior), eliminar de manera segura la referencia al ADR antiguo de todas las skills afectadas y sustituirla por el nuevo registro.
 
 ## Buenas prácticas (Recomendaciones — 🟢 Opcionales)
 - Indexar y almacenar los ADRs en formato Markdown en un directorio centralizado ([docs/adr/](file:///home/danuser2018/workspace/home-assistant/docs/adr/)) con nomenclatura secuencial.
