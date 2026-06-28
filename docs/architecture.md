@@ -66,9 +66,6 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
    |                  |                 |                |                    |               |-- GET -------->|                 |              |               |                |
    |                  |                 |                |                    |               |   /v1/system/info|               |              |               |                |
    |                  |                 |                |                    |               |<-- JSON -------|                 |              |               |                |
-   |                  |                 |                |                    |               |-- GET -------------------------->|              |               |                |
-   |                  |                 |                |                    |               |   /v1/identity                   |              |               |                |
-   |                  |                 |                |                    |               |<-- JSON -------------------------|              |               |                |
    |                  |                 |                |<------------------ |{"speech":"..."}|                |                 |              |               |                |
    |                  |                 |                |-- POST ------------|---------------|----------------|-----------------|------------->|               |                |
    |                  |                 |                |   /v1/synthesize   |               |                |                 |              |               |                |
@@ -161,7 +158,6 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 │                      ──► orchestrator:8000  │
 │                      ──► tts:8000           │
 │  orchestrator        ──► system-service:8000│
-│                      ──► identity-service:8000
 │  mail-watchdog (salida SMTP al exterior)    │
 │                                             │
 └─────────────────────────────────────────────┘

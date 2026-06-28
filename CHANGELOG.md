@@ -64,6 +64,12 @@ Los cambios se agrupan en las siguientes categorías:
 - Se corrige el script de actualización (update.sh). El nombre del entorno virtual estaba mal.
 - Se cambian los datos de Nova. Versión básica, autor.
 
+### Corregido
+
+- Corrección de discrepancias en la documentación (`docs/services.md`, `docs/architecture.md`, `docs/installation.md`, `README.md`) alineando la cantidad de servicios a 9, y removiendo la dependencia directa e incorrecta del orchestrator hacia `identity-service`.
+- Reubicación de la variable `USER_EMAIL` en `config/assistant.env` bajo la sección del `identity-service`.
+- Eliminación de la carpeta obsoleta `systemd/` que contenía plantillas inactivas y actualización de la documentación de instalación.
+
 ---
 
 <!-- Plantilla para nuevas versiones:

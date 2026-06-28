@@ -77,14 +77,14 @@ cd home-assistant
 
 ---
 
-## Paso 2: Crea la carpeta de datos
+## Paso 3: Crea la carpeta de datos
 ```bash
 mkdir -p data/mail/{pending,processing,failed}
 ```
 
 ---
 
-## Paso 3: Configurar las rutas del sistema
+## Paso 4: Configurar las rutas del sistema
 
 Edita el archivo `.env.example`, cópialo como `.env` y personaliza la ruta de tu usuario:
 
@@ -104,7 +104,7 @@ HOME_ASSISTANT_DATA_DIR=/home/TU_USUARIO/home-assistant/data
 
 ---
 
-## Paso 4: Configurar los servicios del host
+## Paso 5: Configurar los servicios del host
 
 Los dos servicios que se instalan en el sistema (`mic-daemon` y `speaker-watchdog`) necesitan conocer las rutas de las carpetas de audio.
 
@@ -155,7 +155,7 @@ LOG_LEVEL=INFO
 
 ---
 
-## Paso 5: Instalar los servicios de systemd
+## Paso 6: Instalar los servicios de systemd
 
 Este paso crea los entornos Python necesarios y registra los servicios en systemd para que arranquen automáticamente con tu sesión.
 
@@ -166,7 +166,7 @@ chmod +x scripts/install.sh
 
 El script realiza automáticamente las siguientes acciones:
 - Instala `mic-daemon` y `speaker-watchdog` con sus entornos virtuales de Python.
-- Copia las unidades de servicio a `~/.config/systemd/user/`.
+- Genera dinámicamente las unidades de servicio systemd en `~/.config/systemd/user/`.
 - Habilita e inicia ambos servicios.
 
 Verifica que los servicios estén activos:
@@ -179,7 +179,7 @@ Deberías ver `Active: active (running)` en ambos.
 
 ---
 
-## Paso 6: Arrancar los servicios Docker
+## Paso 7: Arrancar los servicios Docker
 
 Descarga las imágenes de DockerHub y arranca los 7 contenedores:
 
@@ -208,7 +208,7 @@ Deberías ver 7 contenedores con estado `Up`.
 
 ---
 
-## Paso 7: Configurar el atajo de teclado (Hotkey)
+## Paso 8: Configurar el atajo de teclado (Hotkey)
 
 Necesitas asociar un atajo de teclado de tu sistema operativo al script `mic-toggle.sh` del repositorio `mic-daemon`. Aquí tienes las instrucciones para los entornos de escritorio más comunes.
 
@@ -250,7 +250,7 @@ bind = SUPER, F9, exec, mic-toggle
 
 ---
 
-## Paso 8: Verificar la instalación
+## Paso 9: Verificar la instalación
 
 Realiza una prueba completa del sistema:
 
