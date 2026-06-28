@@ -154,7 +154,7 @@ home-assistant/
     *   ❌ Duplicar persistencia de bases de datos o lógica de negocio en los daemons nativos del host (`mic-daemon`, `speaker-watchdog`).
 *   **Referencias:**
     *   [architecture.md](file:///home/danuser2018/workspace/home-assistant/docs/architecture.md) (Definición del plano de host y plano de procesamiento).
-    *   [ADR-002: Modularización de Servicios] (Explica la decisión de aislar servicios de hardware del host de la lógica Docker).
+    *   [ADR-002: Modularización de Servicios](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-002.md) (Explica la decisión de aislar servicios de hardware del host de la lógica Docker).
 
 ---
 
@@ -198,7 +198,7 @@ home-assistant/
     *   ❌ Retornar excepciones técnicas de base de datos o trazas de código en el payload de las respuestas HTTP.
     *   ❌ Mezclar estilos de nomenclatura en endpoints (ej. camelCase y snake_case combinados en la misma interfaz).
 *   **Referencias:**
-    *   [ADR-004: Estandarización de APIs REST en el Ecosistema] (Establece el protocolo HTTP unificado y la nomenclatura común).
+    *   [ADR-004: Estandarización de APIs REST en el Ecosistema](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-004.md) (Establece el protocolo HTTP unificado y la nomenclatura común).
 
 ---
 

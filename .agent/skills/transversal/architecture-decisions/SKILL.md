@@ -17,6 +17,7 @@ Evaluar el impacto estructural de cambios e indicar la necesidad de documentarlo
 
 ## Invariantes (Leyes — 🔴 Críticas — Hard Constraints)
 - **Trazabilidad de diseño:** Toda decisión arquitectónica crítica que afecte a más de un repositorio debe documentarse en un Architectural Decision Record (ADR).
+- **Resolución de conflictos de decisión:** Si dos ADRs entran en conflicto y ambos están en estado Aceptado, el que posea la fecha de registro posterior (especificada en el campo `Fecha` con formato `DD-MM-YYYY`) es el que prevalece y aplica.
 
 ## Reglas (Procedimientos — 🟡 Recomendadas — Soft Constraints)
 - Proponer obligatoriamente al desarrollador la creación de un nuevo ADR si el cambio propuesto:
@@ -26,7 +27,7 @@ Evaluar el impacto estructural de cambios e indicar la necesidad de documentarlo
     - Altera los patrones de comunicación física o red entre componentes (`communication-patterns`).
 
 ## Buenas prácticas (Recomendaciones — 🟢 Opcionales)
-- Indexar y almacenar los ADRs en formato Markdown en un directorio centralizado (`docs/adr/`) con nomenclatura secuencial.
+- Indexar y almacenar los ADRs en formato Markdown en un directorio centralizado ([docs/adr/](file:///home/danuser2018/workspace/home-assistant/docs/adr/)) con nomenclatura secuencial.
 
 ## Antipatrones (Errores conocidos)
 - ❌ Crear ADRs para cambios de implementación local o refactorización interna de un único método que no impacte a la integración global.
@@ -34,3 +35,4 @@ Evaluar el impacto estructural de cambios e indicar la necesidad de documentarlo
 
 ## Referencias
 - [architecture.md](file:///home/danuser2018/workspace/home-assistant/docs/architecture.md) (Contiene las decisiones de diseño clave iniciales).
+- [Directorio de ADRs](file:///home/danuser2018/workspace/home-assistant/docs/adr/) (Contiene todos los Architectural Decision Records registrados).

@@ -31,4 +31,4 @@ Versionado de APIs, nomenclatura de recursos, esquemas de error comunes y consis
 - ❌ Mezclar estilos de nomenclatura en endpoints (ej. camelCase y snake_case combinados en la misma interfaz).
 
 ## Referencias
-- [ADR-004: Estandarización de APIs REST en el Ecosistema] (Establece el protocolo HTTP unificado y la nomenclatura común).
+- [ADR-004: Estandarización de APIs REST en el Ecosistema](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-004.md) (Establece el protocolo HTTP unificado y la nomenclatura común).
