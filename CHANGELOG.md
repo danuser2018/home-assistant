@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Se añade la carpeta `.agent/skills` con todas las skills que la IA necesita para implementar Nova.
 - Añadido documento de `skills_proposals.md` donde se detallan la propuesta de skills para el sistema.
 - Configuración para el plugin `capabilities` en el `orchestrator`, incluyendo las variables de entorno `USER_EMAIL` y `MAIL_PENDING_DIR` en `config/assistant.env`.
 - Montaje del volumen `./data/mail:/shared/mail` para el servicio `orchestrator` en `docker-compose.yml` para posibilitar el envío asíncrono de correos mediante `mail-watchdog`.
