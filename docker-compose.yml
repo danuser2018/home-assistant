@@ -22,7 +22,7 @@ services:
       - orchestrator
       - tts
     networks:
-      - assistant-net
+      - assistant-network
 
   stt:
     image: danuser2018/stt-capability:latest
@@ -35,7 +35,7 @@ services:
     volumes:
       - ./models/stt:/root/.cache/huggingface
     networks:
-      - assistant-net
+      - assistant-network
 
   orchestrator:
     image: danuser2018/orchestrator:latest
@@ -52,7 +52,7 @@ services:
     depends_on:
       - system-service
     networks:
-      - assistant-net
+      - assistant-network
 
   system-service:
     image: danuser2018/system-service:latest
@@ -68,7 +68,7 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      - assistant-net
+      - assistant-network
 
   tts:
     image: danuser2018/tts-capability:latest
@@ -79,7 +79,7 @@ services:
       - "8003:8000"  # Expuesto para healthcheck y depuración local
     restart: unless-stopped
     networks:
-      - assistant-net
+      - assistant-network
 
   mail-watchdog:
     image: danuser2018/mail-watchdog:latest
@@ -90,9 +90,9 @@ services:
       - ./data/mail:/shared/mail
     restart: unless-stopped
     networks:
-      - assistant-net
+      - assistant-network
 
 networks:
-  assistant-net:
+  assistant-network:
     driver: bridge
 

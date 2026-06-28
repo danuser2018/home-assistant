@@ -353,7 +353,7 @@ Ejemplo de flujo registrado por el contenedor:
 
 ```text
                     ┌──────────────────────────────────────────────────┐
-                    │      Red Docker: assistant-net                   │
+                    │      Red Docker: assistant-network               │
                     │                                                  │
                     │  interaction-manager                             │
                     │      │                                           │
