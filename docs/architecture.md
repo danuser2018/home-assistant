@@ -13,7 +13,7 @@ El sistema se divide en dos planos de ejecución:
 | Plano | Tipo | Servicios |
 |---|---|---|
 | **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog` |
-| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog` |
+| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service` |
 
 ### ¿Por qué esta separación?
 
@@ -49,33 +49,36 @@ Esta arquitectura tiene ventajas clave:
 ## Diagrama de Secuencia (Flujo End-to-End)
 
 ```text
-Usuario          mic-daemon        data/input   interaction-manager   stt-capability   orchestrator   system-service   tts-capability   data/output   speaker-watchdog
-   |                  |                 |                |                    |               |                |              |               |                |
-   |-- Presiona ----->|                 |                |                    |               |                |              |               |                |
-   |   hotkey y habla |                 |                |                    |               |                |              |               |                |
-   |                  |--- graba y ---->|                |                    |               |                |              |               |                |
-   |                  |    guarda .wav  |                |                    |               |                |              |               |                |
-   |                  |                 |-- inotify ---->|                    |               |                |              |               |                |
-   |                  |                 |   evento       |-- mueve a -------->|               |                |              |               |                |
-   |                  |                 |                |   /processing      |               |                |              |               |                |
-   |                  |                 |                |-- POST ----------->|               |                |              |               |                |
-   |                  |                 |                |   /v1/transcriptions|              |                |              |               |                |
-   |                  |                 |                |<-- {"text": "..."} |               |                |              |               |                |
-   |                  |                 |                |-- POST ------------|-------------->|                |              |               |                |
-   |                  |                 |                |   /api/v1/execute  |               |                |              |               |                |
-   |                  |                 |                |                    |               |-- GET -------->|              |               |                |
-   |                  |                 |                |                    |               |   /system/info |              |               |                |
-   |                  |                 |                |                    |               |<-- JSON -------|              |               |                |
-   |                  |                 |                |<------------------ |{"speech":"..."}|                |              |               |                |
-   |                  |                 |                |-- POST ------------|---------------|----------------|-------------->|               |                |
-   |                  |                 |                |   /synthesize      |               |                |              |               |                |
-   |                  |                 |                |<--  audio/wav  ----|---------------|----------------|------------- |               |                |
-   |                  |                 |                |-- guarda ----------|---------------|----------------|--------------|-------------->|                |
-   |                  |                 |                |   respuesta .wav   |               |                |              |               |                |
-   |                  |                 |                |                    |               |                |              |               |-- inotify ----->|
-   |                  |                 |                |                    |               |                |              |               |   evento       |
-   |<-- Escucha audio |                 |                |                    |               |                |              |               |                |-- mpv reproduce
-   |   del altavoz    |                 |                |                    |               |                |              |               |                |   y elimina .wav
+Usuario          mic-daemon        data/input   interaction-manager   stt-capability   orchestrator   system-service   identity-service   tts-capability   data/output   speaker-watchdog
+   |                  |                 |                |                    |               |                |                 |              |               |                |
+   |-- Presiona ----->|                 |                |                    |               |                |                 |              |               |                |
+   |   hotkey y habla |                 |                |                    |               |                |                 |              |               |                |
+   |                  |--- graba y ---->|                |                    |               |                |                 |              |               |                |
+   |                  |    guarda .wav  |                |                    |               |                |                 |              |               |                |
+   |                  |                 |-- inotify ---->|                    |               |                |                 |              |               |                |
+   |                  |                 |   evento       |-- mueve a -------->|               |                |                 |              |               |                |
+   |                  |                 |                |   /processing      |               |                |                 |              |               |                |
+   |                  |                 |                |-- POST ----------->|               |                |                 |              |               |                |
+   |                  |                 |                |   /v1/transcriptions|              |                |                 |              |               |                |
+   |                  |                 |                |<-- {"text": "..."} |               |                |                 |              |               |                |
+   |                  |                 |                |-- POST ------------|-------------->|                |                 |              |               |                |
+   |                  |                 |                |   /api/v1/execute  |               |                |                 |              |               |                |
+   |                  |                 |                |                    |               |-- GET -------->|                 |              |               |                |
+   |                  |                 |                |                    |               |   /v1/system/info|               |              |               |                |
+   |                  |                 |                |                    |               |<-- JSON -------|                 |              |               |                |
+   |                  |                 |                |                    |               |-- GET -------------------------->|              |               |                |
+   |                  |                 |                |                    |               |   /v1/identity                   |              |               |                |
+   |                  |                 |                |                    |               |<-- JSON -------------------------|              |               |                |
+   |                  |                 |                |<------------------ |{"speech":"..."}|                |                 |              |               |                |
+   |                  |                 |                |-- POST ------------|---------------|----------------|-----------------|------------->|               |                |
+   |                  |                 |                |   /v1/synthesize   |               |                |                 |              |               |                |
+   |                  |                 |                |<--  audio/wav  ----|---------------|----------------|-----------------|------------- |               |                |
+   |                  |                 |                |-- guarda ----------|---------------|----------------|-----------------|--------------|-------------->|                |
+   |                  |                 |                |   respuesta .wav   |               |                |                 |              |               |                |
+   |                  |                 |                |                    |               |                |                 |              |               |-- inotify ----->|
+   |                  |                 |                |                    |               |                |                 |              |               |   evento       |
+   |<-- Escucha audio |                 |                |                    |               |                |                 |              |               |                |-- mpv reproduce
+   |   del altavoz    |                 |                |                    |               |                |                 |              |               |                |   y elimina .wav
 ```
 
 ---
@@ -138,6 +141,12 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Entrada:** Archivos JSON que representan los correos en `data/mail/pending/`.
 - **Salida:** Envío de correo a través del servidor SMTP configurado y eliminación del archivo JSON (o traslado a `failed/` en caso de error definitivo).
 
+#### `identity-service`
+- **Imagen:** `danuser2018/identity-service:latest`
+- **Puerto interno:** `8000` (expuesto en puerto host `8005`)
+- **Rol:** Almacena y proporciona de manera centralizada la información de identidad privada del usuario (nombre y correo electrónico), actuando como la fuente de verdad única (*Single Source of Truth*) para el perfil del usuario.
+- **API:** `GET /v1/identity` (retorna nombre y correo), `GET /v1/identity/name`, `GET /v1/identity/email`, `GET /health` (estado de salud).
+
 ---
 
 ## Red Interna de Docker
@@ -152,6 +161,7 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 │                      ──► orchestrator:8000  │
 │                      ──► tts:8000           │
 │  orchestrator        ──► system-service:8000│
+│                      ──► identity-service:8000
 │  mail-watchdog (salida SMTP al exterior)    │
 │                                             │
 └─────────────────────────────────────────────┘

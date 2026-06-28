@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **8 microservicios** con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **9 microservicios** (7 en Docker y 2 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -16,6 +16,7 @@ El sistema Home Assistant está compuesto por **8 microservicios** con responsab
 | `tts-capability` | Docker | `danuser2018/tts-capability:latest` | Convierte texto a voz (TTS) |
 | `system-service` | Docker | `danuser2018/system-service:latest` | Expone información de identidad del sistema (Nova) |
 | `mail-watchdog` | Docker | `danuser2018/mail-watchdog:latest` | Envía correos electrónicos asíncronos vía SMTP |
+| `identity-service` | Docker | `danuser2018/identity-service:latest` | Almacena y proporciona datos privados del usuario |
 
 ---
 
@@ -384,6 +385,30 @@ Ejemplo de flujo registrado por el contenedor:
 
 ---
 
+### identity-service
+
+**Repositorio:** `danuser2018/identity-service`
+
+**Propósito:** Almacena de forma centralizada y proporciona mediante una API REST la información privada de la identidad del usuario (nombre y dirección de correo electrónico). Actúa como la única fuente de verdad (*Single Source of Truth*) para la identidad personal dentro del ecosistema Nova.
+
+**API REST expuesta (puerto interno 8000, mapeado a 8005 en el host):**
+
+* `GET /v1/identity`: Devuelve toda la identidad en formato JSON (nombre y correo electrónico).
+* `GET /v1/identity/name`: Devuelve únicamente el nombre del usuario.
+* `GET /v1/identity/email`: Devuelve únicamente el correo electrónico.
+* `GET /health`: Comprueba el estado de salud del servicio (retorna `{"status": "UP"}`).
+
+**Variables de entorno relevantes (cargadas vía `config/assistant.env`):**
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `USER_NAME` | ✅ Sí | `David` | Nombre real del usuario registrado |
+| `USER_EMAIL` | ✅ Sí | `david@example.com` | Dirección de correo electrónico lógica del usuario |
+| `PORT` | ❌ No | `8000` | Puerto en el que escucha el servicio internamente |
+| `HOST` | ❌ No | `0.0.0.0` | Dirección IP en la que se vincula el servidor |
+
+---
+
 ## Comunicación entre Servicios
 
 ```text
@@ -394,16 +419,15 @@ Ejemplo de flujo registrado por el contenedor:
                     │      │                                           │
                     │      ├──► stt:8000                               │
                     │      ├──► orchestrator:8000 ───┐                 │
-                    │      │                         │                 │
-                    │      │                         ▼                 │
-                    │      │                   system-service:8000     │
+                    │      │                         ├─► system-service:8000
+                    │      │                         └─► identity-service:8000
                     │      └──► tts:8000                               │
                     │                                                  │
                     │  mail-watchdog ──► Servidor SMTP (exterior)      │
                     └──────────────────────────────────────────────────┘
-                              │           │
-                         Volumen Docker: ./data
-                              │           │
+                               │           │
+                          Volumen Docker: ./data
+                               │           │
                     ┌─────────┴───────────┴──────────┐
                     │         HOST (Linux)             │
                     │                                 │

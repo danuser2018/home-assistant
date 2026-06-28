@@ -64,6 +64,7 @@ declare -A CONTAINERS=(
     ["tts-capability"]="tts-capability"
     ["system-service"]="system-service"
     ["mail-watchdog"]="mail-watchdog"
+    ["identity-service"]="identity-service"
 )
 
 for name in "${!CONTAINERS[@]}"; do
@@ -98,6 +99,7 @@ check_http "Orchestrator /health" "http://localhost:8002/api/v1/health" || \
 check_http "TTS /health"          "http://localhost:8003/health" || \
     warn "TTS: el endpoint /health puede no estar disponible según la versión"
 check_http "System Service /health" "http://localhost:8004/health"
+check_http "Identity Service /health" "http://localhost:8005/health"
 
 # ─── Carpetas de datos ────────────────────────────────────────────────────────
 header "Carpetas de datos"
