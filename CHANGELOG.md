@@ -50,6 +50,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Unificación del nombre de la red Docker interna a `assistant-network` en `docker-compose.yml` y `docs/services.md` para corregir la inconsistencia con el resto de la documentación técnica.
 - Ajuste en las skills para que tengan en cuenta los ADRs
 - Correcciones al formato del archivo `docs/services.md`
 - Correcciones al desinstalador
