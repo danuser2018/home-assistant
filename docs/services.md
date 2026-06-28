@@ -251,8 +251,8 @@ Content-Type: application/json
 | Variable | Valor por defecto | Descripción |
 |---|---|---|
 | `NOVA_NAME` | `Nova` | Nombre del asistente |
-| `NOVA_AUTHOR` | `David` | Nombre del creador/autor |
-| `NOVA_VERSION` | `0.1.0` | Versión del sistema |
+| `NOVA_AUTHOR` | `Xeretre studios` | Nombre del creador/autor |
+| `NOVA_VERSION` | `2.0.0` | Versión del sistema |
 | `NOVA_DESCRIPTION` | `Asistente personal de voz y automatización` | Descripción corta de la plataforma |
 
 **Endpoints principales:**
@@ -266,8 +266,8 @@ GET /v1/system/info
 ```json
 {
   "name": "Nova",
-  "author": "David",
-  "version": "0.1.0",
+  "author": "Xeretre studios",
+  "version": "2.0.0",
   "description": "Asistente personal de voz y automatización"
 }
 ```
@@ -322,6 +322,10 @@ GET /health
 **Configuración de Healthcheck en Docker:**
 ```yaml
 healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+  interval: 30s
+  timeout: 5s
+  retries: 3
 ```
 ---
 
@@ -418,9 +422,7 @@ Ejemplo de flujo registrado por el contenedor:
                     │  interaction-manager                             │
                     │      │                                           │
                     │      ├──► stt:8000                               │
-                    │      ├──► orchestrator:8000 ───┐                 │
-                    │      │                         ├─► system-service:8000
-                    │      │                         └─► identity-service:8000
+                    │      ├──► orchestrator:8000 ───► system-service:8000
                     │      └──► tts:8000                               │
                     │                                                  │
                     │  mail-watchdog ──► Servidor SMTP (exterior)      │
