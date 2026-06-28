@@ -31,3 +31,5 @@ Almacenamiento y suministro del nombre del usuario, correo electrónico primario
 
 ## Referencias
 - [identity-service/README.md](file:///home/danuser2018/workspace/identity-service/README.md) (Especifica la implementación actual de almacenamiento por variables `.env` y endpoints REST de identidad).
+- [ADR-007: Configuración de la Cuenta de Correo Destino en el MVP](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-007.md)
+
