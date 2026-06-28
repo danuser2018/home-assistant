@@ -107,13 +107,13 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 
 #### `stt-capability`
 - **Imagen:** `danuser2018/stt-capability:latest`
-- **Puerto interno:** `8001`
+- **Puerto interno:** `8000` (expuesto en puerto host `8001`)
 - **Rol:** Servicio stateless de Speech-to-Text basado en **Faster-Whisper**. Carga el modelo de IA una sola vez al arrancar para minimizar la latencia en peticiones subsiguientes.
 - **API:** `POST /v1/transcriptions` (multipart/form-data con el campo `audio`)
 
 #### `orchestrator`
 - **Imagen:** `danuser2018/orchestrator:latest`
-- **Puerto interno:** `8002`
+- **Puerto interno:** `8000` (expuesto en puerto host `8002`)
 - **Rol:** Motor de intenciones determinista. Evalúa el texto recibido contra las keywords y expresiones regulares de cada plugin cargado, selecciona el plugin con mayor puntuación y ejecuta su lógica.
 - **Integraciones externas:** Además de conectarse a `system-service` para consultar identidad y capacidades, monta el volumen compartido `data/mail` para interactuar de forma asíncrona con `mail-watchdog` escribiendo peticiones de correo cuando se ejecuta el plugin `capabilities`.
 - **API:** `POST /api/v1/execute` (JSON `{"text": "..."}`)
@@ -123,13 +123,13 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Imagen:** `danuser2018/system-service:latest`
 - **Puerto interno:** `8000` (expuesto en puerto host `8004`)
 - **Rol:** Servicio de información de identidad. Expone datos estáticos sobre el asistente Nova. Consumido exclusivamente por el `orchestrator` mediante el `Identity Plugin`.
-- **API:** `GET /system/info` (devuelve información del sistema en formato JSON) y `GET /health` (estado de salud).
+- **API:** `GET /v1/system/info` (devuelve información del sistema en formato JSON), `POST /v1/system/capabilities` (registrar capacidades), `GET /v1/system/capabilities` (listar capacidades) y `GET /health` (estado de salud).
 
 #### `tts-capability`
 - **Imagen:** `danuser2018/tts-capability:latest`
-- **Puerto interno:** `8003`
+- **Puerto interno:** `8000` (expuesto en puerto host `8003`)
 - **Rol:** Servicio stateless de Text-to-Speech basado en **Piper TTS**. Recibe texto y devuelve audio binario PCM 16-bit mono a 16000 Hz empaquetado en formato WAV.
-- **API:** `POST /synthesize` (JSON `{"msg": "..."}`)
+- **API:** `POST /v1/synthesize` (JSON `{"msg": "..."}`)
 
 #### `mail-watchdog`
 - **Imagen:** `danuser2018/mail-watchdog:latest`
@@ -148,10 +148,10 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 ┌─────────────────────────────────────────────┐
 │           assistant-network (Docker)         │
 │                                             │
-│  interaction-manager ──► stt:8001           │
-│                      ──► orchestrator:8002  │
-│                      ──► tts:8003           │
-│  orchestrator        ──► system-service:8004│
+│  interaction-manager ──► stt:8000           │
+│                      ──► orchestrator:8000  │
+│                      ──► tts:8000           │
+│  orchestrator        ──► system-service:8000│
 │  mail-watchdog (salida SMTP al exterior)    │
 │                                             │
 └─────────────────────────────────────────────┘
