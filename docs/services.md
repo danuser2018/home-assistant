@@ -111,9 +111,9 @@ data/input/ → [detecta .wav] → data/processing/ → STT → Orchestrator →
 
 | Variable | Descripción |
 |---|---|
-| `STT_BASE_URL` | URL del servicio STT (ej. `http://stt:8001`) |
-| `ORCHESTRATOR_BASE_URL` | URL del Orchestrator (ej. `http://orchestrator:8002`) |
-| `TTS_BASE_URL` | URL del servicio TTS (ej. `http://tts:8003`) |
+| `STT_BASE_URL` | URL del servicio STT para comunicación interna en la red Docker (ej. `http://stt:8000`) |
+| `ORCHESTRATOR_BASE_URL` | URL del Orchestrator para comunicación interna en la red Docker (ej. `http://orchestrator:8000`) |
+| `TTS_BASE_URL` | URL del servicio TTS para comunicación interna en la red Docker (ej. `http://tts:8000`) |
 | `INPUT_DIR` | Carpeta de entrada (por defecto: `/data/input`) |
 | `PROCESSING_DIR` | Carpeta de procesamiento (por defecto: `/data/processing`) |
 | `OUTPUT_DIR` | Carpeta de salida (por defecto: `/data/output`) |
@@ -126,7 +126,7 @@ data/input/ → [detecta .wav] → data/processing/ → STT → Orchestrator →
 ### stt-capability
 
 **Imagen:** `danuser2018/stt-capability:latest`  
-**Puerto interno:** `8001`
+**Puerto interno:** `8000` (expuesto en puerto host `8001` para depuración/desarrollo)
 
 **Propósito:** Servicio de Speech-to-Text. Recibe un archivo de audio WAV y devuelve la transcripción en texto. Basado en **Faster-Whisper**, una implementación optimizada del modelo Whisper de OpenAI que funciona completamente en local.
 
@@ -175,7 +175,7 @@ curl http://localhost:8001/ready     # {"status": "ready"}
 ### orchestrator
 
 **Imagen:** `danuser2018/orchestrator:latest`  
-**Puerto interno:** `8002`
+**Puerto interno:** `8000` (expuesto en puerto host `8002` para depuración/desarrollo)
 
 **Propósito:** Motor de decisión determinista. Evalúa el texto transcrito contra las keywords y expresiones regulares de cada plugin disponible, asigna una puntuación (score) y ejecuta el plugin ganador. No usa LLMs; es predecible, rápido (< 50ms) y funciona sin GPU.
 
@@ -186,7 +186,7 @@ curl http://localhost:8001/ready     # {"status": "ready"}
 
 **Plugin de Capacidades (CapabilitiesPlugin):**
 Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones disponibles.
-1. Consulta las capacidades registradas en `system-service` llamando a `GET /system/capabilities`.
+1. Consulta las capacidades registradas en `system-service` llamando a `GET /v1/system/capabilities`.
 2. Ordena las capacidades alfabéticamente por su descripción.
 3. Escribe un archivo JSON con el correo formateado en `MAIL_PENDING_DIR` (por defecto `/shared/mail/pending`) siguiendo el contrato del servicio `mail-watchdog`.
 4. El envío del correo se gestiona de forma asíncrona y transparente por `mail-watchdog`.
@@ -222,13 +222,13 @@ Content-Type: application/json
 ### tts-capability
 
 **Imagen:** `danuser2018/tts-capability:latest`  
-**Puerto interno:** `8003`
+**Puerto interno:** `8000` (expuesto en puerto host `8003` para depuración/desarrollo)
 
 **Propósito:** Servicio de Text-to-Speech. Recibe texto en formato JSON y devuelve audio binario WAV sintetizado. Basado en **Piper TTS**, un motor neuronal local ultra-rápido capaz de generar voz en tiempo real incluso en hardware modesto.
 
 **Endpoint principal:**
 ```http
-POST /synthesize
+POST /v1/synthesize
 Content-Type: application/json
 
 {"msg": "Actualmente hace 22 grados"}
@@ -258,7 +258,7 @@ Content-Type: application/json
 
 #### 1. Obtener información del sistema
 ```http
-GET /system/info
+GET /v1/system/info
 ```
 
 **Respuesta:**
@@ -271,7 +271,42 @@ GET /system/info
 }
 ```
 
-#### 2. Health check
+#### 2. Registrar capacidades de los plugins
+```http
+POST /v1/system/capabilities
+Content-Type: application/json
+
+{
+  "capabilities": [
+    {"id": "identity", "description": "Información sobre Nova"},
+    {"id": "weather", "description": "Consultar el tiempo"}
+  ]
+}
+```
+
+**Respuesta:**
+```json
+{
+  "success": true
+}
+```
+
+#### 3. Listar capacidades registradas
+```http
+GET /v1/system/capabilities
+```
+
+**Respuesta:**
+```json
+{
+  "capabilities": [
+    {"id": "identity", "description": "Información sobre Nova"},
+    {"id": "weather", "description": "Consultar el tiempo"}
+  ]
+}
+```
+
+#### 4. Health check
 ```http
 GET /health
 ```
@@ -357,12 +392,12 @@ Ejemplo de flujo registrado por el contenedor:
                     │                                                  │
                     │  interaction-manager                             │
                     │      │                                           │
-                    │      ├──► stt:8001                               │
-                    │      ├──► orchestrator:8002 ───┐                 │
+                    │      ├──► stt:8000                               │
+                    │      ├──► orchestrator:8000 ───┐                 │
                     │      │                         │                 │
                     │      │                         ▼                 │
-                    │      │                   system-service:8004     │
-                    │      └──► tts:8003                               │
+                    │      │                   system-service:8000     │
+                    │      └──► tts:8000                               │
                     │                                                  │
                     │  mail-watchdog ──► Servidor SMTP (exterior)      │
                     └──────────────────────────────────────────────────┘
