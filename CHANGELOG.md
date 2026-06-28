@@ -23,6 +23,9 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Documentación de la decisión táctica sobre la dirección de correo destino en el MVP mediante el nuevo [ADR-007](docs/adr/adr-007.md).
+
+
 - Se añade la carpeta `docs/adr` con la justificación de las decisiones arquitectónicas.
 - Se añade la carpeta `.agent/skills` con todas las skills que la IA necesita para implementar Nova.
 - Añadido documento de `skills_proposals.md` donde se detallan la propuesta de skills para el sistema.
