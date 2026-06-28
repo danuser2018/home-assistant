@@ -92,6 +92,22 @@ services:
     networks:
       - assistant-network
 
+  identity-service:
+    image: danuser2018/identity-service:latest
+    container_name: identity-service
+    env_file:
+      - config/assistant.env
+    ports:
+      - "8005:8000"  # Expuesto para healthcheck y depuración local
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - assistant-network
+
 networks:
   assistant-network:
     driver: bridge

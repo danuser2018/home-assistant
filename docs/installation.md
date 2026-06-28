@@ -181,7 +181,7 @@ Deberías ver `Active: active (running)` en ambos.
 
 ## Paso 6: Arrancar los servicios Docker
 
-Descarga las imágenes de DockerHub y arranca los 6 contenedores:
+Descarga las imágenes de DockerHub y arranca los 7 contenedores:
 
 ```bash
 docker compose up -d
@@ -194,6 +194,7 @@ Esto descargará automáticamente las siguientes imágenes (la primera vez tarda
 - `danuser2018/tts-capability:latest`
 - `danuser2018/system-service:latest`
 - `danuser2018/mail-watchdog:latest`
+- `danuser2018/identity-service:latest`
 
 > [!NOTE]
 > Para que el servicio `mail-watchdog` funcione correctamente, debes configurar los parámetros SMTP de tu servidor de correo en el archivo `config/assistant.env` antes de levantar los contenedores. Consulta [docs/services.md](services.md) para ver la lista de variables requeridas.
@@ -203,7 +204,7 @@ Verifica que todos los contenedores están en funcionamiento:
 docker compose ps
 ```
 
-Deberías ver 6 contenedores con estado `Up`.
+Deberías ver 7 contenedores con estado `Up`.
 
 ---
 
@@ -309,7 +310,7 @@ home-assistant/
 ├── config/
 │   ├── mic-daemon.env          ← Configuración del daemon de grabación
 │   ├── speaker-watchdog.env    ← Configuración del daemon de reproducción
-│   └── assistant.env           ← Configuración global de los contenedores Docker (incluido SMTP)
+│   └── assistant.env           ← Configuración global de los contenedores Docker (incluidos SMTP e identidad)
 ├── data/
 │   ├── input/                  ← mic-daemon deposita aquí los .wav grabados
 │   ├── processing/             ← interaction-manager procesa aquí los archivos

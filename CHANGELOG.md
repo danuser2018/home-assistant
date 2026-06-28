@@ -23,6 +23,9 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Integración del microservicio `identity-service` en `docker-compose.yml` usando la imagen `danuser2018/identity-service:latest` mapeada al puerto `8005` del host.
+- Configuración de la variable `USER_NAME=David` en `config/assistant.env` para la parametrización de la identidad.
+- Monitoreo automático del contenedor `identity-service` y validación de salud de su endpoint REST (`/health`) en `scripts/healthcheck.sh`.
 - Documentación de la decisión táctica sobre la dirección de correo destino en el MVP mediante el nuevo [ADR-007](docs/adr/adr-007.md).
 
 
@@ -50,6 +53,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Actualización de `docs/services.md`, `docs/installation.md` y `docs/architecture.md` para integrar e ilustrar la inclusión de `identity-service` en el ecosistema global de Nova.
 - Unificación del nombre de la red Docker interna a `assistant-network` en `docker-compose.yml` y `docs/services.md` para corregir la inconsistencia con el resto de la documentación técnica.
 - Clarificación del mapeo de puertos (internos vs host) y actualización de endpoints a `/v1` en `docs/services.md` y `docs/architecture.md`.
 - Ajuste en las skills para que tengan en cuenta los ADRs
