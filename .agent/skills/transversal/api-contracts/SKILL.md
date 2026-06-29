@@ -32,3 +32,5 @@ Versionado de APIs, nomenclatura de recursos, esquemas de error comunes y consis
 
 ## Referencias
 - [ADR-004: Estandarización de APIs REST en el Ecosistema](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-004.md) (Establece el protocolo HTTP unificado y la nomenclatura común).
+- [ADR-0001 (Orchestrator): Adición de campo timestamp opcional en UserRequest](file:///home/danuser2018/workspace/orchestrator/doc/adr/0001-adicion-timestamp-userrequest.md) (Define la adición del campo timestamp en UserRequest manteniendo retrocompatibilidad).
+

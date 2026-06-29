@@ -31,3 +31,4 @@ Registro y estado de servicios, capacidades de intenciones del orquestador, meta
 
 ## Referencias
 - [system-service/README.md](file:///home/danuser2018/workspace/system-service/README.md) (Registros REST de información del sistema de metadatos de Nova).
+- [ADR-003 (Orchestrator): Exclusión de FallbackPlugin del registro automático de capacidades](file:///home/danuser2018/workspace/orchestrator/doc/adr/adr-003-exclusion-fallbackplugin-registro-capacidades.md)
