@@ -23,7 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
-- Edición de la skill de api-contract para añadir la referencia al ADR del orchestrator `adr-001-adicion-timestamp-userrequest.md`.
+- Se añade adr-008 para explicar que se descarta la idea del mpv daemon para speaker watchdog.
 - Integración del microservicio `identity-service` en `docker-compose.yml` usando la imagen `danuser2018/identity-service:latest` mapeada al puerto `8005` del host.
 - Configuración de la variable `USER_NAME=David` en `config/assistant.env` para la parametrización de la identidad.
 - Monitoreo automático del contenedor `identity-service` y validación de salud de su endpoint REST (`/health`) en `scripts/healthcheck.sh`.
@@ -54,6 +54,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Edición de la skill de api-contract para añadir la referencia al ADR del orchestrator `adr-001-adicion-timestamp-userrequest.md`.
 - Actualización de `docs/services.md`, `docs/installation.md` y `docs/architecture.md` para integrar e ilustrar la inclusión de `identity-service` en el ecosistema global de Nova.
 - Unificación del nombre de la red Docker interna a `assistant-network` en `docker-compose.yml` y `docs/services.md` para corregir la inconsistencia con el resto de la documentación técnica.
 - Clarificación del mapeo de puertos (internos vs host) y actualización de endpoints a `/v1` en `docs/services.md` y `docs/architecture.md`.
