@@ -71,6 +71,7 @@ Los cambios se agrupan en las siguientes categorías:
 - Corrección de discrepancias en la documentación (`docs/services.md`, `docs/architecture.md`, `docs/installation.md`, `README.md`) alineando la cantidad de servicios a 9, y removiendo la dependencia directa e incorrecta del orchestrator hacia `identity-service`.
 - Reubicación de la variable `USER_EMAIL` en `config/assistant.env` bajo la sección del `identity-service`.
 - Eliminación de la carpeta obsoleta `systemd/` que contenía plantillas inactivas y actualización de la documentación de instalación.
+- Corrección de discrepancias en el documento de decisión arquitectónica [ADR-006](docs/adr/adr-006.md), clarificando la distinción entre las rutas de directorios de correo compartidas en el host (`data/mail/...`) y los contenedores (`/shared/mail/...`).
 
 ---
 
