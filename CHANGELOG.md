@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Edición de la skill de api-contract para añadir la referencia al ADR del orchestrator `adr-001-adicion-timestamp-userrequest.md`.
 - Integración del microservicio `identity-service` en `docker-compose.yml` usando la imagen `danuser2018/identity-service:latest` mapeada al puerto `8005` del host.
 - Configuración de la variable `USER_NAME=David` en `config/assistant.env` para la parametrización de la identidad.
 - Monitoreo automático del contenedor `identity-service` y validación de salud de su endpoint REST (`/health`) en `scripts/healthcheck.sh`.
