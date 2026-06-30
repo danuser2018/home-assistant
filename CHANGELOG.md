@@ -23,7 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
-- Configuración y documentación para el servicio `tts-capability` en `config/assistant.env` con las nuevas variables de entorno `TTS_MODEL_NAME` y `TTS_MODEL_DIR`.
+- Configuración y documentación para el servicio `tts-capability` en `config/assistant.env` con las nuevas variables de entorno `TTS_MODEL_NAME`, `TTS_MODEL_DIR` y `TTS_MODEL_URL`.
+- Comprobación y descarga automática del modelo TTS configurado en `config/assistant.env` dentro del script `scripts/update.sh` para permitir cambios de voz sin necesidad de reinstalación.
 - Nueva skill transversal de agente `feature-refinement` para guiar el refinamiento estructurado y técnico de nuevas características.
 - Nuevo workflow de agente `DoR_review` en `.agent/workflows/` para auditar el DoR de documentos de refinamiento de features.
 - Nuevo workflow de agente `DoD_review` en `.agent/workflows/` para realizar la revisión de Definition of Done (DoD) de features implementadas.
