@@ -17,6 +17,7 @@ Esta guía recoge los problemas más comunes que puedes encontrar durante la ins
 9. [El asistente no entiende lo que digo](#9-el-asistente-no-entiende-lo-que-digo)
 10. [El asistente responde "no he entendido" a todo](#10-el-asistente-responde-no-he-entendido-a-todo)
 11. [El servicio de correo (mail-watchdog) no envía correos](#11-el-servicio-de-correo-mail-watchdog-no-envía-correos)
+12. [El servicio TTS (tts-capability) no arranca por error de modelo](#12-el-servicio-tts-tts-capability-no-arranca-por-error-de-modelo)
 
 ---
 
@@ -436,6 +437,32 @@ Verifica que las variables en `config/assistant.env` coinciden con los requisito
 
 #### 4. JSON mal formado
 Si un plugin escribe un archivo en `/pending` que no sigue el formato requerido (faltan campos obligatorios como `to`, `subject` o `body`), el servicio lo rechazará. Revisa el contenido del archivo JSON movido a `failed/` para verificar su estructura.
+
+---
+
+## 12. El servicio TTS (tts-capability) no arranca por error de modelo
+
+**Síntoma:** El contenedor de `tts-capability` está en estado de reinicio constante (`Restarting`) y al inspeccionar los logs con `docker compose logs tts-capability` se muestra un error `FileNotFoundError` o `ValueError`.
+
+### Causa 1: Archivo de modelo o configuración faltante (FileNotFoundError)
+
+**Mensaje en los logs:**
+`FileNotFoundError: ONNX model file not found at: /app/models/mi_modelo.onnx` o `ONNX config file not found at: ...`
+
+El servicio valida en el arranque (fail-fast) que existan tanto el archivo de modelo como su archivo JSON de configuración. Si alguno de ellos falta en el directorio configurado, detiene su ejecución inmediatamente para evitar peticiones fallidas más adelante.
+
+#### Solución:
+1. Comprueba el valor de `TTS_MODEL_NAME` en `config/assistant.env` (por defecto: `es_ES-carlfm-x_low`).
+2. Verifica que tanto el archivo `{TTS_MODEL_NAME}.onnx` como `{TTS_MODEL_NAME}.onnx.json` existan físicamente en el directorio correspondiente del host (que se monta en `/app/models` dentro del contenedor).
+3. Si estás usando una voz personalizada, asegúrate de haber copiado ambos archivos en la ruta correcta y de que tengan permisos de lectura para el usuario del contenedor.
+
+### Causa 2: Variable de entorno vacía (ValueError)
+
+**Mensaje en los logs:**
+`ValueError: TTS_MODEL_NAME cannot be empty or consist only of whitespace.`
+
+#### Solución:
+1. Asegúrate de que la variable `TTS_MODEL_NAME` en `config/assistant.env` esté correctamente definida y no sea una cadena vacía o espacios en blanco.
 
 ---
 

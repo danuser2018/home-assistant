@@ -227,6 +227,15 @@ Content-Type: application/json
 
 **Propósito:** Servicio de Text-to-Speech. Recibe texto en formato JSON y devuelve audio binario WAV sintetizado. Basado en **Piper TTS**, un motor neuronal local ultra-rápido capaz de generar voz en tiempo real incluso en hardware modesto.
 
+**Variables de entorno relevantes:**
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `TTS_MODEL_NAME` | Sí (con default) | `es_ES-carlfm-x_low` | Identificador base del modelo de voz de Piper TTS |
+| `TTS_MODEL_DIR` | No | `/app/models` | Directorio donde residen los modelos locales de Piper dentro del contenedor |
+| `PORT` | No | `8000` | Puerto en el que escucha el servicio internamente |
+| `MODEL_PATH` | No | — | *(Deprecado)* Ruta directa al archivo de modelo, soportada como fallback |
+
 **Endpoint principal:**
 ```http
 POST /v1/synthesize
