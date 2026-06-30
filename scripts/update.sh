@@ -28,6 +28,7 @@ log_error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 WORKSPACE_DIR="$(dirname "$PROJECT_DIR")"
+TTS_MODEL_DIR="$PROJECT_DIR/models/tts"
 
 MIC_DAEMON_DIR="$WORKSPACE_DIR/mic-daemon"
 SPEAKER_WATCHDOG_DIR="$WORKSPACE_DIR/speaker-watchdog"
@@ -47,6 +48,41 @@ log_info "Descargando las últimas imágenes Docker desde DockerHub..."
 cd "$PROJECT_DIR"
 docker compose pull
 log_ok "Imágenes actualizadas."
+echo ""
+
+# ─── Comprobar y descargar modelos TTS configurados ──────────────────────────
+log_info "Verificando modelos de voz de Piper TTS..."
+
+# Asegurar que el directorio de modelos existe
+mkdir -p "$TTS_MODEL_DIR"
+
+# Leer valores desde config/assistant.env
+get_env_var() {
+    local var_name="$1"
+    local env_file="$PROJECT_DIR/config/assistant.env"
+    if [ -f "$env_file" ]; then
+        grep -E "^${var_name}=" "$env_file" | head -n1 | cut -d'=' -f2- | tr -d '"' | tr -d "'"
+    fi
+}
+
+MODEL_NAME="$(get_env_var "TTS_MODEL_NAME")"
+MODEL_URL="$(get_env_var "TTS_MODEL_URL")"
+
+# Establecer valores por defecto si están vacíos o no se encuentra el archivo
+MODEL_NAME="${MODEL_NAME:-es_ES-carlfm-x_low}"
+MODEL_URL="${MODEL_URL:-https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/carlfm/x_low/es_ES-carlfm-x_low.onnx}"
+
+# Descargar modelo de voz configurado para TTS si no existe
+if [ ! -f "$TTS_MODEL_DIR/${MODEL_NAME}.onnx" ]; then
+    log_info "Descargando modelo de voz ($MODEL_NAME) desde: $MODEL_URL..."
+    curl -L -S -f -o "$TTS_MODEL_DIR/${MODEL_NAME}.onnx" "$MODEL_URL"
+fi
+
+if [ ! -f "$TTS_MODEL_DIR/${MODEL_NAME}.onnx.json" ]; then
+    log_info "Descargando configuración del modelo de voz ($MODEL_NAME) desde: ${MODEL_URL}.json..."
+    curl -L -S -f -o "$TTS_MODEL_DIR/${MODEL_NAME}.onnx.json" "${MODEL_URL}.json"
+    log_ok "Modelo de voz ($MODEL_NAME) verificado y listo."
+fi
 echo ""
 
 # ─── Reiniciar contenedores con las nuevas imágenes ──────────────────────────

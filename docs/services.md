@@ -120,6 +120,7 @@ data/input/ → [detecta .wav] → data/processing/ → STT → Orchestrator →
 | `OUTPUT_DIR` | Carpeta de salida (por defecto: `/data/output`) |
 | `ERROR_DIR` | Carpeta de errores (por defecto: `/data/error`) |
 | `POLL_INTERVAL_SECONDS` | Intervalo de sondeo en segundos (por defecto: `1`) |
+| `TTS_TIMEOUT` | Tiempo de espera máximo en segundos para peticiones a tts-capability (por defecto: `30.0`) |
 | `LOG_LEVEL` | Nivel de logging (por defecto: `INFO`) |
 
 ---
@@ -233,6 +234,7 @@ Content-Type: application/json
 |---|---|---|---|
 | `TTS_MODEL_NAME` | Sí (con default) | `es_ES-carlfm-x_low` | Identificador base del modelo de voz de Piper TTS |
 | `TTS_MODEL_DIR` | No | `/app/models` | Directorio donde residen los modelos locales de Piper dentro del contenedor |
+| `TTS_MODEL_URL` | No | [Enlace carlfm](https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/carlfm/x_low/es_ES-carlfm-x_low.onnx) | URL de descarga del modelo de voz (.onnx) para la instalación inicial en el host |
 | `PORT` | No | `8000` | Puerto en el que escucha el servicio internamente |
 | `MODEL_PATH` | No | — | *(Deprecado)* Ruta directa al archivo de modelo, soportada como fallback |
 

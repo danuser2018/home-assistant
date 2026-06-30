@@ -14,6 +14,7 @@ services:
       POLL_INTERVAL_SECONDS: 1
       DEFAULT_LANGUAGE: es
       LOG_LEVEL: INFO
+      TTS_TIMEOUT: 30
     volumes:
       - ./data:/data
     restart: unless-stopped
@@ -77,6 +78,8 @@ services:
       - config/assistant.env
     ports:
       - "8003:8000"  # Expuesto para healthcheck y depuración local
+    volumes:
+      - ./models/tts:/app/models
     restart: unless-stopped
     networks:
       - assistant-network
