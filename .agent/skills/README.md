@@ -74,6 +74,8 @@ $$\text{Transversal} > \text{Domain Rules} > \text{Subsystem Rules} > \text{Plug
 *   [`api-contracts`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/api-contracts/SKILL.md): Estandarización de endpoints REST, versionado y esquemas comunes de error.
 *   [`system-deployment`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/system-deployment/SKILL.md): Variables de entorno, docker-compose local y systemd de usuario.
 *   [`architecture-decisions`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/architecture-decisions/SKILL.md): Triggers para redactar y sugerir Architectural Decision Records (ADRs).
+*   [`feature-refinement`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/feature-refinement/SKILL.md): Reglas y plantilla para el refinamiento técnico y de negocio de nuevas features.
+
 
 ### Skills de Dominio (Reglas de Negocio)
 *   [`identity-domain`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/domains/identity-domain/SKILL.md): Privacidad de datos del usuario, propiedad y correo primario.

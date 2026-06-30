@@ -23,6 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nueva skill transversal de agente `feature-refinement` para guiar el refinamiento estructurado y técnico de nuevas características.
+- Nuevo workflow de agente `DoR_review` en `.agent/workflows/` para auditar el DoR de documentos de refinamiento de features.
 - Se añade adr-008 para explicar que se descarta la idea del mpv daemon para speaker watchdog.
 - Integración del microservicio `identity-service` en `docker-compose.yml` usando la imagen `danuser2018/identity-service:latest` mapeada al puerto `8005` del host.
 - Configuración de la variable `USER_NAME=David` en `config/assistant.env` para la parametrización de la identidad.
