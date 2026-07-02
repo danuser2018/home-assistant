@@ -3,6 +3,8 @@ services:
   interaction-manager:
     image: danuser2018/interaction-manager:latest
     container_name: interaction-manager
+    env_file:
+      - config/interaction-manager.env
     environment:
       STT_BASE_URL: http://stt:8000
       ORCHESTRATOR_BASE_URL: http://orchestrator:8000
@@ -11,10 +13,6 @@ services:
       PROCESSING_DIR: /data/processing
       OUTPUT_DIR: /data/output
       ERROR_DIR: /data/error
-      POLL_INTERVAL_SECONDS: 1
-      DEFAULT_LANGUAGE: es
-      LOG_LEVEL: INFO
-      TTS_TIMEOUT: 30
     volumes:
       - ./data:/data
     restart: unless-stopped
@@ -29,7 +27,7 @@ services:
     image: danuser2018/stt-capability:latest
     container_name: stt-capability
     env_file:
-      - config/assistant.env
+      - config/stt-capability.env
     ports:
       - "8001:8000"  # Expuesto para healthcheck y depuración local
     restart: unless-stopped
@@ -42,9 +40,10 @@ services:
     image: danuser2018/orchestrator:latest
     container_name: orchestrator
     env_file:
-      - config/assistant.env
+      - config/orchestrator.env
     environment:
       SYSTEM_SERVICE_BASE_URL: http://system-service:8000
+      MAIL_PENDING_DIR: /shared/mail/pending
     volumes:
       - ./data/mail:/shared/mail
     ports:
@@ -59,7 +58,7 @@ services:
     image: danuser2018/system-service:latest
     container_name: system-service
     env_file:
-      - config/assistant.env
+      - config/system-service.env
     ports:
       - "8004:8000"  # Expuesto para healthcheck y depuración local
     restart: unless-stopped
@@ -75,7 +74,7 @@ services:
     image: danuser2018/tts-capability:latest
     container_name: tts-capability
     env_file:
-      - config/assistant.env
+      - config/tts-capability.env
     ports:
       - "8003:8000"  # Expuesto para healthcheck y depuración local
     volumes:
@@ -88,7 +87,7 @@ services:
     image: danuser2018/mail-watchdog:latest
     container_name: mail-watchdog
     env_file:
-      - config/assistant.env
+      - config/mail-watchdog.env
     environment:
       IDENTITY_SERVICE_BASE_URL: http://identity-service:8000
     volumes:
@@ -104,7 +103,7 @@ services:
     image: danuser2018/identity-service:latest
     container_name: identity-service
     env_file:
-      - config/assistant.env
+      - config/identity-service.env
     ports:
       - "8005:8000"  # Expuesto para healthcheck y depuración local
     restart: unless-stopped

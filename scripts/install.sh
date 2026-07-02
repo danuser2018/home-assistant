@@ -112,10 +112,10 @@ mkdir -p "$TTS_MODEL_DIR"
 log_ok "Carpetas creadas en $DATA_DIR"
 echo ""
 
-# Leer valores desde config/assistant.env
+# Leer valores desde config/tts-capability.env
 get_env_var() {
     local var_name="$1"
-    local env_file="$PROJECT_DIR/config/assistant.env"
+    local env_file="$PROJECT_DIR/config/tts-capability.env"
     if [ -f "$env_file" ]; then
         grep -E "^${var_name}=" "$env_file" | head -n1 | cut -d'=' -f2- | tr -d '"' | tr -d "'"
     fi

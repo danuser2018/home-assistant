@@ -179,7 +179,7 @@ Comprueba la memoria disponible:
 free -h
 ```
 
-Si tienes poca RAM, usa un modelo más pequeño. Edita `config/assistant.env`:
+Si tienes poca RAM, usa un modelo más pequeño. Edita `config/stt-capability.env`:
 ```env
 WHISPER_MODEL=tiny   # ~400 MB en lugar de ~750 MB del modelo base
 ```
@@ -374,7 +374,7 @@ curl -X POST \
 
 ### Usar un modelo Whisper más grande
 
-Si la transcripción es consistentemente mala, prueba a cambiar al modelo `small` editando `config/assistant.env`:
+Si la transcripción es consistentemente mala, prueba a cambiar al modelo `small` editando `config/stt-capability.env`:
 ```env
 WHISPER_MODEL=small
 ```
@@ -422,7 +422,7 @@ docker compose logs mail-watchdog
 ### Causas comunes y soluciones
 
 #### 1. Configuración SMTP incorrecta
-Verifica que las variables en `config/assistant.env` coinciden con los requisitos de tu proveedor de correo:
+Verifica que las variables en `config/mail-watchdog.env` coinciden con los requisitos de tu proveedor de correo:
 - Comprueba el host (`SMTP_HOST`) y el puerto (`SMTP_PORT`).
 - Para la mayoría de los servidores con cifrado STARTTLS el puerto es `587`. Para SSL/TLS implícito suele ser `465`.
 
@@ -436,7 +436,7 @@ Verifica que las variables en `config/assistant.env` coinciden con los requisito
   ```
 
 #### 4. JSON mal formado
-Si un plugin escribe un archivo en `/pending` que no sigue el formato requerido (faltan campos obligatorios como `to`, `subject` o `body`), el servicio lo rechazará. Revisa el contenido del archivo JSON movido a `failed/` para verificar su estructura.
+Si un plugin escribe un archivo en `/pending` que no sigue el formato requerido (faltan campos obligatorios como `id`, `subject` o `body`), el servicio lo rechazará. Revisa el contenido del archivo JSON movido a `failed/` para verificar su estructura.
 
 ---
 
@@ -452,7 +452,7 @@ Si un plugin escribe un archivo en `/pending` que no sigue el formato requerido 
 El servicio valida en el arranque (fail-fast) que existan tanto el archivo de modelo como su archivo JSON de configuración. Si alguno de ellos falta en el directorio configurado, detiene su ejecución inmediatamente para evitar peticiones fallidas más adelante.
 
 #### Solución:
-1. Comprueba el valor de `TTS_MODEL_NAME` en `config/assistant.env` (por defecto: `es_ES-carlfm-x_low`).
+1. Comprueba el valor de `TTS_MODEL_NAME` en `config/tts-capability.env` (por defecto: `es_ES-carlfm-x_low`).
 2. Verifica que tanto el archivo `{TTS_MODEL_NAME}.onnx` como `{TTS_MODEL_NAME}.onnx.json` existan físicamente en el directorio correspondiente del host (que se monta en `/app/models` dentro del contenedor).
 3. Si estás usando una voz personalizada, asegúrate de haber copiado ambos archivos en la ruta correcta y de que tengan permisos de lectura para el usuario del contenedor.
 
@@ -462,7 +462,7 @@ El servicio valida en el arranque (fail-fast) que existan tanto el archivo de mo
 `ValueError: TTS_MODEL_NAME cannot be empty or consist only of whitespace.`
 
 #### Solución:
-1. Asegúrate de que la variable `TTS_MODEL_NAME` en `config/assistant.env` esté correctamente definida y no sea una cadena vacía o espacios en blanco.
+1. Asegúrate de que la variable `TTS_MODEL_NAME` en `config/tts-capability.env` esté correctamente definida y no sea una cadena vacía o espacios en blanco.
 
 ---
 

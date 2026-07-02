@@ -35,3 +35,4 @@ Despliegue, configuraciones de red, variables globales y montaje de recursos.
 - [docker-compose.yml](file:///home/danuser2018/workspace/home-assistant/docker-compose.yml) (Configuración actual de redes y variables de entorno).
 - [ADR-002: Modularización de Servicios](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-002.md) (Host para Hardware y Docker para Procesamiento).
 - [ADR-005: Distribución mediante Imágenes Precompiladas en DockerHub](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-005.md).
+- [ADR-010: Aislamiento de Variables de Entorno por Servicio](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-010.md) (Establece un archivo `.env` independiente por servicio como patrón estándar del ecosistema, eliminando el archivo compartido `config/assistant.env`).

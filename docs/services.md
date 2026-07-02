@@ -110,6 +110,17 @@ data/input/ → [detecta .wav] → data/processing/ → STT → Orchestrator →
 
 **Variables de entorno relevantes:**
 
+*Cargadas vía `config/interaction-manager.env`:*
+
+| Variable | Valor por defecto | Descripción |
+|---|---|---|
+| `POLL_INTERVAL_SECONDS` | `1` | Intervalo de sondeo en segundos |
+| `DEFAULT_LANGUAGE` | `es` | Código de idioma predeterminado para transcripción y procesamiento |
+| `TTS_TIMEOUT` | `30` | Tiempo de espera máximo en segundos para peticiones a tts-capability |
+| `LOG_LEVEL` | `INFO` | Nivel de logging (detalle de registros) |
+
+*Definidas inline en `docker-compose.yml` (`environment`):*
+
 | Variable | Descripción |
 |---|---|
 | `STT_BASE_URL` | URL del servicio STT para comunicación interna en la red Docker (ej. `http://stt:8000`) |
@@ -119,9 +130,6 @@ data/input/ → [detecta .wav] → data/processing/ → STT → Orchestrator →
 | `PROCESSING_DIR` | Carpeta de procesamiento (por defecto: `/data/processing`) |
 | `OUTPUT_DIR` | Carpeta de salida (por defecto: `/data/output`) |
 | `ERROR_DIR` | Carpeta de errores (por defecto: `/data/error`) |
-| `POLL_INTERVAL_SECONDS` | Intervalo de sondeo en segundos (por defecto: `1`) |
-| `TTS_TIMEOUT` | Tiempo de espera máximo en segundos para peticiones a tts-capability (por defecto: `30.0`) |
-| `LOG_LEVEL` | Nivel de logging (por defecto: `INFO`) |
 
 ---
 
@@ -158,7 +166,7 @@ Campos: audio (file), language (string, opcional)
 | `small` | ~1.5 GB | Moderado | Muy buena |
 | `medium` | ~3 GB | Lento | Excelente |
 
-**Variables de entorno:**
+**Variables de entorno (cargadas vía `config/stt-capability.env`):**
 
 | Variable | Valor por defecto | Descripción |
 |---|---|---|
@@ -195,6 +203,14 @@ Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones dispon
 
 **Variables de entorno relevantes:**
 
+*Cargadas vía `config/orchestrator.env`:*
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `LOG_LEVEL` | ❌ No | `INFO` | Nivel de detalle de los logs |
+
+*Definidas inline en `docker-compose.yml` (`environment`):*
+
 | Variable | Requerida | Valor por defecto | Descripción |
 |---|---|---|---|
 | `SYSTEM_SERVICE_BASE_URL` | ❌ No | `http://system-service:8000` | URL del servicio `system-service` para consultar identidad y capacidades |
@@ -227,7 +243,7 @@ Content-Type: application/json
 
 **Propósito:** Servicio de Text-to-Speech. Recibe texto en formato JSON y devuelve audio binario WAV sintetizado. Basado en **Piper TTS**, un motor neuronal local ultra-rápido capaz de generar voz en tiempo real incluso en hardware modesto.
 
-**Variables de entorno relevantes:**
+**Variables de entorno relevantes (cargadas vía `config/tts-capability.env`):**
 
 | Variable | Requerida | Valor por defecto | Descripción |
 |---|---|---|---|
@@ -256,7 +272,7 @@ Content-Type: application/json
 
 **Propósito:** Servicio de información de identidad. Expone información básica del asistente Nova en formato JSON. Es consumido exclusivamente por el `Orchestrator` a través del `Identity Plugin` para responder preguntas de identidad del usuario (ej. "¿quién eres?").
 
-**Variables de entorno:**
+**Variables de entorno (cargadas vía `config/system-service.env`):**
 
 | Variable | Valor por defecto | Descripción |
 |---|---|---|
@@ -376,6 +392,8 @@ El volumen montado en el contenedor bajo `/shared/mail` debe tener la siguiente 
 
 **Variables de entorno relevantes:**
 
+*Cargadas vía `config/mail-watchdog.env`:*
+
 | Variable | Requerida | Valor por defecto | Descripción |
 |---|---|---|---|
 | `SMTP_HOST` | ✅ Sí | — | Dirección del servidor SMTP (ej. `smtp.gmail.com`) |
@@ -386,6 +404,12 @@ El volumen montado en el contenedor bajo `/shared/mail` debe tener la siguiente 
 | `MAIL_POLL_INTERVAL` | ❌ No | `2` | Intervalo de sondeo en segundos |
 | `MAIL_MAX_RETRIES` | ❌ No | `3` | Límite máximo de intentos de envío |
 | `MAIL_BACKOFF_BASE` | ❌ No | `2` | Factor de multiplicación para el backoff exponencial |
+| `LOG_LEVEL` | ❌ No | `INFO` | Nivel de detalle de los logs |
+
+*Definidas inline en `docker-compose.yml` (`environment`):*
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
 | `IDENTITY_SERVICE_BASE_URL` | ❌ No | `http://identity-service:8000` | URL base del servicio `identity-service` para la resolución dinámica del destinatario de correo |
 
 **Observabilidad (Logs):**
@@ -413,7 +437,7 @@ Ejemplo de flujo registrado por el contenedor:
 * `GET /v1/identity/email`: Devuelve únicamente el correo electrónico.
 * `GET /health`: Comprueba el estado de salud del servicio (retorna `{"status": "UP"}`).
 
-**Variables de entorno relevantes (cargadas vía `config/assistant.env`):**
+**Variables de entorno relevantes (cargadas vía `config/identity-service.env`):**
 
 | Variable | Requerida | Valor por defecto | Descripción |
 |---|---|---|---|
