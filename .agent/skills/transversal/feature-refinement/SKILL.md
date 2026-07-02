@@ -9,8 +9,7 @@ description: Reglas y condiciones para el refinamiento estructurado de caracter�
 Garantizar la transición ordenada y sin fricciones de requisitos de alto nivel (prosa descriptiva) a especificaciones técnicas implementables, alineadas con las responsabilidades de los servicios y la arquitectura del ecosistema.
 
 ## Cuándo aplicar esta skill
-- Al recibir una solicitud para desarrollar una nueva funcionalidad a partir de un archivo Markdown (`.md`) descriptivo o una especificación de producto (PRD).
-- Al inicio de la fase de planificación de cualquier cambio funcional significativo en el ecosistema.
+- Al recibir una solicitud para refinar una nueva funcionalidad a partir de un archivo Markdown (`.md`) descriptivo o una especificación de producto (PRD).
 
 ## Responsabilidades
 Traducir la intención del usuario a un diseño técnico de componentes, contratos de comunicación, casos de prueba y un plan secuencial de tareas de desarrollo.
@@ -21,7 +20,7 @@ Traducir la intención del usuario a un diseño técnico de componentes, contrat
 - **Validación de fronteras:** Queda estrictamente prohibido refinar una feature acoplando lógica de negocio directa entre servicios de distintas responsabilidades (ej. lógica de base de datos de identidad expuesta en el orquestador). Cada cambio de contrato debe respetar `service-responsibilities`.
 
 ## Reglas (Procedimientos — 🟡 Recomendadas — Soft Constraints)
-- **Documento de Refinamiento Obligatorio:** Antes de modificar cualquier línea de código fuente, se debe generar un documento de refinamiento con las siguientes secciones obligatorias:
+- **Documento de Refinamiento Obligatorio:** No modificar código. Se debe generar un documento de refinamiento con las siguientes secciones obligatorias:
   1.  **Resumen y Contexto de Negocio:** Objetivo principal y actores.
   2.  **Análisis de Servicios e Impacto:** Tabla detallando qué servicios del ecosistema se ven afectados y tipo de cambio (Modificar/Nuevo/Ninguno).
   3.  **Especificación de Comportamiento:** Criterios de Aceptación estructurados en formato Gherkin (`Dado / Cuando / Entonces`).
@@ -33,10 +32,10 @@ Traducir la intención del usuario a un diseño técnico de componentes, contrat
 
 ## Buenas prácticas (Recomendaciones — 🟢 Opcionales)
 - Almacenar los documentos de refinamiento bajo el directorio `docs/refinements/` del repositorio afectado para mantener un histórico de evolución de features.
+- Si se trata de un cambio que afecta a más de un repositorio almacenar en `home-assistant/docs/refinement`.
 - Asegurar que el checklist de implementación desglose tareas con un esfuerzo estimado inferior a media jornada de trabajo para facilitar commits atómicos.
 
 ## Antipatrones (Errores conocidos)
-- ❌ Iniciar el desarrollo basándose únicamente en la descripción narrativa del cliente sin una fase previa de estructuración.
 - ❌ Definir criterios de aceptación ambiguos o no verificables (ej. "el sistema debe responder de forma rápida").
 - ❌ Ignorar el impacto colateral en otros servicios del ecosistema durante la fase de análisis inicial.
 

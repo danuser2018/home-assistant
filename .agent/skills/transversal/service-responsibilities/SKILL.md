@@ -19,6 +19,7 @@ Definición de dependencias, fuentes de verdad (*sources of truth*) y propiedad 
 - **Propiedad Única de Datos:** Cada dominio de datos (identidad, configuración del sistema, cola de correos) pertenece a un único servicio que actúa como su fuente de verdad. Ningún otro servicio debe duplicar su persistencia ni almacenar estados en la sombra (*shadow state*).
 - **Aislamiento del host:** Los contenedores Docker son ciegos al hardware físico. La captura de micrófonos y la reproducción de altavoces residen en exclusiva en el host.
 - **Orquestador único:** La secuencia temporal del pipeline de voz en tiempo real (STT -> Orchestrator -> TTS) es de propiedad exclusiva de `interaction-manager`. Ningún otro componente debe coordinar llamadas en cascada.
+- **Plugins sin lógica:** Los plugins del orquestador no deben contener lógica. La lógica debe residir en los servicios del dominio.
 
 ## Reglas (Procedimientos — 🟡 Recomendadas — Soft Constraints)
 - El orquestador debe limitarse a derivar intenciones mediante scoring determinista; nunca debe realizar almacenamiento de datos de usuario ni llamadas de red directas a APIs externas de dominio.
@@ -33,3 +34,4 @@ Definición de dependencias, fuentes de verdad (*sources of truth*) y propiedad 
 ## Referencias
 - [architecture.md](file:///home/danuser2018/workspace/home-assistant/docs/architecture.md) (Definición del plano de host y plano de procesamiento).
 - [ADR-002: Modularización de Servicios](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-002.md) (Explica la decisión de aislar servicios de hardware del host de la lógica Docker).
+- [ADR-007: Configuración de la Cuenta de Correo Destino en el MVP](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-007.md) (Explica porqué el orchestrator recupera la dirección de correo del destinatario temporalmente)

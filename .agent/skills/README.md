@@ -84,3 +84,62 @@ $$\text{Transversal} > \text{Domain Rules} > \text{Subsystem Rules} > \text{Plug
 *   [`plugin-domain`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/domains/plugin-domain/SKILL.md): Contrato de plugins de intenciones y estilo de respuestas de voz Nova-2.
 *   [`audio-subsystem`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/domains/audio-subsystem/SKILL.md): PipeWire/PulseAudio en el host, secuenciación en cola única de audios y archivo bandera.
 *   [`inference-subsystem`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/domains/inference-subsystem/SKILL.md): Latencia local, carga inicial estática de modelos de IA y formatos WAV.
+
+---
+
+## 5. Modelo de Ejecución de Workflows (Antigravity)
+
+### 5.1 Principio de no encadenamiento
+Los workflows no pueden invocar otros workflows.
+
+### 5.2 Modo por defecto
+Los workflows se ejecutarán siempre bajo demanda del usuario.
+
+### 5.3 Terminación de workflows
+Cada workflow debe finalizar tras generar su artefacto.
+
+### 5.4 Independencia de quality gates
+DoR y DoD son fases independientes y no se encadenan.
+
+## 6. Ciclo de vida del desarrollo de una feature
+
+Cada fase se ejecutará por separado a petición del usuario. No se encadenarán fases. Existen dos quality gates, uno de entrada (`DoR_review.md`) y otro de salida (`DoD_review.md`), que generan artefactos en la conversación.
+Para completar una feature, no es necesario ejecutar todas las fases, esto es decisión del usuario.
+
+### 6.1 Refinamiento
+Esta fase se inicia cuando el usuario solicita el refinamiento de la feature que se va a implementar. En esta fase no se modifica código. 
+
+Como entrada, se recibe una descripción a alto nivel de los requisitos funcionales y no funcionales de la feature. Esta descripción se puede proporcionar como archivo markdown (normalmente en la carpeta `docs/features`), o en el propio contexto de la conversación. Como skill relevante se utiliza `feature-refinement`. 
+Como salida de esta fase, se espera un archivo de refinamiento en la carpeta `docs/refinements`.
+
+### 6.2 DoR Quality gate
+Esta fase se inicia cuando el usuario solicita la ejecución del workflow `DoR_review.md`. En esta fase no se modifica código.
+
+Como entrada, se recibe la descripción inicial de los requisitos funcionales y no funcionales y el archivo de refinamiento. El workflow `DoR_review.md` generará un artefacto con el informe de revisión de refinamiento.
+El usuario podrá hacer comentarios sobre el informe de revisión de refinamiento, y pedir al modelo que realice las modificaciones indicadas sobre el archivo de refinamiento. Este procedimiento se puede repetir varias veces,
+hasta que el usuario considere que el documento de refinamiento está 'Listo para implementar'
+
+Como salida, se espera:
+- Documento de refinamiento.
+- Informe de revisión de refinamiento en estado 'Listo para implementar'
+
+### 6.3 Implementación
+Esta fase se inicia cuando el usuario solicita que se implemente la feature. Esta fase modifica código. No modifica el documento de refinamiento. En este caso se seguirá el workflow normal de desarrollo con sus artefactos (implementation plan, tasks, walkthrough)
+
+Como entrada, se recibe el documento de refinamiento.
+Como salida, se espera el código modificado, nuevas propiedades, documentación, etc. Para ello el modelo utilizará todas aquellas skills transversales y de dominio que considere oportunas.
+
+### 6.4 DoD Quality gate
+Esta fase se inicia cuando el usuario solicita la ejecución del workflow `DoD_review.md`. Esta fase puede modificar código.
+
+Como entrada, se recibe:
+- Documento de refinamiento.
+- Código, propiedades, documentos, etc. modificados.
+
+El workflow `DoD_review.md` generará un artefacto con el informe de revisión DoD. El usuario podrá hacer comentarios sobre este informe, y pedir al modelo que realice las modificaciones indicadas sobre el código, propiedades, documentación, etc. Este procedimiento se puede repetir varias veces,
+hasta que el usuario considere que el código, propiedades, documentos, etc. están en estado 'Aprobado'.
+
+Como salida se espera:
+- Código, propiedades, documentos, etc. modificados.
+- Informe DoD en estado 'Aprobado'.
+

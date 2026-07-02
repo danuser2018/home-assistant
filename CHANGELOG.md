@@ -23,6 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Se añade descripción del ciclo de desarrollo en Nova-2.
+- Se añaden indicaciones para la ejecución de workflows.
 - Configuración y documentación para el servicio `tts-capability` en `config/assistant.env` con las nuevas variables de entorno `TTS_MODEL_NAME`, `TTS_MODEL_DIR` y `TTS_MODEL_URL`.
 - Comprobación y descarga automática del modelo TTS configurado en `config/assistant.env` dentro del script `scripts/update.sh` para permitir cambios de voz sin necesidad de reinstalación.
 - Nueva skill transversal de agente `feature-refinement` para guiar el refinamiento estructurado y técnico de nuevas características.
@@ -33,8 +35,6 @@ Los cambios se agrupan en las siguientes categorías:
 - Configuración de la variable `USER_NAME=David` en `config/assistant.env` para la parametrización de la identidad.
 - Monitoreo automático del contenedor `identity-service` y validación de salud de su endpoint REST (`/health`) en `scripts/healthcheck.sh`.
 - Documentación de la decisión táctica sobre la dirección de correo destino en el MVP mediante el nuevo [ADR-007](docs/adr/adr-007.md).
-
-
 - Se añade la carpeta `docs/adr` con la justificación de las decisiones arquitectónicas.
 - Se añade la carpeta `.agent/skills` con todas las skills que la IA necesita para implementar Nova.
 - Añadido documento de `skills_proposals.md` donde se detallan la propuesta de skills para el sistema.
@@ -73,6 +73,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Corregido
 
+- Se corrigen pequeños errores y discrepancias encontrados en algunas de las skills.
 - Corrección de discrepancias en la documentación (`docs/services.md`, `docs/architecture.md`, `docs/installation.md`, `README.md`) alineando la cantidad de servicios a 9, y removiendo la dependencia directa e incorrecta del orchestrator hacia `identity-service`.
 - Reubicación de la variable `USER_EMAIL` en `config/assistant.env` bajo la sección del `identity-service`.
 - Eliminación de la carpeta obsoleta `systemd/` que contenía plantillas inactivas y actualización de la documentación de instalación.
