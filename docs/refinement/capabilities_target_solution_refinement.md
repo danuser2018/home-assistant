@@ -60,6 +60,17 @@ Entonces el Mail Watchdog registra un error definitivo
 Y mueve el archivo JSON a la carpeta failed/ para auditoría manual
 ```
 
+### Escenario 4: Reintento por respuesta bien formada pero con email inválido
+```gherkin
+Dado que un archivo de correo está listo para ser procesado
+Cuando el Mail Watchdog consulta a Identity Service en GET /v1/identity/email
+Y la respuesta HTTP es 200 OK pero el campo "email" está ausente o es una cadena vacía
+Entonces el Mail Watchdog trata el evento como un fallo temporal
+Y registra una advertencia en los logs indicando que el email recibido es inválido
+Y programa un reintento utilizando la política de backoff exponencial incrementando el contador de intentos
+Y mantiene el archivo en el filesystem
+```
+
 ---
 
 ## 4. Diseño Técnico y Contratos
@@ -101,6 +112,19 @@ class MailMessage(BaseModel):
   "email": "david@example.com"
 }
 ```
+
+### Nueva firma de `SMTPClient.send()` (`mail-watchdog/src/smtp_client.py`)
+El cliente SMTP modifica su firma para recibir el destinatario de forma explícita, desacoplándose del campo `to` del modelo `MailMessage`:
+
+```python
+def send(self, message: MailMessage, recipient: str) -> None:
+    """
+    Builds the MIME message and transmits it via SMTP.
+    recipient: resolved email address obtained from identity-service by the caller (processor.py).
+    """
+```
+
+El valor de `recipient` es obtenido previamente por `processor.py` mediante la llamada REST a `identity-service` y se pasa como argumento explícito. El método ya no lee `message.to`.
 
 ### Configuración de `mail-watchdog`
 Se añadirá a `mail-watchdog/src/config.py`:
@@ -159,4 +183,7 @@ IDENTITY_SERVICE_BASE_URL=http://identity-service:8000
 
 - [ ] **Fase 3: Configuración y Despliegue**
   - [ ] Añadir `IDENTITY_SERVICE_BASE_URL=http://identity-service:8000` en `config/assistant.env`.
-  - [ ] Documentar en el ADR-009 la superación del diseño MVP provisional definido en el ADR-007.
+  - [ ] Añadir `depends_on: [identity-service]` al servicio `mail-watchdog` en `docker-compose.yml`, usando `condition: service_healthy` para aprovechar el healthcheck ya existente en `identity-service`.
+  - [ ] Actualizar `docs/services.md`: eliminar el campo `to` del contrato de entrada de `mail-watchdog`; añadir `IDENTITY_SERVICE_BASE_URL` a su tabla de variables; eliminar `USER_EMAIL` de la sección de variables del `orchestrator`; actualizar el diagrama de comunicación añadiendo la flecha `mail-watchdog → identity-service`.
+  - [ ] Actualizar `docs/architecture.md`: añadir la relación `mail-watchdog → identity-service:8000` en el diagrama de red interna; ampliar la descripción del componente `mail-watchdog` para mencionar la resolución dinámica del destinatario vía REST.
+  - [ ] Tras la validación e integración del PR, cambiar el estado del ADR-009 de `Propuesto` a `Aceptado` y añadir en el ADR-007 una nota de superación con referencia al ADR-009.
