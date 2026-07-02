@@ -90,15 +90,12 @@ $$\text{Transversal} > \text{Domain Rules} > \text{Subsystem Rules} > \text{Plug
 ## 5. Modelo de Ejecución de Workflows (Antigravity)
 
 ### 5.1 Principio de no encadenamiento
-Los workflows no pueden invocar otros workflows.
+Los workflows no pueden invocar otros workflows. Los workflows se ejecutarán siempre bajo demanda del usuario. El modelo no puede lanzar workflows automáticamente.
 
-### 5.2 Modo por defecto
-Los workflows se ejecutarán siempre bajo demanda del usuario.
-
-### 5.3 Terminación de workflows
+### 5.2 Terminación de workflows
 Cada workflow debe finalizar tras generar su artefacto.
 
-### 5.4 Independencia de quality gates
+### 5.3 Independencia de quality gates
 DoR y DoD son fases independientes y no se encadenan.
 
 ## 6. Ciclo de vida del desarrollo de una feature

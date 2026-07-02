@@ -15,12 +15,14 @@ Garantizar la transición ordenada y sin fricciones de requisitos de alto nivel 
 Traducir la intención del usuario a un diseño técnico de componentes, contratos de comunicación, casos de prueba y un plan secuencial de tareas de desarrollo.
 
 ## Invariantes (Leyes — 🔴 Críticas — Hard Constraints)
+- **Solo planificación:** No modificar código, configuraciones o documentación 
+en esta fase, aparte de la generación del documento obligatorio de refinamiento. Todas las modificaciones detectadas en código, configuración o documentación (incluida la generación de nuevos ADRs se deben añadir como tareas a realizar dentro del documento de refinamiento).
 - **Aislamiento lingüístico en especificaciones:** El documento de refinamiento se redacta en español. No obstante, todos los identificadores técnicos (nombres de endpoints, campos JSON, variables, nombres de eventos y código de ejemplo) dentro de la especificación deben escribirse estrictamente en inglés.
 - **Trazabilidad de origen:** Todo refinamiento debe enlazar explícitamente al archivo Markdown descriptivo original que le dio origen.
 - **Validación de fronteras:** Queda estrictamente prohibido refinar una feature acoplando lógica de negocio directa entre servicios de distintas responsabilidades (ej. lógica de base de datos de identidad expuesta en el orquestador). Cada cambio de contrato debe respetar `service-responsibilities`.
 
 ## Reglas (Procedimientos — 🟡 Recomendadas — Soft Constraints)
-- **Documento de Refinamiento Obligatorio:** No modificar código. Se debe generar un documento de refinamiento con las siguientes secciones obligatorias:
+- **Documento de Refinamiento Obligatorio:** Se debe generar un documento de refinamiento con las siguientes secciones obligatorias:
   1.  **Resumen y Contexto de Negocio:** Objetivo principal y actores.
   2.  **Análisis de Servicios e Impacto:** Tabla detallando qué servicios del ecosistema se ven afectados y tipo de cambio (Modificar/Nuevo/Ninguno).
   3.  **Especificación de Comportamiento:** Criterios de Aceptación estructurados en formato Gherkin (`Dado / Cuando / Entonces`).
