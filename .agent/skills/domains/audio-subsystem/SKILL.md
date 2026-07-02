@@ -26,7 +26,6 @@ Captura del micrófono, PipeWire/PulseAudio, encolamiento secuencial de audios d
 - Mantener niveles de ganancia normalizados de forma global para los audios de realimentación acústica del sistema.
 
 ## Antipatrones (Errores conocidos)
-- ❌ Abrir de manera concurrente múltiples instancias del reproductor físico de comandos del host.
 - ❌ Mantener buffers de entrada de audio activos reteniendo RAM indefinidamente cuando no hay comando de grabación activo.
 
 ## Referencias

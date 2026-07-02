@@ -22,7 +22,7 @@ Actuar como un auditor de calidad independiente para verificar que la implementa
 ### Paso 1: Lectura y Carga de Contexto
 1. Leer el documento de refinamiento indicado en la entrada.
 2. Cargar el código implementado (o el diff correspondiente a la rama/commit).
-3. Cargar las skills transversales y de dominio relevantes, la documentación técnica del repositorio (`docs/services.md`, `docs/architecture.md`) y los ADRs vigentes en el directorio `docs/adr/`.
+3. Cargar las skills transversales (`development-workflow`, `service-responsabilities`, `architecture-decisions`) y de dominio relevantes, la documentación técnica del repositorio (`docs/services.md`, `docs/architecture.md`) y los ADRs vigentes en el directorio `docs/adr/`.
 
 ### Paso 2: Revisión de Trazabilidad
 Comparar el diseño aprobado en el documento de refinamiento con la implementación realizada. Verificar:
@@ -30,12 +30,14 @@ Comparar el diseño aprobado en el documento de refinamiento con la implementaci
 - Que no existan funcionalidades añadidas que no figuren en la especificación de refinamiento original.
 - Que no hayan quedado requisitos o tareas definidas sin implementar.
 - Que cualquier desviación funcional o técnica detectada respecto al refinamiento esté debidamente documentada y justificada.
+- Que se haya rellenado el CHANGELOG.md con el registro de cambios.
 
 ### Paso 3: Code Review (Revisión Técnica)
-Auditar la calidad técnica de los cambios utilizando las directrices de las skills transversales y de dominio:
-- **Diseño Arquitectónico**: Validar la consistencia con la arquitectura del sistema y los ADRs vigentes.
+Auditar la calidad técnica de los cambios utilizando las directrices de las skills transversales (`development-workflow`)  y de dominio:
+- **Diseño Arquitectónico**: Validar la consistencia de la solución implementada con la arquitectura del sistema y los ADRs vigentes.
 - **Límites de Servicio**: Comprobar que no haya fugas de lógica entre microservicios o acoplamiento innecesario (`service-responsibilities`).
 - **Calidad de Código**: Evaluar legibilidad, limpieza de variables, manejo de errores, code smells, complejidad ciclomática excesiva y mantenibilidad general.
+- **Contratos**: Verificar, si ha cambiado algún contrato, que este se sigue cumpliendo tanto por el llamante como por el proveedor (`api-contracts`)
 
 ### Paso 4: Revisión de Testing
 Evaluar la suficiencia de la estrategia de pruebas implementada para acompañar la feature:
@@ -48,6 +50,14 @@ Validar que el ecosistema documental se mantenga coherente con la implementació
 - Confirmar que se han actualizado los contratos de comunicación y endpoints modificados (`api-contracts`).
 - Evaluar la necesidad de crear nuevos ADRs si el cambio impacta a decisiones estructurales (`architecture-decisions`).
 - Verificar la consistencia cruzada entre repositorios en caso de que la feature afecte a más de un servicio del ecosistema.
+- Verificar que se ha rellenado correctamente el CHANGELOG.md de todos los proyectos implicados.
+- Verificar que el README.md de todos los proyectos implicados es correcto.
+
+### Paso 6: Revisión de configuración y despliegues
+Validar que toda la configuración necesaria para desplegar la solución está lista:
+- Si hay nuevas variables de entorno, verificar que están definidas y que su valor por defecto está establecido.
+- Si hay nuevos volúmenes, verificar que el docker-compose que levanta home-assistant lo configura correctamente.
+- Si hay nuevas carpetas o configuraciones, verificar que los scripts de install, uninstall, update  y healtcheck los recogen correctamente.
 
 ### Paso 6: Generación del DoD Report
 **IMPORTANTE:** El workflow nunca debe modificar el código fuente, la documentación ni el refinamiento original. Su salida obligatoria es un reporte de revisión generado en formato de artefacto en la conversación con la siguiente estructura:
