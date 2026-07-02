@@ -197,7 +197,7 @@ Esto descargará automáticamente las siguientes imágenes (la primera vez tarda
 - `danuser2018/identity-service:latest`
 
 > [!NOTE]
-> Para que el servicio `mail-watchdog` funcione correctamente, debes configurar los parámetros SMTP de tu servidor de correo en el archivo `config/assistant.env` antes de levantar los contenedores. Consulta [docs/services.md](services.md) para ver la lista de variables requeridas.
+> Para que el servicio `mail-watchdog` funcione correctamente, debes configurar los parámetros SMTP de tu servidor de correo en el archivo `config/mail-watchdog.env` antes de levantar los contenedores. Consulta [docs/services.md](services.md) para ver la lista de variables requeridas.
 
 Verifica que todos los contenedores están en funcionamiento:
 ```bash
@@ -310,7 +310,13 @@ home-assistant/
 ├── config/
 │   ├── mic-daemon.env          ← Configuración del daemon de grabación
 │   ├── speaker-watchdog.env    ← Configuración del daemon de reproducción
-│   └── assistant.env           ← Configuración global de los contenedores Docker (incluidos SMTP e identidad)
+│   ├── interaction-manager.env ← Configuración del gestor de interacciones
+│   ├── stt-capability.env      ← Configuración del servicio de voz a texto (STT)
+│   ├── tts-capability.env      ← Configuración del servicio de texto a voz (TTS)
+│   ├── orchestrator.env        ← Configuración del orquestador de intenciones
+│   ├── system-service.env      ← Configuración de la identidad del asistente
+│   ├── mail-watchdog.env       ← Configuración de la cola de correos y SMTP
+│   └── identity-service.env    ← Configuración de la identidad del usuario
 ├── data/
 │   ├── input/                  ← mic-daemon deposita aquí los .wav grabados
 │   ├── processing/             ← interaction-manager procesa aquí los archivos

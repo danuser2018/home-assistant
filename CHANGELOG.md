@@ -23,6 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Separación de la configuración en archivos `.env` independientes por servicio: se crean `config/stt-capability.env`, `config/tts-capability.env`, `config/system-service.env`, `config/orchestrator.env`, `config/mail-watchdog.env` y `config/identity-service.env`, cada uno con exclusivamente las variables necesarias para su dominio.
+- Nuevo ADR-010 documentando el patrón de aislamiento de variables de entorno por servicio como estándar del ecosistema Nova-2.
 - Se añade descripción del ciclo de desarrollo en Nova-2.
 - Se añaden indicaciones para la ejecución de workflows.
 - Configuración y documentación para el servicio `tts-capability` en `config/assistant.env` con las nuevas variables de entorno `TTS_MODEL_NAME`, `TTS_MODEL_DIR` y `TTS_MODEL_URL`.
@@ -59,10 +61,15 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Migración del archivo de configuración unificado `config/assistant.env` a archivos `.env` específicos por servicio: se actualiza `docker-compose.yml` para que cada servicio Docker referencie su propio archivo de configuración mediante la directiva `env_file`, y las variables de infraestructura interna (URLs entre servicios, rutas de directorios compartidos) se mantienen declaradas inline bajo `environment:` en `docker-compose.yml`.
+- Actualización de `scripts/install.sh` y `scripts/update.sh` para leer las variables del modelo de voz TTS (`TTS_MODEL_NAME`, `TTS_MODEL_URL`) desde `config/tts-capability.env` en lugar del antiguo `config/assistant.env`.
+- Actualización de `docs/installation.md` para reflejar la nueva estructura de archivos de configuración individuales por servicio, incluyendo el árbol de directorios completo.
+- Actualización de `docs/services.md` para documentar las variables de cada servicio referenciando su archivo `.env` específico.
+- Actualización de `docs/troubleshooting.md` para orientar al usuario al archivo `.env` correcto según el tipo de problema (SMTP → `mail-watchdog.env`, modelo TTS → `tts-capability.env`, etc.).
 - Se completa la skill de `feature-refinement`.
 - Se añade más información al flujo de ejecución de los workflows.
 - Centralización del destinatario de correo en `identity-service` (ADR-009): `mail-watchdog` resuelve ahora dinámicamente la dirección del destinatario consultando `GET /v1/identity/email` en `identity-service`, eliminando la dependencia del `orchestrator` sobre datos de identidad del usuario.
-- Variable de entorno `IDENTITY_SERVICE_BASE_URL` definida directamente en el bloque `environment` del servicio `mail-watchdog` en `docker-compose.yml` (URL interna entre servicios, no configurable por el usuario).
+- Variable de entorno `IDENTITY_SERVICE_BASE_URL` definida directamente en el bloque `environment` del servicio `mail-watchdog` en `docker-compose.yml` (URL interna entre servicios, no configurable por el usuario). Nota: el contrato del refinamiento `environment_vars_separation_refinement.md` indicaba esta variable dentro de `config/mail-watchdog.env`; la implementación la movió al bloque inline por coherencia con el patrón arquitectónico establecido para URLs internas de servicios.
 - Se añade `depends_on: identity-service: condition: service_healthy` al servicio `mail-watchdog` en `docker-compose.yml` para garantizar el arranque ordenado.
 - Actualizado el contrato de entrada de `mail-watchdog` en `docs/services.md` y `docs/architecture.md`: el campo `to` ya no forma parte del payload JSON; se documenta la nueva relación `mail-watchdog → identity-service:8000`.
 - ADR-009 promovido de estado `Propuesto` a `Aceptado` tras la integración de la implementación.
@@ -89,6 +96,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Eliminado
 
+- Archivo `config/assistant.env` eliminado definitivamente del repositorio. Su contenido ha sido distribuido en los 6 archivos `.env` individuales por servicio.
 - Variable de entorno `USER_EMAIL` eliminada de la sección del `orchestrator` en `config/assistant.env`. El orchestrator ya no tiene responsabilidad sobre la identidad del destinatario de correo.
 
 ---
