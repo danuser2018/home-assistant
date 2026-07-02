@@ -89,9 +89,14 @@ services:
     container_name: mail-watchdog
     env_file:
       - config/assistant.env
+    environment:
+      IDENTITY_SERVICE_BASE_URL: http://identity-service:8000
     volumes:
       - ./data/mail:/shared/mail
     restart: unless-stopped
+    depends_on:
+      identity-service:
+        condition: service_healthy
     networks:
       - assistant-network
 

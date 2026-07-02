@@ -38,7 +38,7 @@ Los cambios se agrupan en las siguientes categorías:
 - Se añade la carpeta `docs/adr` con la justificación de las decisiones arquitectónicas.
 - Se añade la carpeta `.agent/skills` con todas las skills que la IA necesita para implementar Nova.
 - Añadido documento de `skills_proposals.md` donde se detallan la propuesta de skills para el sistema.
-- Configuración para el plugin `capabilities` en el `orchestrator`, incluyendo las variables de entorno `USER_EMAIL` y `MAIL_PENDING_DIR` en `config/assistant.env`.
+- Configuración para el plugin `capabilities` en el `orchestrator`, incluyendo la variable de entorno `MAIL_PENDING_DIR` en `config/assistant.env`.
 - Montaje del volumen `./data/mail:/shared/mail` para el servicio `orchestrator` en `docker-compose.yml` para posibilitar el envío asíncrono de correos mediante `mail-watchdog`.
 - Documentación detallada del plugin `capabilities` y sus variables asociadas en `docs/services.md` y `docs/architecture.md`.
 - Integración del servicio `mail-watchdog` en `docker-compose.yml` y configuración de variables SMTP en `config/assistant.env`.
@@ -59,6 +59,13 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Centralización del destinatario de correo en `identity-service` (ADR-009): `mail-watchdog` resuelve ahora dinámicamente la dirección del destinatario consultando `GET /v1/identity/email` en `identity-service`, eliminando la dependencia del `orchestrator` sobre datos de identidad del usuario.
+- Variable de entorno `IDENTITY_SERVICE_BASE_URL` definida directamente en el bloque `environment` del servicio `mail-watchdog` en `docker-compose.yml` (URL interna entre servicios, no configurable por el usuario).
+- Se añade `depends_on: identity-service: condition: service_healthy` al servicio `mail-watchdog` en `docker-compose.yml` para garantizar el arranque ordenado.
+- Actualizado el contrato de entrada de `mail-watchdog` en `docs/services.md` y `docs/architecture.md`: el campo `to` ya no forma parte del payload JSON; se documenta la nueva relación `mail-watchdog → identity-service:8000`.
+- ADR-009 promovido de estado `Propuesto` a `Aceptado` tras la integración de la implementación.
+- ADR-007 marcado como superado con referencia a ADR-009.
+
 - Edición de la skill de api-contract para añadir la referencia al ADR del orchestrator `adr-001-adicion-timestamp-userrequest.md`.
 - Actualización de `docs/services.md`, `docs/installation.md` y `docs/architecture.md` para integrar e ilustrar la inclusión de `identity-service` en el ecosistema global de Nova.
 - Unificación del nombre de la red Docker interna a `assistant-network` en `docker-compose.yml` y `docs/services.md` para corregir la inconsistencia con el resto de la documentación técnica.
@@ -78,6 +85,10 @@ Los cambios se agrupan en las siguientes categorías:
 - Reubicación de la variable `USER_EMAIL` en `config/assistant.env` bajo la sección del `identity-service`.
 - Eliminación de la carpeta obsoleta `systemd/` que contenía plantillas inactivas y actualización de la documentación de instalación.
 - Corrección de discrepancias en el documento de decisión arquitectónica [ADR-006](docs/adr/adr-006.md), clarificando la distinción entre las rutas de directorios de correo compartidas en el host (`data/mail/...`) y los contenedores (`/shared/mail/...`).
+
+### Eliminado
+
+- Variable de entorno `USER_EMAIL` eliminada de la sección del `orchestrator` en `config/assistant.env`. El orchestrator ya no tiene responsabilidad sobre la identidad del destinatario de correo.
 
 ---
 
