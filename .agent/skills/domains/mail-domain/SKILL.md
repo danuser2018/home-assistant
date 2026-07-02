@@ -32,5 +32,5 @@ Conexión SMTP, procesamiento de cola de correos, transiciones de archivos JSON 
 ## Referencias
 - [mail-watchdog/README.md](file:///home/danuser2018/workspace/mail-watchdog/README.md) (Detalla la implementación actual de la cola de archivos JSON y las variables del servidor SMTP).
 - [ADR-006: Cola de Mensajería Asíncrona basada en Ficheros JSON](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-006.md)
-- [ADR-007: Configuración de la Cuenta de Correo Destino en el MVP](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-007.md)
+- [ADR-009: Centralización del Destinatario de Correo y Consulta REST desde Mail Watchdog](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-009.md)
 

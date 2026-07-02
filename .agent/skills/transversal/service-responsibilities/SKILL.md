@@ -34,4 +34,4 @@ Definición de dependencias, fuentes de verdad (*sources of truth*) y propiedad 
 ## Referencias
 - [architecture.md](file:///home/danuser2018/workspace/home-assistant/docs/architecture.md) (Definición del plano de host y plano de procesamiento).
 - [ADR-002: Modularización de Servicios](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-002.md) (Explica la decisión de aislar servicios de hardware del host de la lógica Docker).
-- [ADR-007: Configuración de la Cuenta de Correo Destino en el MVP](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-007.md) (Explica porqué el orchestrator recupera la dirección de correo del destinatario temporalmente)
+- [ADR-009: Centralización del Destinatario de Correo y Consulta REST desde Mail Watchdog](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-009.md) (Define la obtención dinámica del destinatario desde Identity Service en Mail Watchdog).

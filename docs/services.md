@@ -198,7 +198,6 @@ Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones dispon
 | Variable | Requerida | Valor por defecto | Descripción |
 |---|---|---|---|
 | `SYSTEM_SERVICE_BASE_URL` | ❌ No | `http://system-service:8000` | URL del servicio `system-service` para consultar identidad y capacidades |
-| `USER_EMAIL` | ✅ Sí | `user@example.com` | Dirección de correo del usuario destinatario para las notificaciones del `CapabilitiesPlugin` |
 | `MAIL_PENDING_DIR` | ❌ No | `/shared/mail/pending` | Directorio compartido donde se escriben los correos pendientes para que los procese `mail-watchdog` |
 
 **Endpoint principal:**
@@ -360,14 +359,14 @@ El servicio consume archivos `.json` con la siguiente estructura:
 ```json
 {
   "id": "mail-12345",
-  "to": "user@example.com",
   "subject": "Asunto del mensaje",
   "body": "Cuerpo o contenido del mensaje",
   "content_type": "text/plain"
 }
 ```
-* **Campos obligatorios:** `id` (identificador único), `to` (destinatario), `subject` (asunto), `body` (contenido).
+* **Campos obligatorios:** `id` (identificador único), `subject` (asunto), `body` (contenido).
 * **Campos opcionales:** `content_type` (`"text/plain"` o `"text/html"`, por defecto `text/plain`).
+* **Nota:** El campo `to` ya no forma parte del contrato. El destinatario se resuelve dinámicamente consultando a `identity-service` en cada ciclo de envío.
 
 **Estructura de Directorios Compartidos:**
 El volumen montado en el contenedor bajo `/shared/mail` debe tener la siguiente estructura en el host:
@@ -387,6 +386,7 @@ El volumen montado en el contenedor bajo `/shared/mail` debe tener la siguiente 
 | `MAIL_POLL_INTERVAL` | ❌ No | `2` | Intervalo de sondeo en segundos |
 | `MAIL_MAX_RETRIES` | ❌ No | `3` | Límite máximo de intentos de envío |
 | `MAIL_BACKOFF_BASE` | ❌ No | `2` | Factor de multiplicación para el backoff exponencial |
+| `IDENTITY_SERVICE_BASE_URL` | ❌ No | `http://identity-service:8000` | URL base del servicio `identity-service` para la resolución dinámica del destinatario de correo |
 
 **Observabilidad (Logs):**
 Ejemplo de flujo registrado por el contenedor:
@@ -436,6 +436,7 @@ Ejemplo de flujo registrado por el contenedor:
                     │      ├──► orchestrator:8000 ───► system-service:8000
                     │      └──► tts:8000                               │
                     │                                                  │
+                    │  mail-watchdog ──► identity-service:8000         │
                     │  mail-watchdog ──► Servidor SMTP (exterior)      │
                     └──────────────────────────────────────────────────┘
                                │           │

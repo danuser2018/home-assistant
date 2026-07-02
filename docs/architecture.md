@@ -134,9 +134,10 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 #### `mail-watchdog`
 - **Imagen:** `danuser2018/mail-watchdog:latest`
 - **Puerto:** Ninguno expuesto al host.
-- **Rol:** Servicio de envío asíncrono de correos electrónicos vía SMTP. Observa la carpeta `/shared/mail/pending` y envía los mensajes estructurados en formato JSON.
+- **Rol:** Servicio de envío asíncrono de correos electrónicos vía SMTP. Observa la carpeta `/shared/mail/pending` y envía los mensajes estructurados en formato JSON. En cada ciclo de procesamiento, resuelve dinámicamente la dirección de correo del destinatario mediante una llamada REST síncrona a `identity-service` (`GET /v1/identity/email`).
 - **Entrada:** Archivos JSON que representan los correos en `data/mail/pending/`.
 - **Salida:** Envío de correo a través del servidor SMTP configurado y eliminación del archivo JSON (o traslado a `failed/` en caso de error definitivo).
+- **Dependencia en arranque:** Requiere que `identity-service` esté sano (`service_healthy`) para arrancar.
 
 #### `identity-service`
 - **Imagen:** `danuser2018/identity-service:latest`
@@ -158,6 +159,7 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 │                      ──► orchestrator:8000  │
 │                      ──► tts:8000           │
 │  orchestrator        ──► system-service:8000│
+│  mail-watchdog       ──► identity-service:8000│
 │  mail-watchdog (salida SMTP al exterior)    │
 │                                             │
 └─────────────────────────────────────────────┘
