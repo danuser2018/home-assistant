@@ -114,7 +114,7 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 #### `orchestrator`
 - **Imagen:** `danuser2018/orchestrator:latest`
 - **Puerto interno:** `8000` (expuesto en puerto host `8002`)
-- **Rol:** Motor de intenciones determinista. Evalúa el texto recibido contra las keywords y expresiones regulares de cada plugin cargado, selecciona el plugin con mayor puntuación y ejecuta su lógica.
+- **Rol:** Motor de intenciones determinista. Evalúa la similitud semántica del texto recibido contra las frases de ejemplo de cada plugin cargado (usando RapidFuzz), selecciona el plugin con mayor puntuación resolviendo empates por prioridad, y ejecuta su lógica.
 - **Integraciones externas:** Además de conectarse a `system-service` para consultar identidad y capacidades, monta el volumen compartido `data/mail` para interactuar de forma asíncrona con `mail-watchdog` escribiendo peticiones de correo cuando se ejecuta el plugin `capabilities`.
 - **API:** `POST /api/v1/execute` (JSON `{"text": "..."}`)
 - **Extensibilidad:** Se pueden añadir nuevos plugins sin tocar el núcleo del orquestador.

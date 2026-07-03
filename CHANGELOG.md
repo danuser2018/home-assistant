@@ -62,6 +62,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Actualización de la documentación global (`docs/architecture.md` y `docs/troubleshooting.md`) y del skill de dominio `plugin-domain` (`.agent/skills/domains/plugin-domain/SKILL.md`) en `home-assistant` para reflejar la eliminación de la lógica de coincidencia por keywords/regex legada en el `orchestrator`, consolidando el enrutamiento por similitud semántica determinista (RapidFuzz) y prioridad.
 - Migración del archivo de configuración unificado `config/assistant.env` a archivos `.env` específicos por servicio: se actualiza `docker-compose.yml` para que cada servicio Docker referencie su propio archivo de configuración mediante la directiva `env_file`, y las variables de infraestructura interna (URLs entre servicios, rutas de directorios compartidos) se mantienen declaradas inline bajo `environment:` en `docker-compose.yml`.
 - Actualización de `scripts/install.sh` y `scripts/update.sh` para leer las variables del modelo de voz TTS (`TTS_MODEL_NAME`, `TTS_MODEL_URL`) desde `config/tts-capability.env` en lugar del antiguo `config/assistant.env`.
 - Actualización de `docs/installation.md` para reflejar la nueva estructura de archivos de configuración individuales por servicio, incluyendo el árbol de directorios completo.
@@ -97,6 +98,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Eliminado
 
+- Eliminación total de la lógica de coincidencia y propiedades heredadas (`keywords`, `regex_patterns`, `exclusive_regex`) en todos los plugins del sistema `orchestrator` y en la clase base `Plugin`.
 - Archivo `config/assistant.env` eliminado definitivamente del repositorio. Su contenido ha sido distribuido en los 6 archivos `.env` individuales por servicio.
 - Variable de entorno `USER_EMAIL` eliminada de la sección del `orchestrator` en `config/assistant.env`. El orchestrator ya no tiene responsabilidad sobre la identidad del destinatario de correo.
 
