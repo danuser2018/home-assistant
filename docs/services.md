@@ -187,12 +187,12 @@ curl http://localhost:8001/ready     # {"status": "ready"}
 **Imagen:** `danuser2018/orchestrator:latest`  
 **Puerto interno:** `8000` (expuesto en puerto host `8002` para depuración/desarrollo)
 
-**Propósito:** Motor de decisión determinista. Evalúa el texto transcrito contra las keywords y expresiones regulares de cada plugin disponible, asigna una puntuación (score) y ejecuta el plugin ganador. No usa LLMs; es predecible, rápido (< 50ms) y funciona sin GPU.
+**Propósito:** Motor de decisión determinista. Evalúa el texto transcrito calculando la similitud semántica ponderada frente a las frases de ejemplo de cada plugin activo, resolviendo empates por prioridad. No usa LLMs; es predecible, rápido (< 15ms) y funciona sin GPU.
 
 **Sistema de plugins:**
 - Los plugins se cargan dinámicamente desde el directorio `plugins/` del contenedor.
-- Cada plugin define sus propias keywords y regex para ser seleccionado.
-- Si ningún plugin supera el umbral mínimo, responde el `FallbackPlugin`.
+- Cada plugin funcional define un conjunto de frases de ejemplo (`examples`) y un nivel de prioridad (`priority`) para resolver ambigüedades.
+- Si ninguna puntuación de coincidencia supera el umbral de similitud configurado, responde el `FallbackPlugin`.
 
 **Plugin de Capacidades (CapabilitiesPlugin):**
 Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones disponibles.
@@ -208,6 +208,12 @@ Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones dispon
 | Variable | Requerida | Valor por defecto | Descripción |
 |---|---|---|---|
 | `LOG_LEVEL` | ❌ No | `INFO` | Nivel de detalle de los logs |
+| `SIMILARITY_THRESHOLD` | ❌ No | `60.0` | Umbral mínimo de similitud requerido para activar un plugin |
+| `TIE_BREAKER_THRESHOLD` | ❌ No | `5.0` | Umbral de diferencia de puntuación para resolver ambigüedades |
+| `WEIGHT_RATIO` | ❌ No | `0.20` | Peso de la métrica ratio de RapidFuzz |
+| `WEIGHT_PARTIAL_RATIO` | ❌ No | `0.30` | Peso de la métrica partial_ratio de RapidFuzz |
+| `WEIGHT_TOKEN_SORT_RATIO` | ❌ No | `0.20` | Peso de la métrica token_sort_ratio de RapidFuzz |
+| `WEIGHT_TOKEN_SET_RATIO` | ❌ No | `0.30` | Peso de la métrica token_set_ratio de RapidFuzz |
 
 *Definidas inline en `docker-compose.yml` (`environment`):*
 
