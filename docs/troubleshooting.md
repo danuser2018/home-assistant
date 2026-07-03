@@ -400,7 +400,7 @@ docker compose logs orchestrator | tail -20
 
 ### Causas comunes
 
-- El texto transcrito no contiene las keywords de ningún plugin instalado.
+- El texto transcrito no posee una similitud textual suficiente con las frases de ejemplo de ningún plugin instalado.
 - El idioma del texto no coincide con el configurado en los plugins.
 - No hay plugins instalados que cubran esa funcionalidad.
 

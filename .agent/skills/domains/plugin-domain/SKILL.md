@@ -13,7 +13,7 @@ Garantizar la resolución determinista de comandos de voz y mantener la coherenc
 - Al definir la cadena de respuesta de voz que se enviará al sintetizador.
 
 ## Responsabilidades
-Scoring determinista de intenciones, coincidencia de keywords/regex, descripción de plugins e identidad verbal.
+Scoring determinista de intenciones, matching por similitud semántica determinista (RapidFuzz), descripción de plugins e identidad verbal.
 
 ## Invariantes (Leyes — 🔴 Críticas — Hard Constraints)
 - **Determinismo en intenciones:** Las derivaciones de voz se resuelven exclusivamente mediante comparación semántica de similitud determinista (RapidFuzz) y desempate por prioridades. Queda prohibida la introducción de modelos de lenguaje probabilísticos (LLMs) para el enrutamiento.
@@ -23,7 +23,7 @@ Scoring determinista de intenciones, coincidencia de keywords/regex, descripció
 - Declarar siempre un campo de descripción conciso y obligatorio en la interfaz pública del plugin para cumplir el contrato del cargador dinámico.
 
 ## Buenas prácticas (Recomendaciones — 🟢 Opcionales)
-- Diseñar expresiones regulares con pesos equilibrados para evitar conflictos de coincidencia múltiple entre plugins.
+- Diseñar las frases de ejemplo (`examples`) de cada plugin con suficiente variedad semántica para minimizar solapamientos de similitud con otros plugins y reducir la necesidad de resolución por prioridad.
 
 ## Antipatrones (Errores conocidos)
 - ❌ Escribir respuestas conversacionales amigables ("¡Hola!", "De nada, espero ayudarte", "¿Necesitas algo más?").
