@@ -16,7 +16,7 @@ Garantizar la resolución determinista de comandos de voz y mantener la coherenc
 Scoring determinista de intenciones, coincidencia de keywords/regex, descripción de plugins e identidad verbal.
 
 ## Invariantes (Leyes — 🔴 Críticas — Hard Constraints)
-- **Determinismo en intenciones:** Las derivaciones de voz se resuelven exclusivamente mediante scoring matemático determinista sobre keywords/regex. Queda prohibida la introducción de modelos de lenguaje probabilísticos (LLMs) para el enrutamiento.
+- **Determinismo en intenciones:** Las derivaciones de voz se resuelven exclusivamente mediante comparación semántica de similitud determinista (RapidFuzz) y desempate por prioridades. Queda prohibida la introducción de modelos de lenguaje probabilísticos (LLMs) para el enrutamiento.
 - **Identidad verbal de Nova-2:** Las respuestas verbales generadas por cualquier plugin deben seguir obligatoriamente el principio de mínima información: ser directas, impersonales, en español y libres de diálogos conversacionales redundantes.
 
 ## Reglas (Procedimientos — 🟡 Recomendadas — Soft Constraints)
@@ -31,5 +31,6 @@ Scoring determinista de intenciones, coincidencia de keywords/regex, descripció
 
 ## Referencias
 - [TONE_GUIDE.md](file:///home/danuser2018/workspace/orchestrator/TONE_GUIDE.md) (Reglas fundamentales de estilo, brevedad y respuestas por categoría).
-- [ADR-003: Scoring Determinista de Plugins de Intenciones](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-003.md)
+- [ADR-003: Scoring Determinista de Plugins de Intenciones (Superado)](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-003.md)
+- [ADR-004 (Orchestrator): Motor de Selección de Plugins por Similitud](file:///home/danuser2018/workspace/orchestrator/doc/adr/adr-004-motor-seleccion-plugins-similitud.md)
 - [ADR-002 (Orchestrator): Alineación de mensajes de error genéricos en plugins](file:///home/danuser2018/workspace/orchestrator/doc/adr/adr-002-alineacion-mensajes-error-plugins.md)

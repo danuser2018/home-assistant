@@ -175,7 +175,7 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 |---|---|---|
 | [ADR-001: Filesystem como bus de mensajes](adr/adr-001.md) | Message broker (RabbitMQ, MQTT) | Complejidad innecesaria para el MVP; el filesystem es suficiente, fácil de depurar y no requiere infraestructura adicional. |
 | [ADR-002: Modularización de Servicios](adr/adr-002.md) | Docker con passthrough de PulseAudio | La integración Docker con el servidor de audio del usuario es frágil y depende de la distribución. Systemd --user es el mecanismo estándar de Linux. |
-| [ADR-003: Scoring determinista de plugins](adr/adr-003.md) | LLM para enrutamiento | Latencia < 50ms vs segundos, sin costo en GPU, 100% predecible y sin riesgo de alucinaciones. |
+| [ADR-003: Scoring determinista de plugins](adr/adr-003.md) (Superado) | LLM para enrutamiento | Latencia < 50ms, sin costo en GPU y 100% predecible. Superado por similitud semántica determinista con RapidFuzz. |
 | [ADR-004: Estandarización de APIs REST](adr/adr-004.md) | Estilo libre ad-hoc sin estándar | Evita la inconsistencia en payloads, nombres de endpoints y formatos de error dispares en el ecosistema. |
 | [ADR-005: Imágenes precompiladas en DockerHub](adr/adr-005.md) | Build local desde fuentes | El usuario no necesita clonar ni compilar los repositorios Docker. Una imagen precompilada garantiza una instalación en minutos. |
 | [ADR-006: Cola de mensajería asíncrona JSON](adr/adr-006.md) | Integración SMTP síncrona en el Orquestador | Desacopla la lógica de red externa del flujo síncrono de voz, evitando bloqueos y ofreciendo persistencia de envíos. |

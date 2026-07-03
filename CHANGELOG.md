@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevas variables de entorno del motor de similitud semántica en `config/orchestrator.env`: `SIMILARITY_THRESHOLD`, `TIE_BREAKER_THRESHOLD`, `WEIGHT_RATIO`, `WEIGHT_PARTIAL_RATIO`, `WEIGHT_TOKEN_SORT_RATIO` y `WEIGHT_TOKEN_SET_RATIO`, con sus valores por defecto documentados, como soporte al nuevo motor `PluginMatcher` basado en `rapidfuzz`.
 - Separación de la configuración en archivos `.env` independientes por servicio: se crean `config/stt-capability.env`, `config/tts-capability.env`, `config/system-service.env`, `config/orchestrator.env`, `config/mail-watchdog.env` y `config/identity-service.env`, cada uno con exclusivamente las variables necesarias para su dominio.
 - Nuevo ADR-010 documentando el patrón de aislamiento de variables de entorno por servicio como estándar del ecosistema Nova-2.
 - Se añade descripción del ciclo de desarrollo en Nova-2.
