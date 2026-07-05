@@ -44,6 +44,7 @@ services:
     environment:
       SYSTEM_SERVICE_BASE_URL: http://system-service:8000
       MAIL_PENDING_DIR: /shared/mail/pending
+      WEATHER_SERVICE_BASE_URL: http://weather-service:8000
     volumes:
       - ./data/mail:/shared/mail
     ports:

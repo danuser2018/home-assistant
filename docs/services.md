@@ -236,7 +236,7 @@ Content-Type: application/json
 {
   "success": true,
   "plugin_used": "WeatherPlugin",
-  "speech": "Actualmente hace 22 grados. No parece que vaya a llover.",
+  "speech": "22 grados. No parece que vaya a llover.",
   "execution_time_ms": 45
 }
 ```
