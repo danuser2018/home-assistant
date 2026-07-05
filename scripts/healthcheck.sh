@@ -65,6 +65,7 @@ declare -A CONTAINERS=(
     ["system-service"]="system-service"
     ["mail-watchdog"]="mail-watchdog"
     ["identity-service"]="identity-service"
+    ["weather-service"]="weather-service"
 )
 
 for name in "${!CONTAINERS[@]}"; do
@@ -100,6 +101,7 @@ check_http "TTS /health"          "http://localhost:8003/health" || \
     warn "TTS: el endpoint /health puede no estar disponible según la versión"
 check_http "System Service /health" "http://localhost:8004/health"
 check_http "Identity Service /health" "http://localhost:8005/health"
+check_http "Weather Service /health" "http://localhost:8006/health"
 
 # ─── Carpetas de datos ────────────────────────────────────────────────────────
 header "Carpetas de datos"
