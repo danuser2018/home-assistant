@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Integración real del `WeatherPlugin` del `orchestrator` con el `weather-service` local, definiendo la variable de entorno `WEATHER_SERVICE_BASE_URL` inline en `docker-compose.yml`.
 - Integración del microservicio `weather-service` en `docker-compose.yml` usando la imagen `danuser2018/weather-service:latest` mapeada al puerto `8006` del host, estableciendo dependencias saludables para el orquestador.
 - Nuevo archivo de variables de entorno `config/weather-service.env` para la configuración aislada de coordenadas y parámetros del servicio meteorológico.
 - Nuevo ADR-011 documentando la integración del servicio de clima y su red privada interna.
