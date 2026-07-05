@@ -54,6 +54,18 @@ for service in mic-daemon speaker-watchdog; do
     fi
 done
 
+# hid-daemon es opcional; sólo se comprueba si está habilitado en systemd
+if systemctl --user is-enabled --quiet hid-daemon 2>/dev/null; then
+    if systemctl --user is-active --quiet hid-daemon 2>/dev/null; then
+        ok "hid-daemon — activo"
+    else
+        status=$(systemctl --user is-active hid-daemon 2>/dev/null || echo "desconocido")
+        fail "hid-daemon — $status"
+    fi
+else
+    warn "hid-daemon — no habilitado (servicio opcional)"
+fi
+
 # ─── Contenedores Docker ──────────────────────────────────────────────────────
 header "Contenedores Docker"
 

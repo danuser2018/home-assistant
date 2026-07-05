@@ -12,7 +12,7 @@ El sistema se divide en dos planos de ejecución:
 
 | Plano | Tipo | Servicios |
 |---|---|---|
-| **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog` |
+| **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog`, `hid-daemon` |
 | **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service` |
 
 ### ¿Por qué esta separación?
@@ -96,6 +96,12 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Lenguaje:** Python 3.8+
 - **Rol:** Monitoriza `data/output/` mediante `inotify`. Al detectar un nuevo `.wav`, lo encola en una cola FIFO thread-safe y lo reproduce secuencialmente mediante `mpv`. Elimina el archivo tras la reproducción.
 - **Principio clave:** Patrón Productor-Consumidor para evitar solapamiento de audios.
+
+#### `hid-daemon`
+- **Repositorio:** `danuser2018/hid-daemon`
+- **Lenguaje:** Python 3.10+
+- **Rol:** Escucha eventos de entrada de bajo nivel desde dispositivos HID físicos mediante la biblioteca `evdev` y ejecuta comandos del sistema configurados (ej. `mic-toggle.sh`) en un subproceso de forma aislada.
+- **Principio clave:** Integración robusta de hardware físico desacoplada de gestores gráficos.
 
 ### Servicios Docker
 
@@ -185,3 +191,4 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 | [ADR-004: Estandarización de APIs REST](adr/adr-004.md) | Estilo libre ad-hoc sin estándar | Evita la inconsistencia en payloads, nombres de endpoints y formatos de error dispares en el ecosistema. |
 | [ADR-005: Imágenes precompiladas en DockerHub](adr/adr-005.md) | Build local desde fuentes | El usuario no necesita clonar ni compilar los repositorios Docker. Una imagen precompilada garantiza una instalación en minutos. |
 | [ADR-006: Cola de mensajería asíncrona JSON](adr/adr-006.md) | Integración SMTP síncrona en el Orquestador | Desacopla la lógica de red externa del flujo síncrono de voz, evitando bloqueos y ofreciendo persistencia de envíos. |
+| [ADR-012: Integración del Servicio HID Daemon (hid-daemon)](adr/adr-012-integracion-hid-daemon.md) | Atajos del sistema gráfico | Permite capturar eventos de entrada de teclado físico a bajo nivel para control del micrófono sin requerir privilegios de superusuario ni sesiones de escritorio gráfico activas. |

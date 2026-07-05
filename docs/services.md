@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **10 microservicios** (8 en Docker y 2 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **11 microservicios** (8 en Docker y 3 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -10,6 +10,7 @@ El sistema Home Assistant está compuesto por **10 microservicios** (8 en Docker
 |---|---|---|---|
 | `mic-daemon` | Host (Systemd) | `danuser2018/mic-daemon` | Graba voz del micrófono |
 | `speaker-watchdog` | Host (Systemd) | `danuser2018/speaker-watchdog` | Reproduce respuestas de audio |
+| `hid-daemon` | Host (Systemd) | `danuser2018/hid-daemon` | Escucha eventos HID y ejecuta comandos del sistema |
 | `interaction-manager` | Docker | `danuser2018/interaction-manager:latest` | Coordina el flujo completo |
 | `stt-capability` | Docker | `danuser2018/stt-capability:latest` | Convierte voz a texto (STT) |
 | `orchestrator` | Docker | `danuser2018/orchestrator:latest` | Selecciona y ejecuta la acción adecuada |
@@ -85,6 +86,37 @@ journalctl --user -u mic-daemon -f
 systemctl --user status speaker-watchdog
 systemctl --user restart speaker-watchdog
 journalctl --user -u speaker-watchdog -f
+```
+
+---
+
+### hid-daemon
+
+**Repositorio:** `danuser2018/hid-daemon`
+
+**Propósito:** Escucha eventos de entrada física de bajo nivel (como botones USB o pedales) mediante la interfaz del kernel `evdev` y los mapea a comandos de sistema configurables.
+
+**Cómo funciona:**
+1. Abre de forma exclusiva o compartida el archivo de dispositivo especial en `/dev/input/event*`.
+2. Lee el flujo de eventos de entrada. Filtra los eventos que no son de tipo tecla o que corresponden a repetición de tecla (`value == 2`).
+3. Mapea la tecla correspondiente (por nombre o código numérico) contra la configuración definida.
+4. Delega la ejecución del comando asociado (ej. `mic-toggle.sh`) a un ejecutor de subprocesos.
+5. Si el dispositivo se desconecta, inicia un bucle de reconexión automático esperando de forma responsiva sin bloquear las señales de apagado de systemd.
+
+**Configuración relevante** (`config/hid-daemon.env`):
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `HID_CONFIG_PATH` | ✅ Sí | `config/hid-daemon.yaml` | Ruta absoluta al archivo YAML de bindings y configuración. |
+| `HID_DEVICE_PATH` | ❌ No | `None` | Ruta directa del dispositivo a escuchar (ej. `/dev/input/event0`). Sobrescribe el YAML. |
+| `HID_DEVICE_NAME` | ❌ No | `None` | Nombre del dispositivo a buscar si no se define la ruta. Sobrescribe el YAML. |
+| `HID_RECONNECT_DELAY_S` | ❌ No | `None` | Tiempo de espera en segundos antes de reintentar la conexión. Sobrescribe el YAML. |
+
+**Gestión:**
+```bash
+systemctl --user status hid-daemon
+systemctl --user restart hid-daemon
+journalctl --user -u hid-daemon -f
 ```
 
 ---

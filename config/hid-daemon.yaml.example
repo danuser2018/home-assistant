@@ -1,0 +1,28 @@
+# Plantilla de ejemplo para la configuración de bindings del HID Daemon
+# Copiar este archivo a config/hid-daemon.yaml y personalizarlo.
+
+# Ruta directa al archivo especial del dispositivo de entrada (ej: "/dev/input/event0")
+# Dejar en null si se prefiere buscar por nombre.
+device_path: null
+
+# Nombre exacto del dispositivo a buscar si device_path no está configurado.
+device_name: "USB Foot Switch"
+
+# Intervalo de espera antes de reintentar la conexión (en segundos)
+# si el dispositivo se desconecta físicamente.
+reconnect_delay_s: 5.0
+
+# Mapeos de teclas y acciones asociadas.
+# Los comandos de ejemplo apuntan a los scripts de control de mic-daemon.
+# Reemplazar `/home/danuser2018` por la ruta de tu propio usuario.
+bindings:
+  KEY_F9:
+    mode: "TOGGLE"
+    press: "/home/danuser2018/workspace/mic-daemon/scripts/mic-toggle.sh"
+    release: null
+
+  # Ejemplo de configuración alternativa en modo PTT (Push-To-Talk):
+  # KEY_F10:
+  #   mode: "PTT"
+  #   press: "/home/danuser2018/workspace/mic-daemon/scripts/mic-start.sh"
+  #   release: "/home/danuser2018/workspace/mic-daemon/scripts/mic-stop.sh"

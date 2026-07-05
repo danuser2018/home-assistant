@@ -36,6 +36,7 @@ en esta fase, aparte de la generación del documento obligatorio de refinamiento
 - Almacenar los documentos de refinamiento bajo el directorio `docs/refinements/` del repositorio afectado para mantener un histórico de evolución de features.
 - Si se trata de un cambio que afecta a más de un repositorio almacenar en `home-assistant/docs/refinement`.
 - Asegurar que el checklist de implementación desglose tareas con un esfuerzo estimado inferior a media jornada de trabajo para facilitar commits atómicos.
+- Ver [first_implementation_refinement.md](file:///home/danuser2018/workspace/hid-daemon/doc/refinements/first_implementation_refinement.md) como referencia ejemplar de especificación para nuevos daemons de hardware.
 
 ## Antipatrones (Errores conocidos)
 - ❌ Definir criterios de aceptación ambiguos o no verificables (ej. "el sistema debe responder de forma rápida").
