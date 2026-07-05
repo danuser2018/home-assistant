@@ -49,7 +49,7 @@ echo ""
 # ─── Parar y deshabilitar servicios systemd ───────────────────────────────────
 log_info "Deteniendo servicios systemd del host..."
 
-for service in mic-daemon speaker-watchdog; do
+for service in mic-daemon speaker-watchdog hid-daemon; do
     if systemctl --user is-active --quiet "$service" 2>/dev/null; then
         systemctl --user stop "$service"
         log_ok "$service detenido."
@@ -104,7 +104,7 @@ log_info "Los siguientes elementos NO han sido eliminados:"
 log_info "  - Directorio de datos: $PROJECT_DIR/data/"
 log_info "  - Directorio con el modelo de STT: $PROJECT_DIR/models/stt"
 log_info "  - Archivos de configuración: $PROJECT_DIR/config/"
-log_info "  - Entornos virtuales Python (en los repos mic-daemon y speaker-watchdog)"
+log_info "  - Entornos virtuales Python (en los repos mic-daemon, speaker-watchdog y hid-daemon)"
 log_info "  - Imágenes Docker (usa 'docker image rm' para eliminarlas manualmente)"
 echo ""
 log_info "Para reinstalar el sistema, ejecuta: ./scripts/install.sh"

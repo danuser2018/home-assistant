@@ -17,7 +17,7 @@ Despliegue, configuraciones de red, variables globales y montaje de recursos.
 
 ## Invariantes (Leyes — 🔴 Críticas — Hard Constraints)
 - **Seguridad en origen:** Queda estrictamente prohibida la inclusión de credenciales SMTP o API keys reales en archivos bajo control de versiones.
-- **Servicio de usuario:** Los daemons de audio nativos deben ejecutarse en el espacio de usuario (`systemd --user`) para heredar los permisos de sonido de la sesión activa del usuario.
+- **Servicio de usuario:** Los daemons de hardware nativos (audio y eventos HID) deben ejecutarse en el espacio de usuario (`systemd --user`) para heredar de forma segura y limpia los permisos de la sesión activa del usuario.
 
 ## Reglas (Procedimientos — 🟡 Recomendadas — Soft Constraints)
 - Validar la existencia de variables locales requeridas al iniciar cualquier módulo del sistema.
@@ -37,3 +37,4 @@ Despliegue, configuraciones de red, variables globales y montaje de recursos.
 - [ADR-005: Distribución mediante Imágenes Precompiladas en DockerHub](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-005.md).
 - [ADR-010: Aislamiento de Variables de Entorno por Servicio](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-010.md) (Establece un archivo `.env` independiente por servicio como patrón estándar del ecosistema, eliminando el archivo compartido `config/assistant.env`).
 - [ADR-011: Integración del Servicio Meteorológico (Weather Service) en el Ecosistema Nova](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-011-integracion-weather-service.md) (Define la integración del microservicio de clima, su red y su aislamiento de configuración).
+- [ADR-012: Integración del Servicio HID Daemon (hid-daemon)](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-012-integracion-hid-daemon.md) (Define la captura y ejecución desacoplada de eventos HID en el host).

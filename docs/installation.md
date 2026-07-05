@@ -72,6 +72,8 @@ sudo usermod -aG docker $USER
 git clone https://github.com/danuser2018/home-assistant.git
 git clone https://github.com/danuser2018/mic-daemon.git
 git clone https://github.com/danuser2018/speaker-watchdog.git
+# Opcional (si deseas usar botones o pedales físicos USB):
+git clone https://github.com/danuser2018/hid-daemon.git
 cd home-assistant
 ```
 
@@ -153,6 +155,12 @@ WATCHDOG_DIR=/home/TU_USUARIO/home-assistant/data/output
 LOG_LEVEL=INFO
 ```
 
+### 4c. Configurar hid-daemon (Opcional)
+
+Si has clonado el repositorio `hid-daemon`, el instalador generará automáticamente los archivos de configuración por defecto:
+1. `config/hid-daemon.env`: Ruta al archivo YAML de atajos y variables de anulación opcionales.
+2. `config/hid-daemon.yaml`: Configuración de bindings y nombre del dispositivo de entrada. Abre este archivo para editar el nombre de tu dispositivo USB (ej: `"USB Foot Switch"`) y verificar las teclas.
+
 ---
 
 ## Paso 6: Instalar los servicios de systemd
@@ -165,17 +173,19 @@ chmod +x scripts/install.sh
 ```
 
 El script realiza automáticamente las siguientes acciones:
-- Instala `mic-daemon` y `speaker-watchdog` con sus entornos virtuales de Python.
+- Instala `mic-daemon`, `speaker-watchdog` y `hid-daemon` (si está presente en el workspace) con sus entornos virtuales de Python.
 - Genera dinámicamente las unidades de servicio systemd en `~/.config/systemd/user/`.
-- Habilita e inicia ambos servicios.
+- Habilita e inicia los servicios instalados.
 
 Verifica que los servicios estén activos:
 ```bash
 systemctl --user status mic-daemon
 systemctl --user status speaker-watchdog
+# Opcional (si se ha instalado):
+systemctl --user status hid-daemon
 ```
 
-Deberías ver `Active: active (running)` en ambos.
+Deberías ver `Active: active (running)` en ellos.
 
 ---
 
@@ -311,6 +321,8 @@ home-assistant/
 ├── config/
 │   ├── mic-daemon.env          ← Configuración del daemon de grabación
 │   ├── speaker-watchdog.env    ← Configuración del daemon de reproducción
+│   ├── hid-daemon.env          ← Configuración del daemon de atajos físicos (opcional)
+│   ├── hid-daemon.yaml         ← Bindings de teclas físicas y comandos (opcional)
 │   ├── interaction-manager.env ← Configuración del gestor de interacciones
 │   ├── stt-capability.env      ← Configuración del servicio de voz a texto (STT)
 │   ├── tts-capability.env      ← Configuración del servicio de texto a voz (TTS)
@@ -336,6 +348,7 @@ home-assistant/
 │   └── healthcheck.sh
 ├── systemd/
 │   ├── mic-daemon.service
-│   └── speaker-watchdog.service
+│   ├── speaker-watchdog.service
+│   └── hid-daemon.service      ← Servicio systemd para hid-daemon (opcional)
 └── docker-compose.yml
 ```

@@ -32,9 +32,11 @@ TTS_MODEL_DIR="$PROJECT_DIR/models/tts"
 
 MIC_DAEMON_DIR="$WORKSPACE_DIR/mic-daemon"
 SPEAKER_WATCHDOG_DIR="$WORKSPACE_DIR/speaker-watchdog"
+HID_DAEMON_DIR="$WORKSPACE_DIR/hid-daemon"
 
 MIC_DAEMON_VENV="$MIC_DAEMON_DIR/venv"
 SPEAKER_WATCHDOG_VENV="$SPEAKER_WATCHDOG_DIR/venv"
+HID_DAEMON_VENV="$HID_DAEMON_DIR/venv"
 
 # ─── Banner ───────────────────────────────────────────────────────────────────
 echo ""
@@ -113,6 +115,23 @@ if [ -d "$SPEAKER_WATCHDOG_VENV" ] && [ -f "$SPEAKER_WATCHDOG_DIR/requirements.t
     log_ok "speaker-watchdog actualizado y reiniciado."
 else
     log_warn "Entorno virtual de speaker-watchdog no encontrado. ¿Está instalado?"
+fi
+echo ""
+
+# ─── Actualizar dependencias de hid-daemon (si está presente) ──────────────────
+if [ -d "$HID_DAEMON_VENV" ] && [ -f "$HID_DAEMON_DIR/requirements.txt" ]; then
+    log_info "Actualizando dependencias Python de hid-daemon..."
+    "$HID_DAEMON_VENV/bin/pip" install --quiet --upgrade pip
+    "$HID_DAEMON_VENV/bin/pip" install --quiet --upgrade -r "$HID_DAEMON_DIR/requirements.txt"
+    # Solo reiniciamos si el servicio systemd está habilitado/activo
+    if systemctl --user is-enabled --quiet hid-daemon.service 2>/dev/null; then
+        systemctl --user restart hid-daemon
+        log_ok "hid-daemon actualizado y reiniciado."
+    else
+        log_ok "hid-daemon actualizado (servicio systemd no activo/habilitado)."
+    fi
+elif [ -d "$HID_DAEMON_DIR" ]; then
+    log_warn "Entorno virtual de hid-daemon no encontrado. ¿Está instalado?"
 fi
 echo ""
 

@@ -23,6 +23,9 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Integración del servicio nativo `hid-daemon` para el control mediante botones físicos USB o pedales.
+- Nuevo archivo de variables de entorno `config/hid-daemon.env` y plantilla de bindings `config/hid-daemon.yaml.example` para `hid-daemon`.
+- Nuevo documento ADR-012 en `docs/adr/adr-012-integracion-hid-daemon.md` describiendo la decisión técnica para capturar eventos de entrada física en el host.
 - Integración real del `WeatherPlugin` del `orchestrator` con el `weather-service` local, definiendo la variable de entorno `WEATHER_SERVICE_BASE_URL` inline en `docker-compose.yml`.
 - Integración del microservicio `weather-service` en `docker-compose.yml` usando la imagen `danuser2018/weather-service:latest` mapeada al puerto `8006` del host, estableciendo dependencias saludables para el orquestador.
 - Nuevo archivo de variables de entorno `config/weather-service.env` para la configuración aislada de coordenadas y parámetros del servicio meteorológico.
@@ -68,8 +71,11 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Actualización de la documentación del sistema (`docs/services.md`, `docs/installation.md`, `docs/architecture.md`) para incorporar el servicio `hid-daemon` como componente opcional del plano de hardware.
+- Sincronización de las skills transversales `feature-refinement`, `service-responsibilities` y `system-deployment` con referencias al nuevo ADR-012 y las directrices de hardware HID.
+- Adaptación de los scripts globales `install.sh`, `uninstall.sh`, `update.sh` y `healthcheck.sh` para soportar la instalación, mantenimiento, actualización y monitoreo del servicio `hid-daemon`.
 - Actualización de la documentación general (`docs/services.md` y `docs/architecture.md`) para agregar `weather-service` al catálogo de servicios y descripción de componentes.
-- Actualización de la skill `system-deployment` para referenciar el nuevo `ADR-011`.
+- Actualización de la skill `system-deployment` para referenciar the nuevo `ADR-011`.
 
 - Actualización de la documentación global (`docs/architecture.md` y `docs/troubleshooting.md`) y del skill de dominio `plugin-domain` (`.agent/skills/domains/plugin-domain/SKILL.md`) en `home-assistant` para reflejar la eliminación de la lógica de coincidencia por keywords/regex legada en el `orchestrator`, consolidando el enrutamiento por similitud semántica determinista (RapidFuzz) y prioridad.
 - Migración del archivo de configuración unificado `config/assistant.env` a archivos `.env` específicos por servicio: se actualiza `docker-compose.yml` para que cada servicio Docker referencie su propio archivo de configuración mediante la directiva `env_file`, y las variables de infraestructura interna (URLs entre servicios, rutas de directorios compartidos) se mantienen declaradas inline bajo `environment:` en `docker-compose.yml`.

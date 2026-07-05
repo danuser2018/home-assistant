@@ -220,3 +220,4 @@ __marimo__/
 # Carpetas específicas del proyecto
 data/
 models/
+config/hid-daemon.yaml

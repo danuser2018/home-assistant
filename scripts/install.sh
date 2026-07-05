@@ -35,9 +35,11 @@ TTS_MODEL_DIR="$PROJECT_DIR/models/tts"
 
 MIC_DAEMON_DIR="$WORKSPACE_DIR/mic-daemon"
 SPEAKER_WATCHDOG_DIR="$WORKSPACE_DIR/speaker-watchdog"
+HID_DAEMON_DIR="$WORKSPACE_DIR/hid-daemon"
 
 MIC_DAEMON_VENV="$MIC_DAEMON_DIR/venv"
 SPEAKER_WATCHDOG_VENV="$SPEAKER_WATCHDOG_DIR/venv"
+HID_DAEMON_VENV="$HID_DAEMON_DIR/venv"
 
 SYSTEMD_USER_DIR="$HOME/.config/systemd/user"
 USER_UID="$(id -u)"
@@ -84,8 +86,28 @@ fi
 log_ok "Requisitos del sistema verificados."
 echo ""
 
+# Verificar grupo input para hid-daemon
+if ! groups "$USER" | grep -q "\binput\b"; then
+    log_warn "El usuario actual '$USER' no pertenece al grupo 'input'."
+    log_warn "Esto es requerido para que hid-daemon pueda leer eventos de teclado físico sin privilegios de root."
+    # Si la terminal es interactiva (o por defecto para asegurar aprobación), pedimos confirmación
+    if [ -t 0 ]; then
+        read -rp "¿Deseas añadir a '$USER' al grupo 'input' ahora? Se requerirán privilegios sudo. (s/N): " add_input
+        if [[ "$add_input" == "s" || "$add_input" == "S" ]]; then
+            log_info "Ejecutando: sudo usermod -aG input $USER"
+            sudo usermod -aG input "$USER"
+            log_ok "Usuario añadido al grupo 'input'. Nota: Es necesario reiniciar la sesión para aplicar cambios."
+        else
+            log_warn "No se añadió al usuario al grupo 'input'. hid-daemon podría fallar al arrancar."
+        fi
+    else
+        log_warn "La instalación no es interactiva. Ejecuta manualmente: sudo usermod -aG input $USER"
+    fi
+fi
+echo ""
+
 # ─── Verificar repositorios de servicios del host ────────────────────────────
-log_info "Verificando repositorios de mic-daemon y speaker-watchdog..."
+log_info "Verificando repositorios de mic-daemon, speaker-watchdog y hid-daemon..."
 
 if [ ! -d "$MIC_DAEMON_DIR" ]; then
     log_error "No se encontró el repositorio mic-daemon en: $MIC_DAEMON_DIR"
@@ -99,7 +121,13 @@ if [ ! -d "$SPEAKER_WATCHDOG_DIR" ]; then
     exit 1
 fi
 
-log_ok "Repositorios encontrados."
+HAS_HID=true
+if [ ! -d "$HID_DAEMON_DIR" ]; then
+    log_warn "No se encontró el repositorio hid-daemon en: $HID_DAEMON_DIR. Se omitirá su instalación."
+    HAS_HID=false
+fi
+
+log_ok "Repositorios verificados."
 echo ""
 
 # ─── Crear carpetas de datos ──────────────────────────────────────────────────
@@ -159,6 +187,16 @@ if grep -q "^WATCHDOG_DIR=$" "$PROJECT_DIR/config/speaker-watchdog.env" 2>/dev/n
 else
     log_warn "WATCHDOG_DIR ya está configurado. Comprueba que apunta a: $DATA_DIR/output"
 fi
+
+if [ "$HAS_HID" = true ]; then
+    log_info "Configurando config/hid-daemon.yaml..."
+    if [ ! -f "$PROJECT_DIR/config/hid-daemon.yaml" ]; then
+        cp "$PROJECT_DIR/config/hid-daemon.yaml.example" "$PROJECT_DIR/config/hid-daemon.yaml"
+        log_ok "Archivo de configuración config/hid-daemon.yaml creado a partir de la plantilla."
+    else
+        log_info "Archivo de configuración config/hid-daemon.yaml ya existe."
+    fi
+fi
 echo ""
 
 # ─── Instalar entorno virtual de mic-daemon ───────────────────────────────────
@@ -184,6 +222,19 @@ fi
 "$SPEAKER_WATCHDOG_VENV/bin/pip" install --quiet -r "$SPEAKER_WATCHDOG_DIR/requirements.txt"
 log_ok "Dependencias de speaker-watchdog instaladas."
 echo ""
+
+if [ "$HAS_HID" = true ]; then
+    log_info "Instalando entorno virtual de hid-daemon..."
+    if [ ! -d "$HID_DAEMON_VENV" ]; then
+        python3 -m venv "$HID_DAEMON_VENV"
+        log_ok "Entorno virtual creado en $HID_DAEMON_VENV"
+    fi
+
+    "$HID_DAEMON_VENV/bin/pip" install --quiet --upgrade pip
+    "$HID_DAEMON_VENV/bin/pip" install --quiet -r "$HID_DAEMON_DIR/requirements.txt"
+    log_ok "Dependencias de hid-daemon instaladas."
+    echo ""
+fi
 
 # ─── Instalar scripts de control de mic-daemon ───────────────────────────────
 log_info "Instalando scripts de control del micrófono..."
@@ -261,6 +312,31 @@ StandardError=journal
 WantedBy=default.target
 EOF
 log_ok "speaker-watchdog.service instalado en $SYSTEMD_USER_DIR/"
+
+if [ "$HAS_HID" = true ]; then
+    # hid-daemon.service
+    cat > "$SYSTEMD_USER_DIR/hid-daemon.service" << EOF
+[Unit]
+Description=HID key events listener daemon for Nova-2
+Documentation=https://github.com/danuser2018/hid-daemon
+After=default.target
+
+[Service]
+Type=simple
+WorkingDirectory=$HID_DAEMON_DIR
+EnvironmentFile=$PROJECT_DIR/config/hid-daemon.env
+ExecStart=$HID_DAEMON_VENV/bin/python $HID_DAEMON_DIR/src/hid_daemon.py
+Restart=on-failure
+RestartSec=3s
+Environment=PYTHONPATH=$HID_DAEMON_DIR
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
+EOF
+    log_ok "hid-daemon.service instalado en $SYSTEMD_USER_DIR/"
+fi
 echo ""
 
 # ─── Habilitar e iniciar servicios ────────────────────────────────────────────
@@ -274,6 +350,12 @@ log_ok "mic-daemon habilitado e iniciado."
 systemctl --user enable speaker-watchdog.service
 systemctl --user start speaker-watchdog.service
 log_ok "speaker-watchdog habilitado e iniciado."
+
+if [ "$HAS_HID" = true ]; then
+    systemctl --user enable hid-daemon.service
+    systemctl --user start hid-daemon.service
+    log_ok "hid-daemon habilitado e iniciado."
+fi
 echo ""
 
 # ─── Arrancar servicios Docker ────────────────────────────────────────────────
@@ -294,6 +376,10 @@ systemctl --user is-active mic-daemon      && echo -e "  ${GREEN}✓${NC} mic-da
                                            || echo -e "  ${RED}✗${NC} mic-daemon"
 systemctl --user is-active speaker-watchdog && echo -e "  ${GREEN}✓${NC} speaker-watchdog" \
                                             || echo -e "  ${RED}✗${NC} speaker-watchdog"
+if [ "$HAS_HID" = true ]; then
+    systemctl --user is-active hid-daemon && echo -e "  ${GREEN}✓${NC} hid-daemon" \
+                                          || echo -e "  ${RED}✗${NC} hid-daemon"
+fi
 echo ""
 echo "Próximos pasos:"
 echo "  1. Configura un atajo de teclado que ejecute: mic-toggle"
