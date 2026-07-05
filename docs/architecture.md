@@ -13,7 +13,7 @@ El sistema se divide en dos planos de ejecución:
 | Plano | Tipo | Servicios |
 |---|---|---|
 | **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog` |
-| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service` |
+| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service` |
 
 ### ¿Por qué esta separación?
 
@@ -144,6 +144,12 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Puerto interno:** `8000` (expuesto en puerto host `8005`)
 - **Rol:** Almacena y proporciona de manera centralizada la información de identidad privada del usuario (nombre y correo electrónico), actuando como la fuente de verdad única (*Single Source of Truth*) para el perfil del usuario.
 - **API:** `GET /v1/identity` (retorna nombre y correo), `GET /v1/identity/name`, `GET /v1/identity/email`, `GET /health` (estado de salud).
+
+#### `weather-service`
+- **Imagen:** `danuser2018/weather-service:latest`
+- **Puerto interno:** `8000` (expuesto en puerto host `8006`)
+- **Rol:** Encapsula la comunicación con la API de Open-Meteo, proporcionando datos normalizados de temperatura y probabilidad de precipitación, y manejando la caché mediante TTL.
+- **API:** `GET /v1/weather/current` (obtiene clima actual), `GET /health` (estado de salud).
 
 ---
 

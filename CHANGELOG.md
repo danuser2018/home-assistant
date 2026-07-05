@@ -23,6 +23,11 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Integración del microservicio `weather-service` en `docker-compose.yml` usando la imagen `danuser2018/weather-service:latest` mapeada al puerto `8006` del host, estableciendo dependencias saludables para el orquestador.
+- Nuevo archivo de variables de entorno `config/weather-service.env` para la configuración aislada de coordenadas y parámetros del servicio meteorológico.
+- Nuevo ADR-011 documentando la integración del servicio de clima y su red privada interna.
+- Comprobación del estado del contenedor `weather-service` y validación de salud de su endpoint REST (`/health`) en `scripts/healthcheck.sh`.
+
 - Nuevas variables de entorno del motor de similitud semántica en `config/orchestrator.env`: `SIMILARITY_THRESHOLD`, `TIE_BREAKER_THRESHOLD`, `WEIGHT_RATIO`, `WEIGHT_PARTIAL_RATIO`, `WEIGHT_TOKEN_SORT_RATIO` y `WEIGHT_TOKEN_SET_RATIO`, con sus valores por defecto documentados, como soporte al nuevo motor `PluginMatcher` basado en `rapidfuzz`.
 - Separación de la configuración en archivos `.env` independientes por servicio: se crean `config/stt-capability.env`, `config/tts-capability.env`, `config/system-service.env`, `config/orchestrator.env`, `config/mail-watchdog.env` y `config/identity-service.env`, cada uno con exclusivamente las variables necesarias para su dominio.
 - Nuevo ADR-010 documentando el patrón de aislamiento de variables de entorno por servicio como estándar del ecosistema Nova-2.
@@ -61,6 +66,9 @@ Los cambios se agrupan en las siguientes categorías:
 - Implementación del servicio (docker-compose, services y scripts de instalación y mantenimiento).
 
 ### Cambiado
+
+- Actualización de la documentación general (`docs/services.md` y `docs/architecture.md`) para agregar `weather-service` al catálogo de servicios y descripción de componentes.
+- Actualización de la skill `system-deployment` para referenciar el nuevo `ADR-011`.
 
 - Actualización de la documentación global (`docs/architecture.md` y `docs/troubleshooting.md`) y del skill de dominio `plugin-domain` (`.agent/skills/domains/plugin-domain/SKILL.md`) en `home-assistant` para reflejar la eliminación de la lógica de coincidencia por keywords/regex legada en el `orchestrator`, consolidando el enrutamiento por similitud semántica determinista (RapidFuzz) y prioridad.
 - Migración del archivo de configuración unificado `config/assistant.env` a archivos `.env` específicos por servicio: se actualiza `docker-compose.yml` para que cada servicio Docker referencie su propio archivo de configuración mediante la directiva `env_file`, y las variables de infraestructura interna (URLs entre servicios, rutas de directorios compartidos) se mantienen declaradas inline bajo `environment:` en `docker-compose.yml`.

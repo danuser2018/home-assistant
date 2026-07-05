@@ -50,7 +50,10 @@ services:
       - "8002:8000"  # Expuesto para healthcheck y depuración local
     restart: unless-stopped
     depends_on:
-      - system-service
+      system-service:
+        condition: service_started
+      weather-service:
+        condition: service_healthy
     networks:
       - assistant-network
 
@@ -106,6 +109,25 @@ services:
       - config/identity-service.env
     ports:
       - "8005:8000"  # Expuesto para healthcheck y depuración local
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - assistant-network
+
+  weather-service:
+    image: danuser2018/weather-service:latest
+    container_name: weather-service
+    env_file:
+      - config/weather-service.env
+    environment:
+      PORT: 8000
+      HOST: 0.0.0.0
+    ports:
+      - "8006:8000"  # Exposed for healthcheck and local debugging
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]

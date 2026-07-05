@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **9 microservicios** (7 en Docker y 2 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **10 microservicios** (8 en Docker y 2 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -17,6 +17,7 @@ El sistema Home Assistant está compuesto por **9 microservicios** (7 en Docker 
 | `system-service` | Docker | `danuser2018/system-service:latest` | Expone información de identidad del sistema (Nova) |
 | `mail-watchdog` | Docker | `danuser2018/mail-watchdog:latest` | Envía correos electrónicos asíncronos vía SMTP |
 | `identity-service` | Docker | `danuser2018/identity-service:latest` | Almacena y proporciona datos privados del usuario |
+| `weather-service` | Docker | `danuser2018/weather-service:latest` | Proporciona datos de clima actual y pronóstico |
 
 ---
 
@@ -454,6 +455,28 @@ Ejemplo de flujo registrado por el contenedor:
 
 ---
 
+### weather-service
+
+**Repositorio:** `danuser2018/weather-service`
+
+**Propósito:** Encapsula la comunicación con la API externa de Open-Meteo, proporcionando datos del clima actual (temperatura y probabilidad de precipitación) de forma normalizada y gestionando la caché local mediante TTL.
+
+**API REST expuesta (puerto interno 8000, mapeado a 8006 en el host):**
+
+* `GET /v1/weather/current`: Devuelve el clima actual para las coordenadas configuradas.
+* `GET /health`: Comprueba el estado de salud del servicio (retorna `{"status": "ok"}`).
+
+**Variables de entorno relevantes (cargadas vía `config/weather-service.env`):**
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `LATITUDE` | ✅ Sí | — | Latitud de la ubicación para la consulta del clima |
+| `LONGITUDE` | ✅ Sí | — | Longitud de la ubicación para la consulta del clima |
+| `REQUEST_TIMEOUT_SECONDS` | ❌ No | `5.0` | Tiempo de espera máximo en segundos para llamadas externas |
+| `CACHE_TTL_SECONDS` | ❌ No | `0` | Tiempo de vida de la caché en memoria en segundos (0 para deshabilitar) |
+
+---
+
 ## Comunicación entre Servicios
 
 ```text
@@ -464,10 +487,13 @@ Ejemplo de flujo registrado por el contenedor:
                     │      │                                           │
                     │      ├──► stt:8000                               │
                     │      ├──► orchestrator:8000 ───► system-service:8000
+                    │      │         │                                 │
+                    │      │         └───────────────► weather-service:8000
                     │      └──► tts:8000                               │
                     │                                                  │
                     │  mail-watchdog ──► identity-service:8000         │
                     │  mail-watchdog ──► Servidor SMTP (exterior)      │
+                    │  weather-service ──► API Open-Meteo (exterior)   │
                     └──────────────────────────────────────────────────┘
                                │           │
                           Volumen Docker: ./data

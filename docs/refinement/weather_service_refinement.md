@@ -196,7 +196,7 @@ Cualquier fallo de validación o del proveedor externo retornará un esquema com
 2. Validar que no se generen errores durante el despliegue del nuevo contenedor.
 3. Ejecutar el script actualizado `./scripts/healthcheck.sh` y comprobar que todos los servicios responden correctamente, prestando especial atención a que `weather-service` sea validado.
 4. Ejecutar comandos manuales de comprobación desde el host:
-   - `curl -i http://localhost:8006/health` (debe responder 200 OK con `"status": "UP"`).
+   - `curl -i http://localhost:8006/health` (debe responder 200 OK con `"status": "ok"`).
    - `curl -i http://localhost:8006/v1/weather/current` (debe responder 200 OK con un JSON estructurado).
 
 ---

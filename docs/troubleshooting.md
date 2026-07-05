@@ -18,6 +18,7 @@ Esta guía recoge los problemas más comunes que puedes encontrar durante la ins
 10. [El asistente responde "no he entendido" a todo](#10-el-asistente-responde-no-he-entendido-a-todo)
 11. [El servicio de correo (mail-watchdog) no envía correos](#11-el-servicio-de-correo-mail-watchdog-no-envía-correos)
 12. [El servicio TTS (tts-capability) no arranca por error de modelo](#12-el-servicio-tts-tts-capability-no-arranca-por-error-de-modelo)
+13. [El servicio de clima (weather-service) no responde o devuelve error](#13-el-servicio-de-clima-weather-service-no-responde-o-devuelve-error)
 
 ---
 
@@ -155,6 +156,7 @@ docker compose logs stt-capability
 docker compose logs orchestrator
 docker compose logs tts-capability
 docker compose logs system-service
+docker compose logs weather-service
 ```
 
 ### La carpeta `data/` no está montada correctamente
@@ -463,6 +465,29 @@ El servicio valida en el arranque (fail-fast) que existan tanto el archivo de mo
 
 #### Solución:
 1. Asegúrate de que la variable `TTS_MODEL_NAME` en `config/tts-capability.env` esté correctamente definida y no sea una cadena vacía o espacios en blanco.
+
+---
+
+## 13. El servicio de clima (weather-service) no responde o devuelve error
+
+**Síntoma:** Al consultar el clima desde los plugins o manualmente vía curl, se recibe un error 503 (WEATHER_PROVIDER_UNAVAILABLE) o 500 (INTERNAL_ERROR).
+
+### Causas comunes y soluciones
+
+#### 1. Caída o timeout de la API externa (Open-Meteo)
+Si el proveedor meteorológico externo tiene problemas de conexión o un timeout, `weather-service` responderá con HTTP 503 y un JSON estructurado según ADR-004.
+- **Solución:** Revisa los logs del contenedor para confirmar si es un problema con el proveedor externo:
+  ```bash
+  docker compose logs weather-service
+  ```
+  Si hay fallos de red persistentes, el servicio volverá a estar disponible de forma automática una vez que la API de Open-Meteo se restablezca.
+
+#### 2. Variables de coordenadas no configuradas o inválidas
+Si `LATITUDE` o `LONGITUDE` no se configuran correctamente en `config/weather-service.env`, el servicio lanzará un error interno HTTP 500.
+- **Solución:** Abre `config/weather-service.env` y verifica que las coordenadas geográficas son válidas y están bien definidas (por ejemplo, `LATITUDE=40.4168` y `LONGITUDE=-3.7038`). Si realizas cambios en el archivo, reinicia el contenedor para cargarlos:
+  ```bash
+  docker compose restart weather-service
+  ```
 
 ---
 
