@@ -109,6 +109,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Corregido
 
+- Corrección del desfase horario en todos los contenedores Docker del ecosistema Nova-2 mediante el montaje en modo lectura de los ficheros `/etc/localtime` y `/etc/timezone` del host en `docker-compose.yml`, sincronizando el entorno de ejecución (incluyendo los plugins de fecha y hora del `orchestrator`) con la zona horaria del sistema host (Europe/Madrid).
 - Se corrigen pequeños errores y discrepancias encontrados en algunas de las skills.
 - Corrección de discrepancias en la documentación (`docs/services.md`, `docs/architecture.md`, `docs/installation.md`, `README.md`) alineando la cantidad de servicios a 9, y removiendo la dependencia directa e incorrecta del orchestrator hacia `identity-service`.
 - Reubicación de la variable `USER_EMAIL` en `config/assistant.env` bajo la sección del `identity-service`.

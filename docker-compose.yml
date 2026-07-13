@@ -15,6 +15,8 @@ services:
       ERROR_DIR: /data/error
     volumes:
       - ./data:/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
     depends_on:
       - stt
@@ -33,6 +35,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./models/stt:/root/.cache/huggingface
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     networks:
       - assistant-network
 
@@ -47,6 +51,8 @@ services:
       WEATHER_SERVICE_BASE_URL: http://weather-service:8000
     volumes:
       - ./data/mail:/shared/mail
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     ports:
       - "8002:8000"  # Expuesto para healthcheck y depuración local
     restart: unless-stopped
@@ -66,6 +72,9 @@ services:
     ports:
       - "8004:8000"  # Expuesto para healthcheck y depuración local
     restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -83,6 +92,8 @@ services:
       - "8003:8000"  # Expuesto para healthcheck y depuración local
     volumes:
       - ./models/tts:/app/models
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
     networks:
       - assistant-network
@@ -96,6 +107,8 @@ services:
       IDENTITY_SERVICE_BASE_URL: http://identity-service:8000
     volumes:
       - ./data/mail:/shared/mail
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
     depends_on:
       identity-service:
@@ -111,6 +124,9 @@ services:
     ports:
       - "8005:8000"  # Expuesto para healthcheck y depuración local
     restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -130,6 +146,9 @@ services:
     ports:
       - "8006:8000"  # Exposed for healthcheck and local debugging
     restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
