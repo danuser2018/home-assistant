@@ -348,7 +348,9 @@ Content-Type: application/json
     {"id": "author", "description": "Información sobre el autor de Nova"},
     {"id": "version", "description": "Información sobre la versión instalada de Nova"},
     {"id": "help", "description": "Explica cómo utilizar Nova"},
-    {"id": "weather", "description": "Consultar el tiempo"}
+    {"id": "weather", "description": "Consultar el tiempo"},
+    {"id": "time", "description": "Consulta la hora actual"},
+    {"id": "date", "description": "Consulta la fecha actual"}
   ]
 }
 ```
@@ -373,7 +375,9 @@ GET /v1/system/capabilities
     {"id": "author", "description": "Información sobre el autor de Nova"},
     {"id": "version", "description": "Información sobre la versión instalada de Nova"},
     {"id": "help", "description": "Explica cómo utilizar Nova"},
-    {"id": "weather", "description": "Consultar el tiempo"}
+    {"id": "weather", "description": "Consultar el tiempo"},
+    {"id": "time", "description": "Consulta la hora actual"},
+    {"id": "date", "description": "Consulta la fecha actual"}
   ]
 }
 ```
