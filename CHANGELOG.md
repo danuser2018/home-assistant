@@ -23,6 +23,9 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevas capacidades y plugins públicos en el ecosistema Nova-2: `author` (información del autor), `version` (versión del sistema) y `help` (ayuda de uso del asistente) expuestos por el orquestador.
+- Actualización de la documentación de `system-service` en `docs/services.md` para reflejar el consumo por los nuevos plugins de identidad, autoría y versión.
+
 - Integración del servicio nativo `hid-daemon` para el control mediante botones físicos USB o pedales.
 - Nuevo archivo de variables de entorno `config/hid-daemon.env` y plantilla de bindings `config/hid-daemon.yaml.example` para `hid-daemon`.
 - Nuevo documento ADR-012 en `docs/adr/adr-012-integracion-hid-daemon.md` describiendo la decisión técnica para capturar eventos de entrada física en el host.
