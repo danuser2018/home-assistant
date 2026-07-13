@@ -309,7 +309,7 @@ Content-Type: application/json
 **Imagen:** `danuser2018/system-service:latest`  
 **Puerto interno:** `8000` (expuesto en puerto host `8004`)
 
-**Propósito:** Servicio de información de identidad. Expone información básica del asistente Nova en formato JSON. Es consumido exclusivamente por el `Orchestrator` a través del `Identity Plugin` para responder preguntas de identidad del usuario (ej. "¿quién eres?").
+**Propósito:** Servicio de información de identidad. Expone información básica del asistente Nova en formato JSON. Es consumido por el `Orchestrator` a través de los plugins `IdentityPlugin`, `AuthorPlugin` y `VersionPlugin` para responder preguntas de identidad, autoría y versión (ej. "¿quién eres?", "¿quién es tu autor?", "¿cuál es tu versión?").
 
 **Variables de entorno (cargadas vía `config/system-service.env`):**
 
@@ -345,6 +345,9 @@ Content-Type: application/json
 {
   "capabilities": [
     {"id": "identity", "description": "Información sobre Nova"},
+    {"id": "author", "description": "Información sobre el autor de Nova"},
+    {"id": "version", "description": "Información sobre la versión instalada de Nova"},
+    {"id": "help", "description": "Explica cómo utilizar Nova"},
     {"id": "weather", "description": "Consultar el tiempo"}
   ]
 }
@@ -367,6 +370,9 @@ GET /v1/system/capabilities
 {
   "capabilities": [
     {"id": "identity", "description": "Información sobre Nova"},
+    {"id": "author", "description": "Información sobre el autor de Nova"},
+    {"id": "version", "description": "Información sobre la versión instalada de Nova"},
+    {"id": "help", "description": "Explica cómo utilizar Nova"},
     {"id": "weather", "description": "Consultar el tiempo"}
   ]
 }
