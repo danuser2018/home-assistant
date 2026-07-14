@@ -350,7 +350,10 @@ Content-Type: application/json
     {"id": "help", "description": "Explica cómo utilizar Nova"},
     {"id": "weather", "description": "Consultar el tiempo"},
     {"id": "time", "description": "Consulta la hora actual"},
-    {"id": "date", "description": "Consulta la fecha actual"}
+    {"id": "date", "description": "Consulta la fecha actual"},
+    {"id": "coin", "description": "Lanza una moneda y devuelve cara o cruz"},
+    {"id": "dice", "description": "Lanza un dado de seis caras"},
+    {"id": "random-number", "description": "Genera un número aleatorio entre 1 y 99"}
   ]
 }
 ```
@@ -377,7 +380,10 @@ GET /v1/system/capabilities
     {"id": "help", "description": "Explica cómo utilizar Nova"},
     {"id": "weather", "description": "Consultar el tiempo"},
     {"id": "time", "description": "Consulta la hora actual"},
-    {"id": "date", "description": "Consulta la fecha actual"}
+    {"id": "date", "description": "Consulta la fecha actual"},
+    {"id": "coin", "description": "Lanza una moneda y devuelve cara o cruz"},
+    {"id": "dice", "description": "Lanza un dado de seis caras"},
+    {"id": "random-number", "description": "Genera un número aleatorio entre 1 y 99"}
   ]
 }
 ```
