@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevas capacidades aleatorias en el ecosistema de Nova-2: lanzamiento de moneda (`coin`), tiro de dado (`dice`) y número aleatorio (`random-number`) soportadas por el orquestador y documentadas en el catálogo de servicios.
 - Soporte nativo a nivel de ecosistema para responder consultas de fecha (`date`) y hora (`time`) mediante los nuevos plugins `TimePlugin` y `DatePlugin` cargados por el orquestador.
 - Nuevas capacidades y plugins públicos en el ecosistema Nova-2: `author` (información del autor), `version` (versión del sistema) y `help` (ayuda de uso del asistente) expuestos por el orquestador.
 - Actualización de la documentación de `system-service` en `docs/services.md` para reflejar el consumo por los nuevos plugins de identidad, autoría y versión, e incorporar las capacidades `time` y `date` en los ejemplos del catálogo de servicios.
