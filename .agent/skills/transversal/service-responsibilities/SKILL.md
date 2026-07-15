@@ -38,3 +38,4 @@ Definición de dependencias, fuentes de verdad (*sources of truth*) y propiedad 
 - [ADR-012: Integración del Servicio HID Daemon (hid-daemon)](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-012-integracion-hid-daemon.md) (Define la captura y ejecución desacoplada de eventos HID en el host).
 - [ADR-013: Integración del Servicio Host (host-service)](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-013-integracion-host-service.md).
 - [ADR-014: Separación de Responsabilidades en el Orquestador](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-014-refactorizacion-orquestador.md).
+- [ADR-015: Consolidación del Modelo ExecutionPlan y Eliminación del Endpoint Legado](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-015-consolidacion-execution-plan.md).

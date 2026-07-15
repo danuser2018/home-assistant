@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevo registro de decisión arquitectónica `docs/adr/adr-015-consolidacion-execution-plan.md` formalizando la consolidación del flujo desacoplado y la remoción de compatibilidades legacy.
 - Dos nuevos endpoints REST en el orquestador (`POST /api/v1/resolve` y `POST /api/v1/execute-plan`) y soporte para el esquema de plan de ejecución (`ExecutionPlan`).
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-014-refactorizacion-orquestador.md` para formalizar la separación de responsabilidades entre el Intent Resolver y el Plugin Executor en el orquestador.
 - Integración de cinco nuevos plugins de control de volumen (`volume-up`, `volume-down`, `volume-status`, `mute`, `unmute`) en el orquestador de Nova-2, que consumen la API REST del microservicio `host-service`.
@@ -44,6 +45,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Renombradas las clases del orquestador a `ExecutionPlanner` (antes `IntentResolver`) y `PlanExecutor` (antes `PluginExecutor`), y eliminada la clase `Router` junto con su método `route_request`.
 - Refactorizado el motor de decisión del orquestador en dos módulos desacoplados: `IntentResolver` (resolución semántica) y `PluginExecutor` (ejecución física de planes).
 - Sincronizadas las skills transversales `service-responsibilities` y `api-contracts` con referencias a `adr-014-refactorizacion-orquestador.md`.
 - Actualización de los scripts globales de sistema (`install.sh`, `uninstall.sh`, `update.sh` y `healthcheck.sh`) para incorporar el clonado, la configuración, el control de ciclo de vida systemd y el monitoreo de salud del microservicio `host-service`.
@@ -93,6 +95,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Eliminado
 
+- Eliminado definitivamente el endpoint legado `POST /api/v1/execute` en el orquestador y toda su documentación asociada.
 - Eliminación total de la lógica de coincidencia y propiedades heredadas (`keywords`, `regex_patterns`, `exclusive_regex`) en todos los plugins del sistema `orchestrator` y en la clase base `Plugin`.
 - Archivo `config/assistant.env` eliminado definitivamente del repositorio. Su contenido ha sido distribuido en los 6 archivos `.env` individuales por servicio.
 - Variable de entorno `USER_EMAIL` eliminada de la sección del `orchestrator` en `config/assistant.env`. El orchestrator ya no tiene responsabilidad sobre la identidad del destinatario de correo.

@@ -289,24 +289,6 @@ Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones dispon
 
 **Endpoints principales:**
 
-* **Ejecutar texto (retrocompatible):**
-```http
-POST /api/v1/execute
-Content-Type: application/json
-
-{"text": "qué tiempo hace hoy"}
-```
-
-**Respuesta:**
-```json
-{
-  "success": true,
-  "plugin_used": "WeatherPlugin",
-  "speech": "22 grados. No parece que vaya a llover.",
-  "execution_time_ms": 45
-}
-```
-
 * **Resolver intención (Generar ExecutionPlan):**
 ```http
 POST /api/v1/resolve

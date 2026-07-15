@@ -35,4 +35,4 @@ Versionado de APIs, nomenclatura de recursos, esquemas de error comunes y consis
 - [ADR-001 (Orchestrator): Adición de campo timestamp opcional en UserRequest](file:///home/danuser2018/workspace/orchestrator/doc/adr/adr-001-adicion-timestamp-userrequest.md) (Define la adición del campo timestamp en UserRequest manteniendo retrocompatibilidad).
 - [ADR-002 (Orchestrator): Alineación mensajes de error en los plugins](file:///home/danuser2018/workspace/orchestrator/doc/adr/adr-002-alineacion-mensajes-error-plugins.md) (Alinea los mensajes de error que devuelven los plugins).
 - [ADR-014: Separación de Responsabilidades en el Orquestador](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-014-refactorizacion-orquestador.md).
-
+- [ADR-015: Consolidación del Modelo ExecutionPlan y Eliminación del Endpoint Legado](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-015-consolidacion-execution-plan.md).
