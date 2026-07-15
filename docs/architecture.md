@@ -62,8 +62,10 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
    |                  |                 |                |   /v1/transcriptions|              |                |                 |              |               |                |
    |                  |                 |                |<-- {"text": "..."} |               |                |                 |              |               |                |
    |                  |                 |                |-- POST ------------|-------------->|                |                 |              |               |                |
-   |                  |                 |                |   /api/v1/execute  |               |                |                 |              |               |                |
-   |                  |                 |                |                    |               |-- GET -------->|                 |              |               |                |
+   |                  |                 |                |   /api/v1/resolve  |               |                |                 |              |               |                |
+   |                  |                 |                |<-- {"steps": [...]} |              |                |                 |              |               |                |
+   |                  |                 |                |-- POST ------------|-------------->|                |                 |              |               |                |
+   |                  |                 |                |   /execute-plan    |               |-- GET -------->|                 |              |               |                |
    |                  |                 |                |                    |               |   /v1/system/info|               |              |               |                |
    |                  |                 |                |                    |               |<-- JSON -------|                 |              |               |                |
    |                  |                 |                |<------------------ |{"speech":"..."}|                |                 |              |               |                |
@@ -126,10 +128,9 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 #### `orchestrator`
 - **Imagen:** `danuser2018/orchestrator:latest`
 - **Puerto interno:** `8000` (expuesto en puerto host `8002`)
-- **Rol:** Motor de intenciones determinista. Se compone de dos módulos desacoplados: `IntentResolver` (procesamiento del lenguaje natural, cálculo de similitud mediante RapidFuzz y generación del plan `ExecutionPlan`) y `PluginExecutor` (validación y ejecución secuencial del plan de pasos usando los plugins).
+- **Rol:** Motor de intenciones determinista. Se compone de dos módulos desacoplados: `ExecutionPlanner` (procesamiento del lenguaje natural, cálculo de similitud mediante RapidFuzz y generación del plan `ExecutionPlan`) y `PlanExecutor` (validación y ejecución secuencial del plan de pasos usando los plugins).
 - **Integraciones externas:** Además de conectarse a `system-service` para consultar identidad y capacidades, monta el volumen compartido `data/mail` para interactuar de forma asíncrona con `mail-watchdog` escribiendo peticiones de correo cuando se ejecuta el plugin `capabilities`.
 - **API:**
-  - `POST /api/v1/execute` (Retrocompatible, JSON `{"text": "..."}`)
   - `POST /api/v1/resolve` (JSON `{"text": "..."}`)
   - `POST /api/v1/execute-plan` (JSON `ExecutionPlan`)
 - **Extensibilidad:** Se pueden añadir nuevos plugins sin tocar el núcleo del orquestador.
@@ -204,3 +205,4 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 | [ADR-012: Integración del Servicio HID Daemon (hid-daemon)](adr/adr-012-integracion-hid-daemon.md) | Atajos del sistema gráfico | Permite capturar eventos de entrada de teclado físico a bajo nivel para control del micrófono sin requerir privilegios de superusuario ni sesiones de escritorio gráfico activas. |
 | [ADR-013: Integración del Servicio Host (host-service)](adr/adr-013-integracion-host-service.md) | Mapeo de sockets de audio a contenedores Docker | Aísla completamente el plano de procesamiento Docker del hardware y las utilidades nativas de audio, interactuando con PipeWire/PulseAudio a través de una API REST local limpia e independiente. |
 | [ADR-014: Separación de Responsabilidades en el Orquestador](adr/adr-014-refactorizacion-orquestador.md) | Enrutamiento acoplado en un único método | Desacopla la lógica de resolución semántica de la ejecución del plan de pasos, permitiendo pre-validaciones seguras y multi-acciones atómicas. |
+| [ADR-015: Consolidación del Modelo ExecutionPlan](adr/adr-015-consolidacion-execution-plan.md) | Mantener el endpoint legado `/execute` | Consolida definitivamente el flujo desacoplado resolve/execute-plan, limpia los contratos de la API y renombra los componentes internos a `ExecutionPlanner` y `PlanExecutor` para mayor coherencia. |
