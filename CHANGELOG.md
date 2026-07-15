@@ -23,6 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Dos nuevos endpoints REST en el orquestador (`POST /api/v1/resolve` y `POST /api/v1/execute-plan`) y soporte para el esquema de plan de ejecución (`ExecutionPlan`).
+- Nuevo registro de decisión arquitectónica `docs/adr/adr-014-refactorizacion-orquestador.md` para formalizar la separación de responsabilidades entre el Intent Resolver y el Plugin Executor en el orquestador.
 - Integración de cinco nuevos plugins de control de volumen (`volume-up`, `volume-down`, `volume-status`, `mute`, `unmute`) en el orquestador de Nova-2, que consumen la API REST del microservicio `host-service`.
 - Integración del microservicio `host-service` como Capa de Abstracción del Host (HAL) para centralizar y proteger el control de volumen físico y silenciado mediante comandos nativos `pactl` bajo `systemd --user`.
 - Nuevo archivo de variables de entorno `config/host-service.env` para configurar la IP, puerto y nivel de log de `host-service`.
@@ -42,6 +44,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Refactorizado el motor de decisión del orquestador en dos módulos desacoplados: `IntentResolver` (resolución semántica) y `PluginExecutor` (ejecución física de planes).
+- Sincronizadas las skills transversales `service-responsibilities` y `api-contracts` con referencias a `adr-014-refactorizacion-orquestador.md`.
 - Actualización de los scripts globales de sistema (`install.sh`, `uninstall.sh`, `update.sh` y `healthcheck.sh`) para incorporar el clonado, la configuración, el control de ciclo de vida systemd y el monitoreo de salud del microservicio `host-service`.
 - Configuración de puente de red mediante `extra_hosts` con `host.docker.internal:host-gateway` y declaración de la variable de entorno `HOST_SERVICE_BASE_URL` para el contenedor `orchestrator` en `docker-compose.yml`, permitiendo la comunicación saliente hacia `host-service` en el host.
 - Actualización de la documentación del sistema (`docs/services.md`, `docs/installation.md`, `docs/architecture.md`, `docs/troubleshooting.md`) y de las skills de agente (`system-deployment`, `audio-subsystem`, `service-responsibilities`) para incluir el nuevo componente de hardware `host-service` y las leyes de uso de su API REST.

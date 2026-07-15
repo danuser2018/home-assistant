@@ -287,7 +287,9 @@ Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones dispon
 | `WEATHER_SERVICE_BASE_URL` | ❌ No | `http://weather-service:8000` | URL del servicio `weather-service` para consultar datos meteorológicos |
 | `HOST_SERVICE_BASE_URL` | ❌ No | `http://host.docker.internal:8007` | URL del servicio `host-service` (HAL) en el host para controlar el volumen de audio físico |
 
-**Endpoint principal:**
+**Endpoints principales:**
+
+* **Ejecutar texto (retrocompatible):**
 ```http
 POST /api/v1/execute
 Content-Type: application/json
@@ -302,6 +304,67 @@ Content-Type: application/json
   "plugin_used": "WeatherPlugin",
   "speech": "22 grados. No parece que vaya a llover.",
   "execution_time_ms": 45
+}
+```
+
+* **Resolver intención (Generar ExecutionPlan):**
+```http
+POST /api/v1/resolve
+Content-Type: application/json
+
+{"text": "qué tiempo hace hoy"}
+```
+
+**Respuesta:**
+```json
+{
+  "steps": [
+    {
+      "plugin": "WeatherPlugin",
+      "confidence": 100.0,
+      "parameters": {},
+      "channel": "voice",
+      "context": {
+        "raw_text": "qué tiempo hace hoy",
+        "normalized_text": "que tiempo hace hoy",
+        "metadata": {}
+      },
+      "security": {}
+    }
+  ]
+}
+```
+
+* **Ejecutar plan:**
+```http
+POST /api/v1/execute-plan
+Content-Type: application/json
+
+{
+  "steps": [
+    {
+      "plugin": "WeatherPlugin",
+      "confidence": 100.0,
+      "parameters": {},
+      "channel": "voice",
+      "context": {
+        "raw_text": "qué tiempo hace hoy",
+        "normalized_text": "que tiempo hace hoy",
+        "metadata": {}
+      },
+      "security": {}
+    }
+  ]
+}
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "plugin_used": "WeatherPlugin",
+  "speech": "22 grados. No parece que vaya a llover.",
+  "execution_time_ms": 15
 }
 ```
 
