@@ -284,6 +284,8 @@ Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones dispon
 |---|---|---|---|
 | `SYSTEM_SERVICE_BASE_URL` | ❌ No | `http://system-service:8000` | URL del servicio `system-service` para consultar identidad y capacidades |
 | `MAIL_PENDING_DIR` | ❌ No | `/shared/mail/pending` | Directorio compartido donde se escriben los correos pendientes para que los procese `mail-watchdog` |
+| `WEATHER_SERVICE_BASE_URL` | ❌ No | `http://weather-service:8000` | URL del servicio `weather-service` para consultar datos meteorológicos |
+| `HOST_SERVICE_BASE_URL` | ❌ No | `http://host.docker.internal:8007` | URL del servicio `host-service` (HAL) en el host para controlar el volumen de audio físico |
 
 **Endpoint principal:**
 ```http
@@ -383,7 +385,12 @@ Content-Type: application/json
     {"id": "date", "description": "Consulta la fecha actual"},
     {"id": "coin", "description": "Lanza una moneda y devuelve cara o cruz"},
     {"id": "dice", "description": "Lanza un dado de seis caras"},
-    {"id": "random-number", "description": "Genera un número aleatorio entre 1 y 99"}
+    {"id": "random-number", "description": "Genera un número aleatorio entre 1 y 99"},
+    {"id": "volume-up", "description": "Incrementa el volumen del sistema"},
+    {"id": "volume-down", "description": "Disminuye el volumen del sistema"},
+    {"id": "volume-status", "description": "Consulta el volumen actual del sistema"},
+    {"id": "mute", "description": "Silencia el sistema"},
+    {"id": "unmute", "description": "Restaura el sonido del sistema"}
   ]
 }
 ```
@@ -413,7 +420,12 @@ GET /v1/system/capabilities
     {"id": "date", "description": "Consulta la fecha actual"},
     {"id": "coin", "description": "Lanza una moneda y devuelve cara o cruz"},
     {"id": "dice", "description": "Lanza un dado de seis caras"},
-    {"id": "random-number", "description": "Genera un número aleatorio entre 1 y 99"}
+    {"id": "random-number", "description": "Genera un número aleatorio entre 1 y 99"},
+    {"id": "volume-up", "description": "Incrementa el volumen del sistema"},
+    {"id": "volume-down", "description": "Disminuye el volumen del sistema"},
+    {"id": "volume-status", "description": "Consulta el volumen actual del sistema"},
+    {"id": "mute", "description": "Silencia el sistema"},
+    {"id": "unmute", "description": "Restaura el sonido del sistema"}
   ]
 }
 ```
