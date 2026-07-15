@@ -18,6 +18,7 @@ Captura del micrófono, PipeWire/PulseAudio, encolamiento secuencial de audios d
 ## Invariantes (Leyes — 🔴 Críticas — Hard Constraints)
 - **Reproducción en cola única:** Las respuestas físicas de audio deben reproducirse secuencialmente una a una. Queda prohibido lanzar ejecuciones de audio concurrentes que provoquen solapamientos.
 - **Liberación inmediata de recursos:** El sistema debe liberar el hardware de sonido y eliminar de forma segura los archivos temporales de audio del disco inmediatamente después de finalizar su reproducción.
+- **Control de volumen centralizado:** El control de volumen físico del host y el estado de silencio deben gestionarse exclusivamente a través de los endpoints REST expuestos por `host-service` en `http://host.docker.internal:8007/v1/audio/volume`. Queda estrictamente prohibido ejecutar comandos directos `pactl` o scripts de manipulación del mezclador de audio desde dentro de contenedores Docker o plugins.
 
 ## Reglas (Procedimientos — 🟡 Recomendadas — Soft Constraints)
 - Monitorear la señal física de grabación a través de la presencia del archivo bandera en el filesystem, deteniendo el buffer nativo de forma limpia si este desaparece.
@@ -33,3 +34,4 @@ Captura del micrófono, PipeWire/PulseAudio, encolamiento secuencial de audios d
 - [speaker-watchdog/README.md](file:///home/danuser2018/workspace/speaker-watchdog/README.md) (Uso del reproductor CLI con política de que el último sonido interrumpe al anterior sin solapamientos).
 - [ADR-002: Modularización de Servicios](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-002.md) (Host para Hardware y Docker para Procesamiento).
 - [ADR-008: Modelo de Reproducción de Audio Física en speaker-watchdog](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-008.md) (Consolidación de subprocesos efímeros con SIGKILL ante fallos de socket daemon).
+- [ADR-013: Integración del Servicio Host (host-service)](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-013-integracion-host-service.md).

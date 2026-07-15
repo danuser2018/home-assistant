@@ -19,6 +19,7 @@ Esta guía recoge los problemas más comunes que puedes encontrar durante la ins
 11. [El servicio de correo (mail-watchdog) no envía correos](#11-el-servicio-de-correo-mail-watchdog-no-envía-correos)
 12. [El servicio TTS (tts-capability) no arranca por error de modelo](#12-el-servicio-tts-tts-capability-no-arranca-por-error-de-modelo)
 13. [El servicio de clima (weather-service) no responde o devuelve error](#13-el-servicio-de-clima-weather-service-no-responde-o-devuelve-error)
+14. [El servicio host (host-service) no responde o devuelve error 503](#14-el-servicio-host-host-service-no-responde-o-devuelve-error-503)
 
 ---
 
@@ -491,6 +492,67 @@ Si `LATITUDE` o `LONGITUDE` no se configuran correctamente en `config/weather-se
 
 ---
 
+## 14. El servicio host (host-service) no responde o devuelve error 503
+
+**Síntoma:** Al interactuar con el asistente para controlar el volumen, se obtiene un error indicando que el servicio no responde, o los logs del contenedor `orchestrator` muestran un fallo al conectar a `http://host.docker.internal:8007/v1/audio/volume`.
+
+### Verificar que host-service está activo
+
+```bash
+systemctl --user status host-service
+journalctl --user -u host-service -f  # Ver logs en tiempo real
+```
+
+Si está en estado `failed` o `inactive`, inícialo manualmente:
+```bash
+systemctl --user start host-service
+```
+
+### Probar la API de host-service localmente
+
+Realiza una consulta manual para verificar que el servicio responde y que pactl funciona correctamente:
+```bash
+curl http://localhost:8007/health
+curl http://localhost:8007/v1/audio/volume
+```
+
+### Error 503 (Servicio de Audio No Disponible)
+
+Si el endpoint devuelve un error `503` con el código `HOST_AUDIO_SERVICE_ERROR`:
+- El daemon `host-service` se está ejecutando pero no puede interactuar con PipeWire o PulseAudio mediante `pactl`.
+- Comprueba que la sesión del usuario tiene PulseAudio o PipeWire activos:
+  ```bash
+  pactl info
+  ```
+- Asegúrate de que las variables de entorno de la sesión están expuestas correctamente al servicio systemd. Si estás conectado por SSH, es posible que systemd no herede las variables de la sesión de escritorio. Ejecuta lo siguiente desde la sesión de escritorio del usuario para importar las variables necesarias:
+  ```bash
+  systemctl --user import-environment XDG_RUNTIME_DIR
+  systemctl --user restart host-service
+  ```
+
+### Problemas de Red desde Docker (host.docker.internal)
+
+Si el orquestador no puede comunicarse con `host-service`:
+- Comprueba que la configuración de `docker-compose.yml` para el servicio `orchestrator` incluye la definición de `extra_hosts` con `host.docker.internal:host-gateway`.
+- **Cortafuegos (UFW) bloqueando la conexión**: Si utilizas Linux con `ufw` habilitado, este bloqueará por defecto las conexiones entrantes desde la red de Docker (subred `172.16.0.0/12` o el bridge personalizado) hacia el host en el puerto `8007`. Puedes verificar si está activo ejecutando:
+  ```bash
+  sudo ufw status
+  ```
+  Si está activo, permite el tráfico de la subred de Docker al puerto `8007` con:
+  ```bash
+  sudo ufw allow proto tcp from 172.16.0.0/12 to any port 8007
+  ```
+  O abre el puerto `8007/tcp` de forma general si lo prefieres:
+  ```bash
+  sudo ufw allow 8007/tcp
+  ```
+- Verifica la conectividad desde dentro del contenedor (utilizando Python, ya que `curl` no está instalado en la imagen del orquestador):
+  ```bash
+  docker compose exec orchestrator python3 -c "import urllib.request; print(urllib.request.urlopen('http://host.docker.internal:8007/health', timeout=3).read().decode())"
+  ```
+
+---
+
 ## Comandos de Diagnóstico Rápido
 
 ```bash
@@ -501,12 +563,12 @@ Si `LATITUDE` o `LONGITUDE` no se configuran correctamente en `config/weather-se
 docker compose logs -f
 
 # Estado de todos los servicios de systemd
-systemctl --user status mic-daemon speaker-watchdog
+systemctl --user status mic-daemon speaker-watchdog host-service
 
 # Contenido de las carpetas de datos (para ver el flujo)
 watch -n 1 "ls -la data/input/ data/processing/ data/output/ data/error/ data/mail/pending/ data/mail/failed/"
 
 # Reinicio completo del sistema
 docker compose restart
-systemctl --user restart mic-daemon speaker-watchdog
+systemctl --user restart mic-daemon speaker-watchdog host-service
 ```

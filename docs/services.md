@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **11 microservicios** (8 en Docker y 3 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **12 microservicios** (8 en Docker y 4 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -11,6 +11,7 @@ El sistema Home Assistant está compuesto por **11 microservicios** (8 en Docker
 | `mic-daemon` | Host (Systemd) | `danuser2018/mic-daemon` | Graba voz del micrófono |
 | `speaker-watchdog` | Host (Systemd) | `danuser2018/speaker-watchdog` | Reproduce respuestas de audio |
 | `hid-daemon` | Host (Systemd) | `danuser2018/hid-daemon` | Escucha eventos HID y ejecuta comandos del sistema |
+| `host-service` | Host (Systemd) | `danuser2018/host-service` | Capa de Abstracción de Host (HAL) y API de Audio |
 | `interaction-manager` | Docker | `danuser2018/interaction-manager:latest` | Coordina el flujo completo |
 | `stt-capability` | Docker | `danuser2018/stt-capability:latest` | Convierte voz a texto (STT) |
 | `orchestrator` | Docker | `danuser2018/orchestrator:latest` | Selecciona y ejecuta la acción adecuada |
@@ -117,6 +118,35 @@ journalctl --user -u speaker-watchdog -f
 systemctl --user status hid-daemon
 systemctl --user restart hid-daemon
 journalctl --user -u hid-daemon -f
+```
+
+---
+
+### host-service
+
+**Repositorio:** `danuser2018/host-service`
+
+**Propósito:** Actúa como la Capa de Abstracción del Host (HAL), exponiendo una API REST local para controlar de manera segura recursos físicos del host como el volumen de audio del sistema y su estado de silencio.
+
+**Cómo funciona:**
+1. Escucha peticiones HTTP locales en el puerto `8007`.
+2. Al recibir peticiones REST, ejecuta la utilidad nativa `pactl` mediante subprocesos efímeros en el host.
+3. Parsea y devuelve en formato JSON estructurado el volumen y estado de silencio actual de PulseAudio/PipeWire.
+4. Valida los parámetros mediante Pydantic y unifica el manejo de errores.
+
+**Configuración relevante** (`config/host-service.env`):
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `HOST` | ❌ No | `0.0.0.0` | Dirección IP de red a la que se vincula el servidor |
+| `PORT` | ❌ No | `8007` | Puerto en el que escucha el servidor |
+| `LOG_LEVEL` | ❌ No | `INFO` | Nivel de logs (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
+
+**Gestión:**
+```bash
+systemctl --user status host-service
+systemctl --user restart host-service
+journalctl --user -u host-service -f
 ```
 
 ---
@@ -535,22 +565,25 @@ Ejemplo de flujo registrado por el contenedor:
                     │      │                                           │
                     │      ├──► stt:8000                               │
                     │      ├──► orchestrator:8000 ───► system-service:8000
+                    │      │         │     │                           │
+                    │      │         │     └─────────► weather-service:8000
                     │      │         │                                 │
-                    │      │         └───────────────► weather-service:8000
-                    │      └──► tts:8000                               │
-                    │                                                  │
-                    │  mail-watchdog ──► identity-service:8000         │
-                    │  mail-watchdog ──► Servidor SMTP (exterior)      │
-                    │  weather-service ──► API Open-Meteo (exterior)   │
-                    └──────────────────────────────────────────────────┘
-                               │           │
-                          Volumen Docker: ./data
-                               │           │
-                    ┌─────────┴───────────┴──────────┐
-                    │         HOST (Linux)             │
+                    │      │         └───────(host.docker.internal:8007)┐
+                    │      └──► tts:8000                                │
+                    │                                                   │
+                    │  mail-watchdog ──► identity-service:8000          │
+                    │  mail-watchdog ──► Servidor SMTP (exterior)       │
+                    │  weather-service ──► API Open-Meteo (exterior)    │
+                    └───────────────────────────────────────────────────┘
+                               │           │                            │
+                          Volumen Docker: ./data                        │
+                               │           │                            │
+                    ┌─────────┴───────────┴──────────┐                  │
+                    │         HOST (Linux)             │◄───────────────┘
                     │                                 │
                     │  mic-daemon ──► data/input/     │
                     │  speaker-watchdog ◄── data/output/│
                     │  plugins ──► data/mail/pending/  │
+                    │  host-service:8007 (HAL / Audio)│
                     └─────────────────────────────────┘
 ```
