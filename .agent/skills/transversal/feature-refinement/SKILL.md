@@ -33,7 +33,7 @@ en esta fase, aparte de la generación del documento obligatorio de refinamiento
 - **Trigger de ADR:** Si el análisis de impacto muestra cambios en contratos públicos (`api-contracts`) o patrones de comunicación (`communication-patterns`), se debe disparar la skill `architecture-decisions` para evaluar la necesidad de crear un nuevo ADR.
 
 ## Buenas prácticas (Recomendaciones — 🟢 Opcionales)
-- Almacenar los documentos de refinamiento bajo el directorio `docs/refinements/` del repositorio afectado para mantener un histórico de evolución de features.
+- Almacenar los documentos de refinamiento bajo el directorio `docs/refinement/` del repositorio afectado para mantener un histórico de evolución de features.
 - Si se trata de un cambio que afecta a más de un repositorio almacenar en `home-assistant/docs/refinement`.
 - Asegurar que el checklist de implementación desglose tareas con un esfuerzo estimado inferior a media jornada de trabajo para facilitar commits atómicos.
 - Ver [first_implementation_refinement.md](file:///home/danuser2018/workspace/hid-daemon/doc/refinements/first_implementation_refinement.md) como referencia ejemplar de especificación para nuevos daemons de hardware.
