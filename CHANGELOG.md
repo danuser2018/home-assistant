@@ -23,13 +23,14 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Integración de cinco nuevos plugins de control de volumen (`volume-up`, `volume-down`, `volume-status`, `mute`, `unmute`) en el orquestador de Nova-2, que consumen la API REST del microservicio `host-service`.
 - Integración del microservicio `host-service` como Capa de Abstracción del Host (HAL) para centralizar y proteger el control de volumen físico y silenciado mediante comandos nativos `pactl` bajo `systemd --user`.
 - Nuevo archivo de variables de entorno `config/host-service.env` para configurar la IP, puerto y nivel de log de `host-service`.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-013-integracion-host-service.md` definiendo el diseño de la capa HAL y las ventajas de desacoplar el hardware de audio físico de los contenedores Docker.
 - Nuevas capacidades aleatorias en el ecosistema de Nova-2: lanzamiento de moneda (`coin`), tiro de dado (`dice`) y número aleatorio (`random-number`) soportadas por el orquestador y documentadas en el catálogo de servicios.
 - Soporte nativo a nivel de ecosistema para responder consultas de fecha (`date`) y hora (`time`) mediante los nuevos plugins `TimePlugin` y `DatePlugin` cargados por el orquestador.
 - Nuevas capacidades y plugins públicos en el ecosistema Nova-2: `author` (información del autor), `version` (versión del sistema) y `help` (ayuda de uso del asistente) expuestos por el orquestador.
-- Actualización de la documentación de `system-service` en `docs/services.md` para reflejar el consumo por los nuevos plugins de identidad, autoría y versión, e incorporar las capacidades `time` y `date` en los ejemplos del catálogo de servicios.
+- Actualización de la documentación de `system-service` en `docs/services.md` para reflejar el consumo por los nuevos plugins de identidad, autoría y versión, e incorporar las capacidades `time`, `date` y las 5 nuevas de volumen en los ejemplos del catálogo de servicios.
 - Integración del servicio nativo `hid-daemon` para el control mediante botones físicos USB o pedales.
 - Nuevo archivo de variables de entorno `config/hid-daemon.env` y plantilla de bindings `config/hid-daemon.yaml.example` para `hid-daemon`.
 - Nuevo documento ADR-012 en `docs/adr/adr-012-integracion-hid-daemon.md` describiendo la decisión técnica para capturar eventos de entrada física en el host.
@@ -42,7 +43,7 @@ Los cambios se agrupan en las siguientes categorías:
 ### Cambiado
 
 - Actualización de los scripts globales de sistema (`install.sh`, `uninstall.sh`, `update.sh` y `healthcheck.sh`) para incorporar el clonado, la configuración, el control de ciclo de vida systemd y el monitoreo de salud del microservicio `host-service`.
-- Configuración de puente de red mediante `extra_hosts` con `host.docker.internal:host-gateway` para el contenedor `orchestrator` en `docker-compose.yml`, permitiendo la comunicación saliente hacia `host-service` en el host.
+- Configuración de puente de red mediante `extra_hosts` con `host.docker.internal:host-gateway` y declaración de la variable de entorno `HOST_SERVICE_BASE_URL` para el contenedor `orchestrator` en `docker-compose.yml`, permitiendo la comunicación saliente hacia `host-service` en el host.
 - Actualización de la documentación del sistema (`docs/services.md`, `docs/installation.md`, `docs/architecture.md`, `docs/troubleshooting.md`) y de las skills de agente (`system-deployment`, `audio-subsystem`, `service-responsibilities`) para incluir el nuevo componente de hardware `host-service` y las leyes de uso de su API REST.
 - Actualización de la documentación del sistema (`docs/services.md`, `docs/installation.md`, `docs/architecture.md`) para incorporar el servicio `hid-daemon` como componente opcional del plano de hardware.
 - Sincronización de las skills transversales `feature-refinement`, `service-responsibilities` y `system-deployment` con referencias al nuevo ADR-012 y las directrices de hardware HID.
