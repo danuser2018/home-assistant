@@ -55,6 +55,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
     ports:
       - "8002:8000"  # Expuesto para healthcheck y depuración local
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
     depends_on:
       system-service:

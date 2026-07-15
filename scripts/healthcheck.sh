@@ -45,7 +45,7 @@ echo "=============================================="
 # ─── Servicios Systemd ────────────────────────────────────────────────────────
 header "Servicios del host (systemd)"
 
-for service in mic-daemon speaker-watchdog; do
+for service in mic-daemon speaker-watchdog host-service; do
     if systemctl --user is-active --quiet "$service" 2>/dev/null; then
         ok "$service — activo"
     else
@@ -114,6 +114,7 @@ check_http "TTS /health"          "http://localhost:8003/health" || \
 check_http "System Service /health" "http://localhost:8004/health"
 check_http "Identity Service /health" "http://localhost:8005/health"
 check_http "Weather Service /health" "http://localhost:8006/health"
+check_http "Host Service /health" "http://localhost:8007/health"
 
 # ─── Carpetas de datos ────────────────────────────────────────────────────────
 header "Carpetas de datos"

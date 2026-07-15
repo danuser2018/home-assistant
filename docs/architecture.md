@@ -12,14 +12,14 @@ El sistema se divide en dos planos de ejecución:
 
 | Plano | Tipo | Servicios |
 |---|---|---|
-| **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog`, `hid-daemon` |
+| **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog`, `hid-daemon`, `host-service` |
 | **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service` |
 
 ### ¿Por qué esta separación?
 
-Los servicios de audio (`mic-daemon` y `speaker-watchdog`) necesitan acceso directo al servidor de sonido del usuario (PulseAudio o PipeWire), que opera dentro de la sesión de usuario de Linux. Ejecutarlos dentro de Docker añadiría una complejidad innecesaria con permisos, variables de entorno y sockets de audio. Por ello, se instalan como **servicios de usuario de systemd** (`systemd --user`).
+Los servicios de audio y hardware (`mic-daemon`, `speaker-watchdog`, `hid-daemon` y `host-service`) necesitan interactuar directamente con el kernel o el servidor de sonido del usuario (PulseAudio o PipeWire), que opera dentro de la sesión activa de usuario de Linux. Ejecutarlos dentro de Docker añadiría una complejidad innecesaria con permisos, variables de entorno y sockets de audio. Por ello, se instalan como **servicios de usuario de systemd** (`systemd --user`).
 
-El resto de servicios, al no necesitar acceso hardware, se ejecutan perfectamente en contenedores Docker, garantizando aislamiento, portabilidad y actualizaciones sin esfuerzo.
+El resto de servicios, al no necesitar acceso hardware o utilizar la capa de abstracción HAL provista por `host-service`, se ejecutan perfectamente en contenedores Docker, garantizando aislamiento, portabilidad y actualizaciones sin esfuerzo.
 
 ---
 
@@ -103,6 +103,12 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Rol:** Escucha eventos de entrada de bajo nivel desde dispositivos HID físicos mediante la biblioteca `evdev` y ejecuta comandos del sistema configurados (ej. `mic-toggle.sh`) en un subproceso de forma aislada.
 - **Principio clave:** Integración robusta de hardware físico desacoplada de gestores gráficos.
 
+#### `host-service`
+- **Repositorio:** `danuser2018/host-service`
+- **Lenguaje:** Python 3.10+
+- **Rol:** Actúa como la Capa de Abstracción del Host (HAL). Expone una API REST local en el puerto `8007` para controlar de manera segura recursos físicos del host como el volumen del sistema y su estado de silencio mediante la utilidad `pactl`.
+- **Principio clave:** Capa intermedia segura que aísla las herramientas y dependencias del sistema operativo del plano de procesamiento en Docker.
+
 ### Servicios Docker
 
 #### `interaction-manager`
@@ -164,17 +170,18 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 Todos los contenedores se conectan a través de una red Docker privada (`assistant-network`) definida en el `docker-compose.yml`. Ningún servicio expone puertos al exterior salvo que sea necesario para depuración.
 
 ```text
-┌─────────────────────────────────────────────┐
-│           assistant-network (Docker)         │
-│                                             │
-│  interaction-manager ──► stt:8000           │
-│                      ──► orchestrator:8000  │
-│                      ──► tts:8000           │
-│  orchestrator        ──► system-service:8000│
-│  mail-watchdog       ──► identity-service:8000│
-│  mail-watchdog (salida SMTP al exterior)    │
-│                                             │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                 assistant-network (Docker)                   │
+│                                                             │
+│  interaction-manager ──► stt:8000                           │
+│                      ──► orchestrator:8000                  │
+│                      ──► tts:8000                           │
+│  orchestrator        ──► system-service:8000                │
+│  orchestrator        ──► host.docker.internal:8007 ────────►│── host-service (HAL)
+│  mail-watchdog       ──► identity-service:8000              │
+│  mail-watchdog (salida SMTP al exterior)                    │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -192,3 +199,4 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 | [ADR-005: Imágenes precompiladas en DockerHub](adr/adr-005.md) | Build local desde fuentes | El usuario no necesita clonar ni compilar los repositorios Docker. Una imagen precompilada garantiza una instalación en minutos. |
 | [ADR-006: Cola de mensajería asíncrona JSON](adr/adr-006.md) | Integración SMTP síncrona en el Orquestador | Desacopla la lógica de red externa del flujo síncrono de voz, evitando bloqueos y ofreciendo persistencia de envíos. |
 | [ADR-012: Integración del Servicio HID Daemon (hid-daemon)](adr/adr-012-integracion-hid-daemon.md) | Atajos del sistema gráfico | Permite capturar eventos de entrada de teclado físico a bajo nivel para control del micrófono sin requerir privilegios de superusuario ni sesiones de escritorio gráfico activas. |
+| [ADR-013: Integración del Servicio Host (host-service)](adr/adr-013-integracion-host-service.md) | Mapeo de sockets de audio a contenedores Docker | Aísla completamente el plano de procesamiento Docker del hardware y las utilidades nativas de audio, interactuando con PipeWire/PulseAudio a través de una API REST local limpia e independiente. |

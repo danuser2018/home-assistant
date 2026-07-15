@@ -33,10 +33,12 @@ TTS_MODEL_DIR="$PROJECT_DIR/models/tts"
 MIC_DAEMON_DIR="$WORKSPACE_DIR/mic-daemon"
 SPEAKER_WATCHDOG_DIR="$WORKSPACE_DIR/speaker-watchdog"
 HID_DAEMON_DIR="$WORKSPACE_DIR/hid-daemon"
+HOST_SERVICE_DIR="$WORKSPACE_DIR/host-service"
 
 MIC_DAEMON_VENV="$MIC_DAEMON_DIR/venv"
 SPEAKER_WATCHDOG_VENV="$SPEAKER_WATCHDOG_DIR/venv"
 HID_DAEMON_VENV="$HID_DAEMON_DIR/venv"
+HOST_SERVICE_VENV="$HOST_SERVICE_DIR/venv"
 
 # ─── Banner ───────────────────────────────────────────────────────────────────
 echo ""
@@ -115,6 +117,18 @@ if [ -d "$SPEAKER_WATCHDOG_VENV" ] && [ -f "$SPEAKER_WATCHDOG_DIR/requirements.t
     log_ok "speaker-watchdog actualizado y reiniciado."
 else
     log_warn "Entorno virtual de speaker-watchdog no encontrado. ¿Está instalado?"
+fi
+echo ""
+
+# ─── Actualizar dependencias de host-service ──────────────────────────────────
+if [ -d "$HOST_SERVICE_VENV" ] && [ -f "$HOST_SERVICE_DIR/requirements.txt" ]; then
+    log_info "Actualizando dependencias Python de host-service..."
+    "$HOST_SERVICE_VENV/bin/pip" install --quiet --upgrade pip
+    "$HOST_SERVICE_VENV/bin/pip" install --quiet --upgrade -r "$HOST_SERVICE_DIR/requirements.txt"
+    systemctl --user restart host-service
+    log_ok "host-service actualizado y reiniciado."
+else
+    log_warn "Entorno virtual de host-service no encontrado. ¿Está instalado?"
 fi
 echo ""
 

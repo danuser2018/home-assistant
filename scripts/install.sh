@@ -36,10 +36,12 @@ TTS_MODEL_DIR="$PROJECT_DIR/models/tts"
 MIC_DAEMON_DIR="$WORKSPACE_DIR/mic-daemon"
 SPEAKER_WATCHDOG_DIR="$WORKSPACE_DIR/speaker-watchdog"
 HID_DAEMON_DIR="$WORKSPACE_DIR/hid-daemon"
+HOST_SERVICE_DIR="$WORKSPACE_DIR/host-service"
 
 MIC_DAEMON_VENV="$MIC_DAEMON_DIR/venv"
 SPEAKER_WATCHDOG_VENV="$SPEAKER_WATCHDOG_DIR/venv"
 HID_DAEMON_VENV="$HID_DAEMON_DIR/venv"
+HOST_SERVICE_VENV="$HOST_SERVICE_DIR/venv"
 
 SYSTEMD_USER_DIR="$HOME/.config/systemd/user"
 USER_UID="$(id -u)"
@@ -107,7 +109,13 @@ fi
 echo ""
 
 # ─── Verificar repositorios de servicios del host ────────────────────────────
-log_info "Verificando repositorios de mic-daemon, speaker-watchdog y hid-daemon..."
+log_info "Verificando repositorios de mic-daemon, speaker-watchdog, host-service y hid-daemon..."
+
+if [ ! -d "$HOST_SERVICE_DIR" ]; then
+    log_error "No se encontró el repositorio host-service en: $HOST_SERVICE_DIR"
+    log_error "Clónalo con: git clone https://github.com/danuser2018/host-service.git $HOST_SERVICE_DIR"
+    exit 1
+fi
 
 if [ ! -d "$MIC_DAEMON_DIR" ]; then
     log_error "No se encontró el repositorio mic-daemon en: $MIC_DAEMON_DIR"
@@ -223,6 +231,18 @@ fi
 log_ok "Dependencias de speaker-watchdog instaladas."
 echo ""
 
+# ─── Instalar entorno virtual de host-service ────────────────────────────────
+log_info "Instalando entorno virtual de host-service..."
+if [ ! -d "$HOST_SERVICE_VENV" ]; then
+    python3 -m venv "$HOST_SERVICE_VENV"
+    log_ok "Entorno virtual creado en $HOST_SERVICE_VENV"
+fi
+
+"$HOST_SERVICE_VENV/bin/pip" install --quiet --upgrade pip
+"$HOST_SERVICE_VENV/bin/pip" install --quiet -r "$HOST_SERVICE_DIR/requirements.txt"
+log_ok "Dependencias de host-service instaladas."
+echo ""
+
 if [ "$HAS_HID" = true ]; then
     log_info "Instalando entorno virtual de hid-daemon..."
     if [ ! -d "$HID_DAEMON_VENV" ]; then
@@ -313,6 +333,29 @@ WantedBy=default.target
 EOF
 log_ok "speaker-watchdog.service instalado en $SYSTEMD_USER_DIR/"
 
+# host-service.service
+cat > "$SYSTEMD_USER_DIR/host-service.service" << EOF
+[Unit]
+Description=Host Abstraction Layer for Nova-2
+Documentation=https://github.com/danuser2018/host-service
+After=default.target sound.target pipewire.service pipewire-pulse.service
+
+[Service]
+Type=simple
+WorkingDirectory=$HOST_SERVICE_DIR
+EnvironmentFile=$PROJECT_DIR/config/host-service.env
+ExecStart=$HOST_SERVICE_VENV/bin/python -m src.main
+Restart=always
+RestartSec=3
+Environment=PYTHONPATH=$HOST_SERVICE_DIR
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
+EOF
+log_ok "host-service.service instalado en $SYSTEMD_USER_DIR/"
+
 if [ "$HAS_HID" = true ]; then
     # hid-daemon.service
     cat > "$SYSTEMD_USER_DIR/hid-daemon.service" << EOF
@@ -351,6 +394,10 @@ systemctl --user enable speaker-watchdog.service
 systemctl --user start speaker-watchdog.service
 log_ok "speaker-watchdog habilitado e iniciado."
 
+systemctl --user enable host-service.service
+systemctl --user start host-service.service
+log_ok "host-service habilitado e iniciado."
+
 if [ "$HAS_HID" = true ]; then
     systemctl --user enable hid-daemon.service
     systemctl --user start hid-daemon.service
@@ -376,6 +423,8 @@ systemctl --user is-active mic-daemon      && echo -e "  ${GREEN}✓${NC} mic-da
                                            || echo -e "  ${RED}✗${NC} mic-daemon"
 systemctl --user is-active speaker-watchdog && echo -e "  ${GREEN}✓${NC} speaker-watchdog" \
                                             || echo -e "  ${RED}✗${NC} speaker-watchdog"
+systemctl --user is-active host-service      && echo -e "  ${GREEN}✓${NC} host-service" \
+                                            || echo -e "  ${RED}✗${NC} host-service"
 if [ "$HAS_HID" = true ]; then
     systemctl --user is-active hid-daemon && echo -e "  ${GREEN}✓${NC} hid-daemon" \
                                           || echo -e "  ${RED}✗${NC} hid-daemon"
