@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Integración de los cuatro nuevos plugins de festivos (`today_holiday`, `next_holiday`, `days_until_next_holiday`, `holidays_of_year`) en el `orchestrator`, consumiendo la API de `calendar-service`.
 - Integración del microservicio `calendar-service` para la consulta local y offline de días festivos oficiales y cálculo del próximo festivo.
 - Registro de decisión arquitectónica `docs/adr/adr-016-integracion-calendar-service.md` formalizando la integración de `calendar-service` en el ecosistema.
 - Nuevo archivo de variables de entorno `config/calendar-service.env` para configurar el nivel de logs y ruta de datos de `calendar-service`.

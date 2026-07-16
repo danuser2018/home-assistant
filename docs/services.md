@@ -265,6 +265,13 @@ Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones dispon
 3. Escribe un archivo JSON con el correo formateado en `MAIL_PENDING_DIR` (por defecto `/shared/mail/pending`) siguiendo el contrato del servicio `mail-watchdog`.
 4. El envío del correo se gestiona de forma asíncrona y transparente por `mail-watchdog`.
 
+**Plugins de Festivos (Holidays Plugins):**
+Integran al orquestador con `calendar-service` para resolver consultas sobre días no laborables de forma local y offline:
+1. **TodayHolidayPlugin (`today_holiday`)**: Indica si hoy es festivo en base al calendario (ej. "Fiesta de la Virgen del Carmen. Festivo local.").
+2. **NextHolidayPlugin (`next_holiday`)**: Detalla la fecha, día de la semana, ámbito y días restantes para el siguiente festivo (ej. "Santiago Apóstol. Jueves 23 de julio. Festivo regional. Falta una semana.").
+3. **DaysUntilNextHolidayPlugin (`days_until_next_holiday`)**: Devuelve de forma simplificada en lenguaje natural el tiempo que queda para el siguiente festivo (ej. "Falta una semana.").
+4. **HolidaysOfYearPlugin (`holidays_of_year`)**: Obtiene el listado completo de festivos del año actual, genera un reporte estructurado en HTML y lo envía por correo electrónico (escribiendo un archivo en `MAIL_PENDING_DIR` sin destinatario `"to"`, delegando la entrega en `mail-watchdog`).
+
 **Variables de entorno relevantes:**
 
 *Cargadas vía `config/orchestrator.env`:*
@@ -436,7 +443,11 @@ Content-Type: application/json
     {"id": "volume-down", "description": "Disminuye el volumen del sistema"},
     {"id": "volume-status", "description": "Consulta el volumen actual del sistema"},
     {"id": "mute", "description": "Silencia el sistema"},
-    {"id": "unmute", "description": "Restaura el sonido del sistema"}
+    {"id": "unmute", "description": "Restaura el sonido del sistema"},
+    {"id": "today_holiday", "description": "Determina si la fecha actual es festiva"},
+    {"id": "next_holiday", "description": "Informa del siguiente festivo"},
+    {"id": "days_until_next_holiday", "description": "Informa únicamente del tiempo restante hasta el siguiente festivo"},
+    {"id": "holidays_of_year", "description": "Obtiene el listado completo de festivos del año y lo envía por correo"}
   ]
 }
 ```
@@ -471,7 +482,11 @@ GET /v1/system/capabilities
     {"id": "volume-down", "description": "Disminuye el volumen del sistema"},
     {"id": "volume-status", "description": "Consulta el volumen actual del sistema"},
     {"id": "mute", "description": "Silencia el sistema"},
-    {"id": "unmute", "description": "Restaura el sonido del sistema"}
+    {"id": "unmute", "description": "Restaura el sonido del sistema"},
+    {"id": "today_holiday", "description": "Determina si la fecha actual es festiva"},
+    {"id": "next_holiday", "description": "Informa del siguiente festivo"},
+    {"id": "days_until_next_holiday", "description": "Informa únicamente del tiempo restante hasta el siguiente festivo"},
+    {"id": "holidays_of_year", "description": "Obtiene el listado completo de festivos del año y lo envía por correo"}
   ]
 }
 ```
