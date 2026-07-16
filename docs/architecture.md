@@ -13,7 +13,7 @@ El sistema se divide en dos planos de ejecución:
 | Plano | Tipo | Servicios |
 |---|---|---|
 | **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog`, `hid-daemon`, `host-service` |
-| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service` |
+| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service`, `calendar-service` |
 
 ### ¿Por qué esta separación?
 
@@ -167,6 +167,12 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Rol:** Encapsula la comunicación con la API de Open-Meteo, proporcionando datos normalizados de temperatura y probabilidad de precipitación, y manejando la caché mediante TTL.
 - **API:** `GET /v1/weather/current` (obtiene clima actual), `GET /health` (estado de salud).
 
+#### `calendar-service`
+- **Imagen:** `danuser2018/calendar-service:latest`
+- **Puerto interno:** `8000` (expuesto en puerto host `8008`)
+- **Rol:** Servicio local y offline para comprobar festivos oficiales y calcular el próximo festivo cronológico a partir de una fecha determinada, cargando archivos JSON estructurados por año.
+- **API:** `GET /api/v1/holidays` (obtiene festivos de un año o fecha), `GET /api/v1/holidays/next` (obtiene el próximo festivo), `GET /api/v1/health` (estado de salud).
+
 ---
 
 ## Red Interna de Docker
@@ -181,6 +187,8 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 │                      ──► orchestrator:8000                  │
 │                      ──► tts:8000                           │
 │  orchestrator        ──► system-service:8000                │
+│  orchestrator        ──► weather-service:8000               │
+│  orchestrator        ──► calendar-service:8000              │
 │  orchestrator        ──► host.docker.internal:8007 ────────►│── host-service (HAL)
 │  mail-watchdog       ──► identity-service:8000              │
 │  mail-watchdog (salida SMTP al exterior)                    │
@@ -206,3 +214,4 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 | [ADR-013: Integración del Servicio Host (host-service)](adr/adr-013-integracion-host-service.md) | Mapeo de sockets de audio a contenedores Docker | Aísla completamente el plano de procesamiento Docker del hardware y las utilidades nativas de audio, interactuando con PipeWire/PulseAudio a través de una API REST local limpia e independiente. |
 | [ADR-014: Separación de Responsabilidades en el Orquestador](adr/adr-014-refactorizacion-orquestador.md) | Enrutamiento acoplado en un único método | Desacopla la lógica de resolución semántica de la ejecución del plan de pasos, permitiendo pre-validaciones seguras y multi-acciones atómicas. |
 | [ADR-015: Consolidación del Modelo ExecutionPlan](adr/adr-015-consolidacion-execution-plan.md) | Mantener el endpoint legado `/execute` | Consolida definitivamente el flujo desacoplado resolve/execute-plan, limpia los contratos de la API y renombra los componentes internos a `ExecutionPlanner` y `PlanExecutor` para mayor coherencia. |
+| [ADR-016: Integración del Servicio Calendario](adr/adr-016-integracion-calendar-service.md) | Integrar SQLite o consultas directas en el Orquestador | Proporciona un servicio de consulta offline rápido, modular y de bajo mantenimiento para determinar días festivos sin depender de red externa. |

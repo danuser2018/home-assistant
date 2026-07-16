@@ -78,6 +78,7 @@ declare -A CONTAINERS=(
     ["mail-watchdog"]="mail-watchdog"
     ["identity-service"]="identity-service"
     ["weather-service"]="weather-service"
+    ["calendar-service"]="calendar-service"
 )
 
 for name in "${!CONTAINERS[@]}"; do
@@ -115,6 +116,7 @@ check_http "System Service /health" "http://localhost:8004/health"
 check_http "Identity Service /health" "http://localhost:8005/health"
 check_http "Weather Service /health" "http://localhost:8006/health"
 check_http "Host Service /health" "http://localhost:8007/health"
+check_http "Calendar Service /health" "http://localhost:8008/api/v1/health"
 
 # ─── Carpetas de datos ────────────────────────────────────────────────────────
 header "Carpetas de datos"
@@ -153,6 +155,20 @@ if [ -d "$DATA_DIR/mail" ]; then
 else
     fail "mail/ — no existe"
 fi
+
+# Verificar carpetas de calendar
+if [ -d "$PROJECT_DIR/calendar-data" ]; then
+    ok "calendar-data/ — existe"
+    if [ -d "$PROJECT_DIR/calendar-data/holidays" ]; then
+        count=$(find "$PROJECT_DIR/calendar-data/holidays" -maxdepth 1 -name "*.json" 2>/dev/null | wc -l)
+        ok "calendar-data/holidays/ — existe ($count archivos .json de festivos)"
+    else
+        fail "calendar-data/holidays/ — no existe"
+    fi
+else
+    fail "calendar-data/ — no existe"
+fi
+
 
 # ─── Flag de grabación ────────────────────────────────────────────────────────
 header "Estado del micrófono"

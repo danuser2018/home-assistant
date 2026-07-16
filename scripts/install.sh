@@ -145,7 +145,8 @@ mkdir -p "$DATA_DIR/mail/pending" "$DATA_DIR/mail/processing" "$DATA_DIR/mail/fa
 mkdir -p /tmp/voice_assistant
 mkdir -p "$STT_MODEL_DIR"
 mkdir -p "$TTS_MODEL_DIR"
-log_ok "Carpetas creadas en $DATA_DIR"
+mkdir -p "$PROJECT_DIR/calendar-data/holidays"
+log_ok "Carpetas creadas en $DATA_DIR y $PROJECT_DIR/calendar-data"
 echo ""
 
 # Leer valores desde config/tts-capability.env

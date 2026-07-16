@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **12 microservicios** (8 en Docker y 4 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **13 microservicios** (9 en Docker y 4 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -20,6 +20,7 @@ El sistema Home Assistant está compuesto por **12 microservicios** (8 en Docker
 | `mail-watchdog` | Docker | `danuser2018/mail-watchdog:latest` | Envía correos electrónicos asíncronos vía SMTP |
 | `identity-service` | Docker | `danuser2018/identity-service:latest` | Almacena y proporciona datos privados del usuario |
 | `weather-service` | Docker | `danuser2018/weather-service:latest` | Proporciona datos de clima actual y pronóstico |
+| `calendar-service` | Docker | `danuser2018/calendar-service:latest` | Proporciona datos de festivos locales offline |
 
 ---
 
@@ -612,6 +613,29 @@ Ejemplo de flujo registrado por el contenedor:
 
 ---
 
+### calendar-service
+
+**Repositorio:** `danuser2018/calendar-service`
+
+**Propósito:** Proporciona un servicio de consulta offline para determinar si una fecha dada es un festivo oficial (nacional, regional o local) o para listar todos los festivos de un año determinado, cargando los datos de forma dinámica desde ficheros JSON montados en un volumen compartido.
+
+**API REST expuesta (puerto interno 8000, mapeado a 8008 en el host):**
+
+* `GET /api/v1/holidays`: Consulta festivos de un año (`?year=YYYY`) o verifica si una fecha es festiva (`?date=YYYY-MM-DD`).
+* `GET /api/v1/holidays/next`: Devuelve el próximo festivo cronológicamente a partir de una fecha (`?from=YYYY-MM-DD`).
+* `GET /api/v1/health`: Comprueba el estado de salud del servicio (retorna `{"status": "ok"}`).
+
+**Variables de entorno relevantes (cargadas vía `config/calendar-service.env`):**
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `LOG_LEVEL` | ❌ No | `INFO` | Nivel de registro de logs |
+| `DATA_DIR` | ❌ No | `/app/data` | Directorio de datos donde se encuentran las subcarpetas `holidays/` |
+| `PORT` | ❌ No | `8000` | Puerto en el que escucha el servicio internamente |
+| `HOST` | ❌ No | `0.0.0.0` | Dirección IP en la que se vincula el servidor |
+
+---
+
 ## Comunicación entre Servicios
 
 ```text
@@ -622,8 +646,8 @@ Ejemplo de flujo registrado por el contenedor:
                     │      │                                           │
                     │      ├──► stt:8000                               │
                     │      ├──► orchestrator:8000 ───► system-service:8000
-                    │      │         │     │                           │
-                    │      │         │     └─────────► weather-service:8000
+                    │      │         │     ├─────────► weather-service:8000
+                    │      │         │     └─────────► calendar-service:8000
                     │      │         │                                 │
                     │      │         └───────(host.docker.internal:8007)┐
                     │      └──► tts:8000                                │
@@ -633,7 +657,7 @@ Ejemplo de flujo registrado por el contenedor:
                     │  weather-service ──► API Open-Meteo (exterior)    │
                     └───────────────────────────────────────────────────┘
                                │           │                            │
-                          Volumen Docker: ./data                        │
+                        Volumen Docker: ./data / ./calendar-data         │
                                │           │                            │
                     ┌─────────┴───────────┴──────────┐                  │
                     │         HOST (Linux)             │◄───────────────┘

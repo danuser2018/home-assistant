@@ -4,7 +4,7 @@
 # =============================================================================
 # Detiene y elimina los servicios del host (mic-daemon y speaker-watchdog).
 # Los contenedores Docker se paran pero las imágenes se conservan.
-# Los datos en data/ y los archivos de configuración NO se eliminan.
+# Los datos en data/, calendar-data/ y los archivos de configuración NO se eliminan.
 #
 # Uso:
 #   chmod +x scripts/uninstall.sh
@@ -37,7 +37,7 @@ echo "   Home Assistant — Desinstalador"
 echo "=============================================="
 echo ""
 log_warn "Este proceso detendrá y eliminará los servicios del sistema."
-log_warn "Los datos en data/ y los archivos de configuración se conservarán."
+log_warn "Los datos en data/, calendar-data/ y los archivos de configuración se conservarán."
 echo ""
 read -rp "¿Deseas continuar? (s/N): " confirm
 if [[ "$confirm" != "s" && "$confirm" != "S" ]]; then
@@ -101,7 +101,8 @@ echo -e "   ${GREEN}Desinstalación completada${NC}"
 echo "=============================================="
 echo ""
 log_info "Los siguientes elementos NO han sido eliminados:"
-log_info "  - Directorio de datos: $PROJECT_DIR/data/"
+log_info "  - Directorio de datos de audio: $PROJECT_DIR/data/"
+log_info "  - Directorio de datos de calendario: $PROJECT_DIR/calendar-data/"
 log_info "  - Directorio con el modelo de STT: $PROJECT_DIR/models/stt"
 log_info "  - Archivos de configuración: $PROJECT_DIR/config/"
 log_info "  - Entornos virtuales Python (en los repos mic-daemon, speaker-watchdog, host-service y hid-daemon)"

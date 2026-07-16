@@ -49,6 +49,7 @@ services:
       SYSTEM_SERVICE_BASE_URL: http://system-service:8000
       MAIL_PENDING_DIR: /shared/mail/pending
       WEATHER_SERVICE_BASE_URL: http://weather-service:8000
+      CALENDAR_SERVICE_BASE_URL: http://calendar-service:8000
       HOST_SERVICE_BASE_URL: http://host.docker.internal:8007
     volumes:
       - ./data/mail:/shared/mail
@@ -63,6 +64,8 @@ services:
       system-service:
         condition: service_started
       weather-service:
+        condition: service_healthy
+      calendar-service:
         condition: service_healthy
     networks:
       - assistant-network
@@ -154,6 +157,27 @@ services:
       - /etc/timezone:/etc/timezone:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - assistant-network
+
+  calendar-service:
+    image: danuser2018/calendar-service:latest
+    container_name: calendar-service
+
+    env_file:
+      - config/calendar-service.env
+    ports:
+      - "8008:8000"  # Exposed for healthcheck and local debugging
+    restart: unless-stopped
+    volumes:
+      - ./calendar-data:/app/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
       interval: 30s
       timeout: 5s
       retries: 3

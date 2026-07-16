@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "year": 2026,
+  "country": "ES",
+  "region": "Madrid",
+  "municipality": "Parla",
+  "source": "https://example.com",
+  "holidays": [
+    {
+      "date": "2026-01-01",
+      "name": "Año Nuevo",
+      "scope": "national"
+    },
+    {
+      "date": "2026-01-06",
+      "name": "Epifanía del Señor",
+      "scope": "national"
+    },
+    {
+      "date": "2026-05-01",
+      "name": "Fiesta del Trabajo",
+      "scope": "national"
+    },
+    {
+      "date": "2026-10-12",
+      "name": "Fiesta Nacional de España",
+      "scope": "national"
+    },
+    {
+      "date": "2026-12-25",
+      "name": "Natividad del Señor",
+      "scope": "national"
+    }
+  ]
+}
