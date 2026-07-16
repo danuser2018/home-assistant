@@ -23,6 +23,11 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Integración del microservicio `calendar-service` para la consulta local y offline de días festivos oficiales y cálculo del próximo festivo.
+- Registro de decisión arquitectónica `docs/adr/adr-016-integracion-calendar-service.md` formalizando la integración de `calendar-service` en el ecosistema.
+- Nuevo archivo de variables de entorno `config/calendar-service.env` para configurar el nivel de logs y ruta de datos de `calendar-service`.
+- Automatización de la creación y verificación de las carpetas de datos de calendario en `scripts/install.sh`, `scripts/uninstall.sh` y `scripts/healthcheck.sh`.
+
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-015-consolidacion-execution-plan.md` formalizando la consolidación del flujo desacoplado y la remoción de compatibilidades legacy.
 - Dos nuevos endpoints REST en el orquestador (`POST /api/v1/resolve` y `POST /api/v1/execute-plan`) y soporte para el esquema de plan de ejecución (`ExecutionPlan`).
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-014-refactorizacion-orquestador.md` para formalizar la separación de responsabilidades entre el Intent Resolver y el Plugin Executor en el orquestador.
