@@ -34,3 +34,4 @@ Protocolos de red internos (síncronos) y paso de mensajes en el sistema de arch
 - [services.md](file:///home/danuser2018/workspace/home-assistant/docs/services.md) (Sección: Comunicación entre Servicios).
 - [ADR-001: Usar el Sistema de Ficheros como Bus de Mensajes entre Servicios](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-001.md)
 - [ADR-006: Cola de Mensajería Asíncrona basada en Ficheros JSON](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-006.md)
+- [ADR-017: Integración de NATS como Message Broker en el Ecosistema Nova](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-017-integracion-nats.md) (Define la integración del broker de mensajería NATS en el plano de procesamiento).

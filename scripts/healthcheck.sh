@@ -79,14 +79,20 @@ declare -A CONTAINERS=(
     ["identity-service"]="identity-service"
     ["weather-service"]="weather-service"
     ["calendar-service"]="calendar-service"
+    ["nats"]="nats"
 )
 
 for name in "${!CONTAINERS[@]}"; do
     container="${CONTAINERS[$name]}"
-    if docker inspect --format='{{.State.Status}}' "$container" 2>/dev/null | grep -q "running"; then
-        ok "$name — running"
+    state=$(docker inspect --format='{{.State.Status}}' "$container" 2>/dev/null || echo "no encontrado")
+    if [ "$state" = "running" ]; then
+        health=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$container" 2>/dev/null)
+        if [ "$health" = "none" ] || [ "$health" = "healthy" ]; then
+            ok "$name — running"
+        else
+            fail "$name — running pero estado de salud es $health"
+        fi
     else
-        state=$(docker inspect --format='{{.State.Status}}' "$container" 2>/dev/null || echo "no encontrado")
         fail "$name — $state"
     fi
 done
@@ -117,6 +123,13 @@ check_http "Identity Service /health" "http://localhost:8005/health"
 check_http "Weather Service /health" "http://localhost:8006/health"
 check_http "Host Service /health" "http://localhost:8007/health"
 check_http "Calendar Service /health" "http://localhost:8008/api/v1/health"
+
+# Comprobación de socket TCP para NATS usando sockets bash
+if bash -c "</dev/tcp/localhost/4222" 2>/dev/null; then
+    ok "NATS Broker — localhost:4222"
+else
+    fail "NATS Broker — no responde en localhost:4222"
+fi
 
 # ─── Carpetas de datos ────────────────────────────────────────────────────────
 header "Carpetas de datos"

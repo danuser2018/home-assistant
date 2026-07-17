@@ -23,6 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Integración de la infraestructura del broker de mensajería NATS (`nats:2.10-alpine`) en `docker-compose.yml` como cimiento para futuros eventos distribuidos inter-container.
+- Nuevo registro de decisión arquitectónica `docs/adr/adr-017-integracion-nats.md` formalizando e indexando la integración de NATS y su coexistencia con el actual filesystem-bus.
 - Integración de los cuatro nuevos plugins de festivos (`today_holiday`, `next_holiday`, `days_until_next_holiday`, `holidays_of_year`) en el `orchestrator`, consumiendo la API de `calendar-service`.
 - Integración del microservicio `calendar-service` para la consulta local y offline de días festivos oficiales y cálculo del próximo festivo.
 - Registro de decisión arquitectónica `docs/adr/adr-016-integracion-calendar-service.md` formalizando la integración de `calendar-service` en el ecosistema.
@@ -51,6 +53,9 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Modificado el script de verificación global `scripts/healthcheck.sh` para verificar el Docker health status (`healthy`) de los contenedores que tengan healthcheck, y validar la disponibilidad del puerto de mensajería `4222` de NATS mediante sockets nativos de bash.
+- Sincronización de las skills transversales `system-deployment` y `communication-patterns` con la referencia al nuevo ADR-017 de NATS.
+- Actualización de la documentación general del sistema (`docs/services.md` y `docs/architecture.md`) para incorporar el servicio NATS en la topología de red privada, catálogo y decisiones de diseño clave.
 - Renombradas las clases del orquestador a `ExecutionPlanner` (antes `IntentResolver`) y `PlanExecutor` (antes `PluginExecutor`), y eliminada la clase `Router` junto con su método `route_request`.
 - Refactorizado el motor de decisión del orquestador en dos módulos desacoplados: `IntentResolver` (resolución semántica) y `PluginExecutor` (ejecución física de planes).
 - Sincronizadas las skills transversales `service-responsibilities` y `api-contracts` con referencias a `adr-014-refactorizacion-orquestador.md`.
