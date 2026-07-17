@@ -184,6 +184,22 @@ services:
     networks:
       - assistant-network
 
+  nats:
+    image: nats:2.10-alpine
+    container_name: nats
+    command: "-m 8222"  # Habilita el puerto de monitoreo interno para el healthcheck
+    ports:
+      - "4222:4222"     # Puerto de clientes expuesto al host para desarrollo y depuración
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8222/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - assistant-network
+
 networks:
   assistant-network:
     driver: bridge

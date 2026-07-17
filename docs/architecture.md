@@ -13,7 +13,7 @@ El sistema se divide en dos planos de ejecución:
 | Plano | Tipo | Servicios |
 |---|---|---|
 | **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog`, `hid-daemon`, `host-service` |
-| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service`, `calendar-service` |
+| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service`, `calendar-service`, `nats` |
 
 ### ¿Por qué esta separación?
 
@@ -173,6 +173,11 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Rol:** Servicio local y offline para comprobar festivos oficiales y calcular el próximo festivo cronológico a partir de una fecha determinada, cargando archivos JSON estructurados por año.
 - **API:** `GET /api/v1/holidays` (obtiene festivos de un año o fecha), `GET /api/v1/holidays/next` (obtiene el próximo festivo), `GET /api/v1/health` (estado de salud).
 
+#### `nats`
+- **Imagen:** `nats:2.10-alpine`
+- **Puerto interno:** `8222` (monitoreo interno) / `4222` (cliente expuesto al host)
+- **Rol:** Servidor de mensajería (broker) oficial de NATS, preparado para soportar el tránsito de eventos y pub/sub distribuido en el ecosistema en fases futuras.
+
 ---
 
 ## Red Interna de Docker
@@ -192,6 +197,7 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 │  orchestrator        ──► host.docker.internal:8007 ────────►│── host-service (HAL)
 │  mail-watchdog       ──► identity-service:8000              │
 │  mail-watchdog (salida SMTP al exterior)                    │
+│  nats (sin acoplar - puerto 4222)                           │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -215,3 +221,4 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 | [ADR-014: Separación de Responsabilidades en el Orquestador](adr/adr-014-refactorizacion-orquestador.md) | Enrutamiento acoplado en un único método | Desacopla la lógica de resolución semántica de la ejecución del plan de pasos, permitiendo pre-validaciones seguras y multi-acciones atómicas. |
 | [ADR-015: Consolidación del Modelo ExecutionPlan](adr/adr-015-consolidacion-execution-plan.md) | Mantener el endpoint legado `/execute` | Consolida definitivamente el flujo desacoplado resolve/execute-plan, limpia los contratos de la API y renombra los componentes internos a `ExecutionPlanner` y `PlanExecutor` para mayor coherencia. |
 | [ADR-016: Integración del Servicio Calendario](adr/adr-016-integracion-calendar-service.md) | Integrar SQLite o consultas directas en el Orquestador | Proporciona un servicio de consulta offline rápido, modular y de bajo mantenimiento para determinar días festivos sin depender de red externa. |
+| [ADR-017: Integración de NATS como Message Broker](adr/adr-017-integracion-nats.md) | Migración total e inmediata de daemons | Introduce el broker NATS en el plano de procesamiento Docker, permitiendo la coexistencia con el filesystem-bus para no comprometer el audio. |

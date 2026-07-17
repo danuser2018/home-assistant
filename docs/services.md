@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **13 microservicios** (9 en Docker y 4 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **14 microservicios** (10 en Docker y 4 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -21,6 +21,7 @@ El sistema Home Assistant está compuesto por **13 microservicios** (9 en Docker
 | `identity-service` | Docker | `danuser2018/identity-service:latest` | Almacena y proporciona datos privados del usuario |
 | `weather-service` | Docker | `danuser2018/weather-service:latest` | Proporciona datos de clima actual y pronóstico |
 | `calendar-service` | Docker | `danuser2018/calendar-service:latest` | Proporciona datos de festivos locales offline |
+| `nats` | Docker | `nats:2.10-alpine` | Broker de mensajería (NATS) para eventos asíncronos (Fase 1) |
 
 ---
 
@@ -651,6 +652,20 @@ Ejemplo de flujo registrado por el contenedor:
 
 ---
 
+### nats
+
+**Imagen:** `nats:2.10-alpine`  
+**Puerto interno:** `8222` (monitoreo interno) / `4222` (cliente expuesto al host)
+
+**Propósito:** Servidor oficial de mensajería NATS para habilitar la comunicación orientada a eventos y pub/sub de alto rendimiento dentro del ecosistema Nova (Fase 1).
+
+**Cómo funciona:**
+1. Arranca como un servicio Docker de infraestructura.
+2. Expone el puerto `4222` en `localhost` para desarrollo y depuración desde el host.
+3. Habilita el puerto `8222` internamente para comprobar el estado de salud del servicio a través del endpoint `/healthz` de NATS sin exponerlo al exterior.
+
+---
+
 ## Comunicación entre Servicios
 
 ```text
@@ -670,6 +685,7 @@ Ejemplo de flujo registrado por el contenedor:
                     │  mail-watchdog ──► identity-service:8000          │
                     │  mail-watchdog ──► Servidor SMTP (exterior)       │
                     │  weather-service ──► API Open-Meteo (exterior)    │
+                    │  nats (sin acoplar - puerto 4222)                 │
                     └───────────────────────────────────────────────────┘
                                │           │                            │
                         Volumen Docker: ./data / ./calendar-data         │
