@@ -31,3 +31,5 @@ Ciclo de vida de Git, versionado, tipado, documentación e internacionalización
 
 ## Referencias
 - [CONTRIBUTING.md](file:///home/danuser2018/workspace/home-assistant/CONTRIBUTING.md) (Describe el flujo de Git y Conventional Commits).
+- [ADR-018: Creación de la Librería de Abstracción nova-event-bus](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-018-libreria-nova-event-bus.md).
+- [event-driven-architecture](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/event-driven-architecture/SKILL.md).

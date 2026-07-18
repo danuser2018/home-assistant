@@ -46,6 +46,14 @@ Esta arquitectura tiene ventajas clave:
 
 ---
 
+## Integración: El Bus de Eventos (Event Bus)
+
+Para el plano de procesamiento en Docker, se introduce un bus de eventos asíncrono basado en **NATS** y encapsulado por la librería común **nova-event-bus** (ver [ADR-018](adr/adr-018-libreria-nova-event-bus.md)).
+
+Este bus permite un desacoplamiento reactivo de los servicios mediante la publicación y consumo de clases de eventos fuertemente tipadas que heredan de `Event` (ej. `ResponseGeneratedEvent`).
+
+---
+
 ## Diagrama de Secuencia (Flujo End-to-End)
 
 ```text
@@ -173,6 +181,11 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Rol:** Servicio local y offline para comprobar festivos oficiales y calcular el próximo festivo cronológico a partir de una fecha determinada, cargando archivos JSON estructurados por año.
 - **API:** `GET /api/v1/holidays` (obtiene festivos de un año o fecha), `GET /api/v1/holidays/next` (obtiene el próximo festivo), `GET /api/v1/health` (estado de salud).
 
+#### `nova-event-bus` (Librería Común)
+- **Repositorio:** `danuser2018/nova-event-bus`
+- **Lenguaje:** Python 3.10+
+- **Rol:** Librería compartida que encapsula el acceso al bus de eventos. Proporciona una interfaz unificada y tipada para la publicación y suscripción de eventos, abstrayendo por completo el uso de NATS para los microservicios del dominio.
+
 #### `nats`
 - **Imagen:** `nats:2.10-alpine`
 - **Puerto interno:** `8222` (monitoreo interno) / `4222` (cliente expuesto al host)
@@ -222,3 +235,4 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 | [ADR-015: Consolidación del Modelo ExecutionPlan](adr/adr-015-consolidacion-execution-plan.md) | Mantener el endpoint legado `/execute` | Consolida definitivamente el flujo desacoplado resolve/execute-plan, limpia los contratos de la API y renombra los componentes internos a `ExecutionPlanner` y `PlanExecutor` para mayor coherencia. |
 | [ADR-016: Integración del Servicio Calendario](adr/adr-016-integracion-calendar-service.md) | Integrar SQLite o consultas directas en el Orquestador | Proporciona un servicio de consulta offline rápido, modular y de bajo mantenimiento para determinar días festivos sin depender de red externa. |
 | [ADR-017: Integración de NATS como Message Broker](adr/adr-017-integracion-nats.md) | Migración total e inmediata de daemons | Introduce el broker NATS en el plano de procesamiento Docker, permitiendo la coexistencia con el filesystem-bus para no comprometer el audio. |
+| [ADR-018: Abstracción de Event Bus](adr/adr-018-libreria-nova-event-bus.md) | Uso directo de nats-py o diccionarios planos | Desacopla la lógica de negocio del broker de mensajería NATS mediante una librería común con tipado fuerte. |
