@@ -295,6 +295,7 @@ Integran al orquestador con `calendar-service` para resolver consultas sobre dí
 | `MAIL_PENDING_DIR` | ❌ No | `/shared/mail/pending` | Directorio compartido donde se escriben los correos pendientes para que los procese `mail-watchdog` |
 | `WEATHER_SERVICE_BASE_URL` | ❌ No | `http://weather-service:8000` | URL del servicio `weather-service` para consultar datos meteorológicos |
 | `HOST_SERVICE_BASE_URL` | ❌ No | `http://host.docker.internal:8007` | URL del servicio `host-service` (HAL) en el host para controlar el volumen de audio físico |
+| `NATS_URL` | ❌ No | `nats://nats:4222` | URL del broker NATS para la publicación y consumo de eventos del dominio |
 
 **Endpoints principales:**
 
@@ -318,6 +319,8 @@ Content-Type: application/json
       "context": {
         "raw_text": "qué tiempo hace hoy",
         "normalized_text": "que tiempo hace hoy",
+        "correlation_id": "a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6",
+        "channel": "voice",
         "metadata": {}
       },
       "security": {}
@@ -341,6 +344,8 @@ Content-Type: application/json
       "context": {
         "raw_text": "qué tiempo hace hoy",
         "normalized_text": "que tiempo hace hoy",
+        "correlation_id": "a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6",
+        "channel": "voice",
         "metadata": {}
       },
       "security": {}

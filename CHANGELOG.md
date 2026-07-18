@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Publicación del primer evento del dominio en el orquestador (`ResponseGeneratedEvent`) bajo el subject `orchestrator.response.generated` tras resolver y ejecutar con éxito un plan de plugins.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-018-libreria-nova-event-bus.md` formalizando la creación de la librería común de abstracción `nova-event-bus` para desacoplar el código de los microservicios del broker NATS.
 - Nueva skill transversal `event-driven-architecture` documentando las directrices, invariantes (leyes) y mejores prácticas para el modelado de eventos tipados en el ecosistema Nova-2.
 - Integración de la infraestructura del broker de mensajería NATS (`nats:2.10-alpine`) en `docker-compose.yml` como cimiento para futuros eventos distribuidos inter-container.
@@ -55,6 +56,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Modificado `docker-compose.yml` para incorporar el soporte del broker NATS e inyectar la variable de entorno `NATS_URL` en el servicio `orchestrator`, estableciendo la correspondiente dependencia de arranque ordenado.
 - Sincronización de las skills transversales `communication-patterns`, `development-workflow` y `service-responsibilities` para referenciar el nuevo ADR-018 y la skill de arquitectura dirigida por eventos.
 - Actualización de la documentación general (`docs/services.md` y `docs/architecture.md`) para incorporar la librería común `nova-event-bus` al catálogo de servicios y la topología de red y componentes.
 - Modificado el script de verificación global `scripts/healthcheck.sh` para verificar el Docker health status (`healthy`) de los contenedores que tengan healthcheck, y validar la disponibilidad del puerto de mensajería `4222` de NATS mediante sockets nativos de bash.

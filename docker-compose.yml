@@ -51,6 +51,7 @@ services:
       WEATHER_SERVICE_BASE_URL: http://weather-service:8000
       CALENDAR_SERVICE_BASE_URL: http://calendar-service:8000
       HOST_SERVICE_BASE_URL: http://host.docker.internal:8007
+      NATS_URL: nats://nats:4222
     volumes:
       - ./data/mail:/shared/mail
       - /etc/localtime:/etc/localtime:ro
@@ -66,6 +67,8 @@ services:
       weather-service:
         condition: service_healthy
       calendar-service:
+        condition: service_healthy
+      nats:
         condition: service_healthy
     networks:
       - assistant-network
