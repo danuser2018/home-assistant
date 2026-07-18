@@ -651,6 +651,16 @@ Ejemplo de flujo registrado por el contenedor:
 | `HOST` | ❌ No | `0.0.0.0` | Dirección IP en la que se vincula el servidor |
 
 ---
+### nova-event-bus (Librería)
+
+**Repositorio:** `danuser2018/nova-event-bus`  
+**Propósito:** Abstracción unificada del bus de eventos para microservicios de dominio basados en Python. Permite interactuar con el broker (NATS) utilizando eventos tipados, abstrayendo los detalles del broker y facilitando la portabilidad (ver [ADR-018](adr/adr-018-libreria-nova-event-bus.md)).
+
+**Uso general:**
+1. Heredar de `Event` y decorar con `@event("subject")` para declarar eventos tipados.
+2. Usar `EventBus` para conectar, desconectar, publicar, suscribirse y desuscribirse de eventos de forma asíncrona.
+
+---
 
 ### nats
 
@@ -685,7 +695,7 @@ Ejemplo de flujo registrado por el contenedor:
                     │  mail-watchdog ──► identity-service:8000          │
                     │  mail-watchdog ──► Servidor SMTP (exterior)       │
                     │  weather-service ──► API Open-Meteo (exterior)    │
-                    │  nats (sin acoplar - puerto 4222)                 │
+                    │  nats (Bus de eventos: pub/sub asíncrono)         │
                     └───────────────────────────────────────────────────┘
                                │           │                            │
                         Volumen Docker: ./data / ./calendar-data         │
