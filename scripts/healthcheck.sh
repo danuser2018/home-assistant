@@ -79,6 +79,7 @@ declare -A CONTAINERS=(
     ["identity-service"]="identity-service"
     ["weather-service"]="weather-service"
     ["calendar-service"]="calendar-service"
+    ["context-service"]="context-service"
     ["nats"]="nats"
 )
 
@@ -123,6 +124,7 @@ check_http "Identity Service /health" "http://localhost:8005/health"
 check_http "Weather Service /health" "http://localhost:8006/health"
 check_http "Host Service /health" "http://localhost:8007/health"
 check_http "Calendar Service /health" "http://localhost:8008/api/v1/health"
+check_http "Context Service /health" "http://localhost:8009/health"
 
 # Comprobación de socket TCP para NATS usando sockets bash
 if bash -c "</dev/tcp/localhost/4222" 2>/dev/null; then

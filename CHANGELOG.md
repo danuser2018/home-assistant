@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Comprobación del estado del contenedor `context-service` y validación de salud de su endpoint REST (`/health`) en `scripts/healthcheck.sh`.
 - Publicación del primer evento del dominio en el orquestador (`ResponseGeneratedEvent`) bajo el subject `orchestrator.response.generated` tras resolver y ejecutar con éxito un plan de plugins.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-018-libreria-nova-event-bus.md` formalizando la creación de la librería común de abstracción `nova-event-bus` para desacoplar el código de los microservicios del broker NATS.
 - Nueva skill transversal `event-driven-architecture` documentando las directrices, invariantes (leyes) y mejores prácticas para el modelado de eventos tipados en el ecosistema Nova-2.
