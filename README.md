@@ -19,12 +19,14 @@ Todo ocurre en tu equipo, en pocos segundos.
 
 ## Arquitectura
 
-El sistema está formado por **9 microservicios** con responsabilidades bien delimitadas:
+El sistema está formado por **15 microservicios** (11 en Docker y 4 en el Host) con responsabilidades bien delimitadas:
 
 | Servicio | Tipo | Función |
 |---|---|---|
 | `mic-daemon` | Systemd (host) | Graba voz del micrófono al pulsar un hotkey |
 | `speaker-watchdog` | Systemd (host) | Reproduce las respuestas de audio por los altavoces |
+| `hid-daemon` | Systemd (host) | Escucha eventos HID y ejecuta comandos del sistema |
+| `host-service` | Systemd (host) | Capa de Abstracción de Host (HAL) y API de Audio |
 | `interaction-manager` | Docker | Coordina el flujo completo (STT → Orchestrator → TTS) |
 | `stt-capability` | Docker | Convierte voz a texto con Faster-Whisper |
 | `orchestrator` | Docker | Selecciona y ejecuta la acción correcta |
@@ -32,6 +34,10 @@ El sistema está formado por **9 microservicios** con responsabilidades bien del
 | `system-service` | Docker | Expone información de identidad del sistema (Nova) |
 | `identity-service` | Docker | Almacena y proporciona datos privados del usuario |
 | `mail-watchdog` | Docker | Envía correos electrónicos de forma asíncrona mediante SMTP leyendo archivos JSON |
+| `weather-service` | Docker | Proporciona datos de clima actual y pronóstico |
+| `calendar-service` | Docker | Proporciona datos de festivos locales offline |
+| `context-service` | Docker | Almacena en memoria el contexto conversacional actual |
+| `nats` | Docker | Broker de mensajería (NATS) para eventos asíncronos |
 
 Los servicios del host se instalan como **systemd user services** para tener acceso directo al servidor de audio. Los servicios Docker se gestionan con un único `docker-compose.yml` y sus imágenes están disponibles en DockerHub.
 
@@ -84,7 +90,7 @@ chmod +x scripts/install.sh
 |---|---|
 | [docs/architecture.md](docs/architecture.md) | Arquitectura del sistema, componentes y decisiones de diseño |
 | [docs/adr/](docs/adr/) | Registro de Decisiones Arquitectónicas (ADRs) |
-| [docs/services.md](docs/services.md) | Catálogo de los 9 servicios con sus APIs y configuración |
+| [docs/services.md](docs/services.md) | Catálogo de los 15 servicios con sus APIs y configuración |
 | [docs/installation.md](docs/installation.md) | Guía de instalación paso a paso |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Solución a los problemas más comunes |
 
