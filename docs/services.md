@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **14 microservicios** (10 en Docker y 4 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **15 microservicios** (11 en Docker y 4 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -21,7 +21,9 @@ El sistema Home Assistant está compuesto por **14 microservicios** (10 en Docke
 | `identity-service` | Docker | `danuser2018/identity-service:latest` | Almacena y proporciona datos privados del usuario |
 | `weather-service` | Docker | `danuser2018/weather-service:latest` | Proporciona datos de clima actual y pronóstico |
 | `calendar-service` | Docker | `danuser2018/calendar-service:latest` | Proporciona datos de festivos locales offline |
+| `context-service` | Docker | `danuser2018/context-service:latest` | Almacena en memoria el contexto conversacional actual |
 | `nats` | Docker | `nats:2.10-alpine` | Broker de mensajería (NATS) para eventos asíncronos (Fase 1) |
+
 
 ---
 
@@ -656,7 +658,42 @@ Ejemplo de flujo registrado por el contenedor:
 | `HOST` | ❌ No | `0.0.0.0` | Dirección IP en la que se vincula el servidor |
 
 ---
+
+### context-service
+
+**Imagen:** `danuser2018/context-service:latest`  
+**Puerto interno:** `8000` (mapeado a `8009` en el host)
+
+**Propósito:** Almacena y proporciona el contexto conversacional del asistente Nova de forma centralizada en memoria.
+
+**Funcionamiento:**
+1. Escucha eventos `ResponseGeneratedEvent` publicados en el subject `orchestrator.response.generated` a través del bus de eventos NATS (`nova-event-bus`).
+2. Al recibir un evento, actualiza el estado interno en memoria con la última respuesta, el plugin que la generó y la fecha/hora de la misma.
+3. Expone un endpoint HTTP REST para la consulta del contexto.
+
+**API REST expuesta (puerto interno 8000, mapeado a 8009 en el host):**
+
+* `GET /v1/context/last-response`: Devuelve el último contexto conversacional registrado.
+* `GET /health`: Comprueba el estado de salud del servicio (retorna `{"status": "ok"}`).
+
+**Variables de entorno relevantes (cargadas vía `config/context-service.env`):**
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `LOG_LEVEL` | ❌ No | `INFO` | Nivel de registro de logs |
+| `PORT` | ❌ No | `8000` | Puerto en el que escucha el servicio internamente |
+| `HOST` | ❌ No | `0.0.0.0` | Dirección IP en la que se vincula el servidor |
+
+*Definidas inline en `docker-compose.yml` (`environment`):*
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `NATS_URL` | ❌ No | `nats://nats:4222` | Dirección del broker NATS para la suscripción de eventos |
+
+---
+
 ### nova-event-bus (Librería)
+
 
 **Repositorio:** `danuser2018/nova-event-bus`  
 **Propósito:** Abstracción unificada del bus de eventos para microservicios de dominio basados en Python. Permite interactuar con el broker (NATS) utilizando eventos tipados, abstrayendo los detalles del broker y facilitando la portabilidad (ver [ADR-018](adr/adr-018-libreria-nova-event-bus.md)).

@@ -13,7 +13,8 @@ El sistema se divide en dos planos de ejecución:
 | Plano | Tipo | Servicios |
 |---|---|---|
 | **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog`, `hid-daemon`, `host-service` |
-| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service`, `calendar-service`, `nats` |
+| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service`, `calendar-service`, `context-service`, `nats` |
+
 
 ### ¿Por qué esta separación?
 
@@ -181,7 +182,14 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Rol:** Servicio local y offline para comprobar festivos oficiales y calcular el próximo festivo cronológico a partir de una fecha determinada, cargando archivos JSON estructurados por año.
 - **API:** `GET /api/v1/holidays` (obtiene festivos de un año o fecha), `GET /api/v1/holidays/next` (obtiene el próximo festivo), `GET /api/v1/health` (estado de salud).
 
+#### `context-service`
+- **Imagen:** `danuser2018/context-service:latest`
+- **Puerto interno:** `8000` (expuesto en puerto host `8009`)
+- **Rol:** Mantiene centralizado en memoria el contexto conversacional del asistente Nova (la última respuesta generada, el plugin que la resolvió y la hora). Consume de forma asíncrona eventos `ResponseGeneratedEvent` a través del event bus y expone un endpoint REST para su consulta.
+- **API:** `GET /v1/context/last-response` y `GET /health`.
+
 #### `nova-event-bus` (Librería Común)
+
 - **Repositorio:** `danuser2018/nova-event-bus`
 - **Lenguaje:** Python 3.10+
 - **Rol:** Librería compartida que encapsula el acceso al bus de eventos. Proporciona una interfaz unificada y tipada para la publicación y suscripción de eventos, abstrayendo por completo el uso de NATS para los microservicios del dominio.
@@ -236,3 +244,5 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 | [ADR-016: Integración del Servicio Calendario](adr/adr-016-integracion-calendar-service.md) | Integrar SQLite o consultas directas en el Orquestador | Proporciona un servicio de consulta offline rápido, modular y de bajo mantenimiento para determinar días festivos sin depender de red externa. |
 | [ADR-017: Integración de NATS como Message Broker](adr/adr-017-integracion-nats.md) | Migración total e inmediata de daemons | Introduce el broker NATS en el plano de procesamiento Docker, permitiendo la coexistencia con el filesystem-bus para no comprometer el audio. |
 | [ADR-018: Abstracción de Event Bus](adr/adr-018-libreria-nova-event-bus.md) | Uso directo de nats-py o diccionarios planos | Desacopla la lógica de negocio del broker de mensajería NATS mediante una librería común con tipado fuerte. |
+| [ADR-019: Integración de Context Service](adr/adr-019-integracion-context-service.md) | Centralizar el contexto en cada servicio o en Base de Datos | Centraliza el contexto conversacional de forma aislada e in-memory, consumiendo eventos asíncronos sin añadir dependencias síncronas ni acoplamiento. |
+
