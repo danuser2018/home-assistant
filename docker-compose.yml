@@ -187,7 +187,32 @@ services:
     networks:
       - assistant-network
 
+  context-service:
+    image: danuser2018/context-service:latest
+    container_name: context-service
+    env_file:
+      - config/context-service.env
+    environment:
+      NATS_URL: nats://nats:4222
+    ports:
+      - "8009:8000"  # Expuesto para healthcheck y depuración local
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      nats:
+        condition: service_healthy
+    networks:
+      - assistant-network
+
   nats:
+
     image: nats:2.10-alpine
     container_name: nats
     command: "-m 8222"  # Habilita el puerto de monitoreo interno para el healthcheck

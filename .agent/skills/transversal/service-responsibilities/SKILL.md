@@ -40,4 +40,5 @@ Definición de dependencias, fuentes de verdad (*sources of truth*) y propiedad 
 - [ADR-014: Separación de Responsabilidades en el Orquestador](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-014-refactorizacion-orquestador.md).
 - [ADR-015: Consolidación del Modelo ExecutionPlan y Eliminación del Endpoint Legado](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-015-consolidacion-execution-plan.md).
 - [ADR-018: Creación de la Librería de Abstracción nova-event-bus](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-018-libreria-nova-event-bus.md).
+- [ADR-019: Integración de Context Service](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-019-integracion-context-service.md).
 - [event-driven-architecture](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/event-driven-architecture/SKILL.md).
