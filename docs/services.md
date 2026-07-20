@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **15 microservicios** (11 en Docker y 4 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **16 microservicios** (11 en Docker y 5 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -12,6 +12,7 @@ El sistema Home Assistant está compuesto por **15 microservicios** (11 en Docke
 | `speaker-watchdog` | Host (Systemd) | `danuser2018/speaker-watchdog` | Reproduce respuestas de audio |
 | `hid-daemon` | Host (Systemd) | `danuser2018/hid-daemon` | Escucha eventos HID y ejecuta comandos del sistema |
 | `host-service` | Host (Systemd) | `danuser2018/host-service` | Capa de Abstracción de Host (HAL) y API de Audio |
+| `novactl` | Host (CLI) | `danuser2018/novactl` | CLI oficial del ecosistema Nova para emisión de comandos estructurados |
 | `interaction-manager` | Docker | `danuser2018/interaction-manager:latest` | Coordina el flujo completo |
 | `stt-capability` | Docker | `danuser2018/stt-capability:latest` | Convierte voz a texto (STT) |
 | `orchestrator` | Docker | `danuser2018/orchestrator:latest` | Selecciona y ejecuta la acción adecuada |
@@ -151,6 +152,31 @@ journalctl --user -u hid-daemon -f
 systemctl --user status host-service
 systemctl --user restart host-service
 journalctl --user -u host-service -f
+```
+
+---
+
+### novactl
+
+**Repositorio:** `danuser2018/novactl`
+
+**Propósito:** Herramienta de línea de comandos (CLI) oficial del ecosistema Nova. Permite la emisión de comandos estructurados desde aplicaciones del SO, scripts y atajos hacia Nova mediante eventos tipados sobre `nova-event-bus`.
+
+**Cómo funciona:**
+1. Ejecuta subcomandos nativos (`start-capture`, `stop-capture`, `execute`, `version`, `help`) procesados por plugins aislados (`CommandPlugin`).
+2. Genera un `correlation_id` UUIDv4 para cada solicitud y construye el evento tipado del dominio.
+3. Se conecta de forma efímera a NATS mediante `nova-event-bus`, publica el evento y finaliza inmediatamente de forma limpia.
+
+**Instalación:**
+```bash
+pip install -e .
+```
+
+**Ejemplo de uso:**
+```bash
+novactl start-capture --channel voice
+novactl stop-capture
+novactl execute volume-up
 ```
 
 ---

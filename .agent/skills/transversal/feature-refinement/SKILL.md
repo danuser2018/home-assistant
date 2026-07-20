@@ -46,3 +46,4 @@ en esta fase, aparte de la generación del documento obligatorio de refinamiento
 - [development-workflow](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/development-workflow/SKILL.md) (Define el flujo de Git, Conventional Commits y la política lingüística general).
 - [service-responsibilities](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/service-responsibilities/SKILL.md) (Define los límites de responsabilidad de cada servicio del ecosistema).
 - [architecture-decisions](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/architecture-decisions/SKILL.md) (Condiciones para la creación de ADRs).
+- [ADR-020: Integración del CLI novactl](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-020-integracion-novactl.md).

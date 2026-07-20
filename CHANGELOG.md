@@ -23,6 +23,9 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevo registro de decisión arquitectónica `docs/adr/adr-020-integracion-novactl.md` formalizando la integración de la herramienta CLI `novactl` y la publicación de eventos estructurados mediante `nova-event-bus`.
+- Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para registrar `novactl` en el catálogo de servicios (16 microservicios) y definir su rol como CLI oficial de Nova.
+- Sincronización de las skills transversales (`communication-patterns`, `event-driven-architecture`, `feature-refinement`, `service-responsibilities`, `system-deployment`) incorporando las referencias al nuevo `ADR-020`.
 - Comprobación del estado del contenedor `context-service` y validación de salud de su endpoint REST (`/health`) en `scripts/healthcheck.sh`.
 - Integración de la variable de entorno `CONTEXT_SERVICE_BASE_URL` en el servicio `orchestrator` y configuración de su dependencia de arranque saludable (`depends_on: context-service`) en `docker-compose.yml`.
 - Publicación del primer evento del dominio en el orquestador (`ResponseGeneratedEvent`) bajo el subject `orchestrator.response.generated` tras resolver y ejecutar con éxito un plan de plugins.

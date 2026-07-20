@@ -63,3 +63,8 @@ async def stop_service():
 - ❌ Publicar diccionarios de datos planos directamente sin envolverlos en una clase `Event` decorada.
 - ❌ Crear subjects de forma dinámica concatenando variables en la llamada a `publish` en lugar de declararlos estáticamente en el decorador `@event`.
 - ❌ No capturar excepciones dentro del callback, delegando el control de flujo al bucle interno de mensajería.
+
+## Referencias
+- [ADR-017: Integración de NATS como Message Broker en el Ecosistema Nova](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-017-integracion-nats.md).
+- [ADR-018: Creación de la Librería de Abstracción nova-event-bus](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-018-libreria-nova-event-bus.md).
+- [ADR-020: Integración del CLI novactl](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-020-integracion-novactl.md).
