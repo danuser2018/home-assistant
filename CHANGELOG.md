@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevo documento de refinamiento `docs/refinement/novactl_scripts_integration_refinement.md` formalizando la integración del CLI `novactl` en los scripts del sistema.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-020-integracion-novactl.md` formalizando la integración de la herramienta CLI `novactl` y la publicación de eventos estructurados mediante `nova-event-bus`.
 - Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para registrar `novactl` en el catálogo de servicios (16 microservicios) y definir su rol como CLI oficial de Nova.
 - Sincronización de las skills transversales (`communication-patterns`, `event-driven-architecture`, `feature-refinement`, `service-responsibilities`, `system-deployment`) incorporando las referencias al nuevo `ADR-020`.
@@ -61,6 +62,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Actualización de los scripts de administración (`scripts/install.sh`, `scripts/uninstall.sh`, `scripts/update.sh` y `scripts/healthcheck.sh`) para incorporar el ciclo de vida de la herramienta CLI `novactl` e instalar su script wrapper ejecutable en `~/.local/bin/novactl` con `NATS_URL=nats://localhost:4222` por defecto.
 - Modificado `docker-compose.yml` para incorporar el soporte del broker NATS e inyectar la variable de entorno `NATS_URL` en el servicio `orchestrator`, estableciendo la correspondiente dependencia de arranque ordenado.
 - Sincronización de las skills transversales `communication-patterns`, `development-workflow` y `service-responsibilities` para referenciar el nuevo ADR-018 y la skill de arquitectura dirigida por eventos.
 - Actualización de la documentación general (`docs/services.md` y `docs/architecture.md`) para incorporar la librería común `nova-event-bus` al catálogo de servicios y la topología de red y componentes.

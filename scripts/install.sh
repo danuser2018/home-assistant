@@ -37,11 +37,13 @@ MIC_DAEMON_DIR="$WORKSPACE_DIR/mic-daemon"
 SPEAKER_WATCHDOG_DIR="$WORKSPACE_DIR/speaker-watchdog"
 HID_DAEMON_DIR="$WORKSPACE_DIR/hid-daemon"
 HOST_SERVICE_DIR="$WORKSPACE_DIR/host-service"
+NOVACTL_DIR="$WORKSPACE_DIR/novactl"
 
 MIC_DAEMON_VENV="$MIC_DAEMON_DIR/venv"
 SPEAKER_WATCHDOG_VENV="$SPEAKER_WATCHDOG_DIR/venv"
 HID_DAEMON_VENV="$HID_DAEMON_DIR/venv"
 HOST_SERVICE_VENV="$HOST_SERVICE_DIR/venv"
+NOVACTL_VENV="$NOVACTL_DIR/venv"
 
 SYSTEMD_USER_DIR="$HOME/.config/systemd/user"
 USER_UID="$(id -u)"
@@ -109,7 +111,7 @@ fi
 echo ""
 
 # ─── Verificar repositorios de servicios del host ────────────────────────────
-log_info "Verificando repositorios de mic-daemon, speaker-watchdog, host-service y hid-daemon..."
+log_info "Verificando repositorios de mic-daemon, speaker-watchdog, host-service, hid-daemon y novactl..."
 
 if [ ! -d "$HOST_SERVICE_DIR" ]; then
     log_error "No se encontró el repositorio host-service en: $HOST_SERVICE_DIR"
@@ -126,6 +128,12 @@ fi
 if [ ! -d "$SPEAKER_WATCHDOG_DIR" ]; then
     log_error "No se encontró el repositorio speaker-watchdog en: $SPEAKER_WATCHDOG_DIR"
     log_error "Clónalo con: git clone https://github.com/danuser2018/speaker-watchdog.git $SPEAKER_WATCHDOG_DIR"
+    exit 1
+fi
+
+if [ ! -d "$NOVACTL_DIR" ]; then
+    log_error "No se encontró el repositorio novactl en: $NOVACTL_DIR"
+    log_error "Clónalo con: git clone https://github.com/danuser2018/novactl.git $NOVACTL_DIR"
     exit 1
 fi
 
@@ -257,8 +265,20 @@ if [ "$HAS_HID" = true ]; then
     echo ""
 fi
 
-# ─── Instalar scripts de control de mic-daemon ───────────────────────────────
-log_info "Instalando scripts de control del micrófono..."
+# ─── Instalar entorno virtual del CLI novactl ────────────────────────────────
+log_info "Instalando entorno virtual de novactl..."
+if [ ! -d "$NOVACTL_VENV" ]; then
+    python3 -m venv "$NOVACTL_VENV"
+    log_ok "Entorno virtual creado en $NOVACTL_VENV"
+fi
+
+"$NOVACTL_VENV/bin/pip" install --quiet --upgrade pip
+"$NOVACTL_VENV/bin/pip" install --quiet -e "$NOVACTL_DIR"
+log_ok "Dependencias y CLI de novactl instalados."
+echo ""
+
+# ─── Instalar scripts de control de mic-daemon y novactl ───────────────────
+log_info "Instalando scripts de control del micrófono y novactl CLI..."
 mkdir -p "$HOME/.local/bin"
 
 if [ -f "$MIC_DAEMON_DIR/scripts/mic-toggle.sh" ]; then
@@ -276,6 +296,15 @@ if [ -f "$MIC_DAEMON_DIR/scripts/mic-stop.sh" ]; then
     cp "$MIC_DAEMON_DIR/scripts/mic-stop.sh" "$HOME/.local/bin/mic-stop"
     chmod +x "$HOME/.local/bin/mic-stop"
 fi
+
+# Wrapper script para novactl inyectando NATS_URL por defecto si no está definida
+cat > "$HOME/.local/bin/novactl" << EOF
+#!/usr/bin/env bash
+export NATS_URL="\${NATS_URL:-nats://localhost:4222}"
+exec "$NOVACTL_VENV/bin/novactl" "\$@"
+EOF
+chmod +x "$HOME/.local/bin/novactl"
+log_ok "novactl wrapper instalado en ~/.local/bin/novactl (NATS_URL por defecto: nats://localhost:4222)"
 
 # Verificar que ~/.local/bin está en el PATH
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
@@ -430,6 +459,8 @@ if [ "$HAS_HID" = true ]; then
     systemctl --user is-active hid-daemon && echo -e "  ${GREEN}✓${NC} hid-daemon" \
                                           || echo -e "  ${RED}✗${NC} hid-daemon"
 fi
+[ -x "$HOME/.local/bin/novactl" ] && echo -e "  ${GREEN}✓${NC} novactl CLI" \
+                                 || echo -e "  ${RED}✗${NC} novactl CLI"
 echo ""
 echo "Próximos pasos:"
 echo "  1. Configura un atajo de teclado que ejecute: mic-toggle"

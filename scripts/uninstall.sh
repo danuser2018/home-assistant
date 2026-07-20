@@ -86,10 +86,10 @@ fi
 echo ""
 
 # ─── Eliminar scripts de control ──────────────────────────────────────────────
-log_info "Eliminando scripts de control del micrófono..."
-for script in mic-toggle mic-start mic-stop; do
-    if [ -f "$HOME/.local/bin/$script" ]; then
-        rm "$HOME/.local/bin/$script"
+log_info "Eliminando scripts de control del micrófono y novactl CLI..."
+for script in mic-toggle mic-start mic-stop novactl; do
+    if [ -f "$HOME/.local/bin/$script" ] || [ -L "$HOME/.local/bin/$script" ]; then
+        rm -f "$HOME/.local/bin/$script"
         log_ok "$script eliminado de ~/.local/bin/"
     fi
 done
@@ -105,7 +105,7 @@ log_info "  - Directorio de datos de audio: $PROJECT_DIR/data/"
 log_info "  - Directorio de datos de calendario: $PROJECT_DIR/calendar-data/"
 log_info "  - Directorio con el modelo de STT: $PROJECT_DIR/models/stt"
 log_info "  - Archivos de configuración: $PROJECT_DIR/config/"
-log_info "  - Entornos virtuales Python (en los repos mic-daemon, speaker-watchdog, host-service y hid-daemon)"
+log_info "  - Entornos virtuales Python (en repos mic-daemon, speaker-watchdog, host-service, hid-daemon y novactl)"
 log_info "  - Imágenes Docker (usa 'docker image rm' para eliminarlas manualmente)"
 echo ""
 log_info "Para reinstalar el sistema, ejecuta: ./scripts/install.sh"

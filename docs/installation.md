@@ -73,6 +73,7 @@ git clone https://github.com/danuser2018/home-assistant.git
 git clone https://github.com/danuser2018/mic-daemon.git
 git clone https://github.com/danuser2018/speaker-watchdog.git
 git clone https://github.com/danuser2018/host-service.git
+git clone https://github.com/danuser2018/novactl.git
 # Opcional (si deseas usar botones o pedales físicos USB):
 git clone https://github.com/danuser2018/hid-daemon.git
 cd home-assistant
@@ -189,7 +190,8 @@ chmod +x scripts/install.sh
 ```
 
 El script realiza automáticamente las siguientes acciones:
-- Instala `mic-daemon`, `speaker-watchdog`, `host-service` y `hid-daemon` (si está presente en el workspace) con sus entornos virtuales de Python.
+- Instala `mic-daemon`, `speaker-watchdog`, `host-service`, `novactl` y `hid-daemon` (si está presente en el workspace) con sus entornos virtuales de Python.
+- Configura el wrapper de `novactl` en `~/.local/bin/novactl` (con `NATS_URL=nats://localhost:4222` por defecto).
 - Genera dinámicamente las unidades de servicio systemd en `~/.config/systemd/user/`.
 - Habilita e inicia los servicios instalados.
 
