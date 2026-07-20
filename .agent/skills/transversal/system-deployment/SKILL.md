@@ -42,3 +42,4 @@ Despliegue, configuraciones de red, variables globales y montaje de recursos.
 - [ADR-013: Integración del Servicio Host (host-service)](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-013-integracion-host-service.md) (Define la capa de abstracción HAL para el hardware y volumen físico).
 - [ADR-016: Integración del Servicio Calendario (Calendar Service) en el Ecosistema Nova](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-016-integracion-calendar-service.md) (Define la integración del microservicio de calendario offline y carga de festivos).
 - [ADR-017: Integración de NATS como Message Broker en el Ecosistema Nova](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-017-integracion-nats.md) (Define la integración del broker de mensajería NATS en el plano de procesamiento).
+- [ADR-020: Integración del CLI novactl](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-020-integracion-novactl.md).

@@ -120,6 +120,12 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 - **Rol:** Actúa como la Capa de Abstracción del Host (HAL). Expone una API REST local en el puerto `8007` para controlar de manera segura recursos físicos del host como el volumen del sistema y su estado de silencio mediante la utilidad `pactl`.
 - **Principio clave:** Capa intermedia segura que aísla las herramientas y dependencias del sistema operativo del plano de procesamiento en Docker.
 
+#### `novactl`
+- **Repositorio:** `danuser2018/novactl`
+- **Lenguaje:** Python 3.10+
+- **Rol:** Herramienta oficial de línea de comandos (CLI) del ecosistema Nova basada en una arquitectura modular de plugins. Permite que aplicaciones del SO, atajos de teclado y componentes externos emitan comandos estructurados hacia Nova publicando eventos tipados a través de `nova-event-bus`.
+- **Principio clave:** Desacoplamiento total del sistema operativo frente a la infraestructura de mensajería y la topología de red.
+
 ### Servicios Docker
 
 #### `interaction-manager`
@@ -245,4 +251,5 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 | [ADR-017: Integración de NATS como Message Broker](adr/adr-017-integracion-nats.md) | Migración total e inmediata de daemons | Introduce el broker NATS en el plano de procesamiento Docker, permitiendo la coexistencia con el filesystem-bus para no comprometer el audio. |
 | [ADR-018: Abstracción de Event Bus](adr/adr-018-libreria-nova-event-bus.md) | Uso directo de nats-py o diccionarios planos | Desacopla la lógica de negocio del broker de mensajería NATS mediante una librería común con tipado fuerte. |
 | [ADR-019: Integración de Context Service](adr/adr-019-integracion-context-service.md) | Centralizar el contexto en cada servicio o en Base de Datos | Centraliza el contexto conversacional de forma aislada e in-memory, consumiendo eventos asíncronos sin añadir dependencias síncronas ni acoplamiento. |
+| [ADR-020: Integración del CLI novactl](adr/adr-020-integracion-novactl.md) | Endpoint REST directo / Scripts Bash | Consolida las interacciones CLI mediante una herramienta modular de plugins en Python que publica eventos estructurados mediante `nova-event-bus`. |
 
