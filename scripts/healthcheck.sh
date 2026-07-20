@@ -185,6 +185,26 @@ else
 fi
 
 
+# ─── Herramientas CLI ─────────────────────────────────────────────────────────
+header "Herramientas CLI"
+
+NOVACTL_BIN="$HOME/.local/bin/novactl"
+if command -v novactl &>/dev/null; then
+    if novactl --help &>/dev/null; then
+        ok "novactl CLI — disponible y ejecutable"
+    else
+        fail "novactl CLI — error al ejecutar novactl --help"
+    fi
+elif [ -x "$NOVACTL_BIN" ]; then
+    if "$NOVACTL_BIN" --help &>/dev/null; then
+        ok "novactl CLI — disponible en $NOVACTL_BIN"
+    else
+        fail "novactl CLI — error al ejecutar $NOVACTL_BIN --help"
+    fi
+else
+    fail "novactl CLI — no encontrado en PATH ni en $NOVACTL_BIN"
+fi
+
 # ─── Flag de grabación ────────────────────────────────────────────────────────
 header "Estado del micrófono"
 

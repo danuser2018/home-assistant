@@ -34,11 +34,13 @@ MIC_DAEMON_DIR="$WORKSPACE_DIR/mic-daemon"
 SPEAKER_WATCHDOG_DIR="$WORKSPACE_DIR/speaker-watchdog"
 HID_DAEMON_DIR="$WORKSPACE_DIR/hid-daemon"
 HOST_SERVICE_DIR="$WORKSPACE_DIR/host-service"
+NOVACTL_DIR="$WORKSPACE_DIR/novactl"
 
 MIC_DAEMON_VENV="$MIC_DAEMON_DIR/venv"
 SPEAKER_WATCHDOG_VENV="$SPEAKER_WATCHDOG_DIR/venv"
 HID_DAEMON_VENV="$HID_DAEMON_DIR/venv"
 HOST_SERVICE_VENV="$HOST_SERVICE_DIR/venv"
+NOVACTL_VENV="$NOVACTL_DIR/venv"
 
 # ─── Banner ───────────────────────────────────────────────────────────────────
 echo ""
@@ -146,6 +148,25 @@ if [ -d "$HID_DAEMON_VENV" ] && [ -f "$HID_DAEMON_DIR/requirements.txt" ]; then
     fi
 elif [ -d "$HID_DAEMON_DIR" ]; then
     log_warn "Entorno virtual de hid-daemon no encontrado. ¿Está instalado?"
+fi
+echo ""
+
+# ─── Actualizar dependencias de novactl CLI ──────────────────────────────────
+if [ -d "$NOVACTL_VENV" ] && [ -f "$NOVACTL_DIR/pyproject.toml" ]; then
+    log_info "Actualizando dependencias Python y CLI de novactl..."
+    "$NOVACTL_VENV/bin/pip" install --quiet --upgrade pip
+    "$NOVACTL_VENV/bin/pip" install --quiet --upgrade -e "$NOVACTL_DIR"
+    
+    mkdir -p "$HOME/.local/bin"
+    cat > "$HOME/.local/bin/novactl" << EOF
+#!/usr/bin/env bash
+export NATS_URL="\${NATS_URL:-nats://localhost:4222}"
+exec "$NOVACTL_VENV/bin/novactl" "\$@"
+EOF
+    chmod +x "$HOME/.local/bin/novactl"
+    log_ok "novactl actualizado y wrapper recreado."
+elif [ -d "$NOVACTL_DIR" ]; then
+    log_warn "Entorno virtual de novactl no encontrado. ¿Está instalado?"
 fi
 echo ""
 
