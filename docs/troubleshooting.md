@@ -39,19 +39,17 @@ systemctl --user start mic-daemon
 journalctl --user -u mic-daemon -f  # Ver el error en tiempo real
 ```
 
-### Verificar el archivo de estado (flag)
+### Verificar la emisión de comandos NATS y novactl
 
-El hotkey debe crear este archivo:
+Prueba la invocación manual del CLI `novactl` o los scripts de control:
 ```bash
-ls -la /tmp/voice_assistant/recording.flag
+novactl start-capture  # O ~/.local/bin/mic-start
+novactl stop-capture   # O ~/.local/bin/mic-stop
 ```
 
-Si el archivo no aparece al pulsar el hotkey, el problema está en el script `mic-toggle.sh` o en la configuración del atajo de teclado. Prueba a ejecutarlo manualmente:
+Comprueba en los logs del daemon que se reciben los eventos:
 ```bash
-~/.local/bin/mic-toggle
-ls /tmp/voice_assistant/  # Debe aparecer recording.flag
-~/.local/bin/mic-toggle
-ls /tmp/voice_assistant/  # Debe desaparecer
+journalctl --user -u mic-daemon -f
 ```
 
 ### Verificar permisos de audio
@@ -317,7 +315,7 @@ systemctl --user start mic-daemon
 
 ## 8. El hotkey no hace nada
 
-**Síntoma:** Pulsas el atajo de teclado pero no ocurre nada (no aparece `recording.flag`, mic-daemon no reacciona).
+**Síntoma:** Pulsas el atajo de teclado pero no ocurre nada (no se emiten eventos NATS o mic-daemon no reacciona).
 
 ### Prueba el script manualmente
 

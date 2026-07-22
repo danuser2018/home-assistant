@@ -205,14 +205,13 @@ else
     fail "novactl CLI — no encontrado en PATH ni en $NOVACTL_BIN"
 fi
 
-# ─── Flag de grabación ────────────────────────────────────────────────────────
+# ─── Estado del micrófono ──────────────────────────────────────────────────────
 header "Estado del micrófono"
 
-FLAG="/tmp/voice_assistant/recording.flag"
-if [ -f "$FLAG" ]; then
-    warn "recording.flag existe — el micrófono está actualmente grabando"
+if systemctl --user is-active --quiet mic-daemon 2>/dev/null; then
+    ok "mic-daemon activo — listo para recibir comandos NATS de captura de habla"
 else
-    ok "Micrófono en reposo (recording.flag no existe)"
+    fail "mic-daemon inactivo — la captura por micrófono no responderá"
 fi
 
 # ─── Resumen ──────────────────────────────────────────────────────────────────

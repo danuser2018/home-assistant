@@ -38,4 +38,4 @@ Evaluar el impacto estructural de cambios e indicar la necesidad de documentarlo
 
 ## Referencias
 - [architecture.md](file:///home/danuser2018/workspace/home-assistant/docs/architecture.md) (Contiene las decisiones de diseño clave iniciales).
-- [Directorio de ADRs](file:///home/danuser2018/workspace/home-assistant/docs/adr/) (Contiene todos los Architectural Decision Records registrados).
+- [Directorio de ADRs](file:///home/danuser2018/workspace/home-assistant/docs/adr/) (Contiene todos los Architectural Decision Records registrados, incluido [ADR-021](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-021-deteccion-habla-eventos-mic-daemon.md)).

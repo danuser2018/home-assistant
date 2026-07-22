@@ -125,8 +125,8 @@ Contenido mínimo necesario (reemplaza `/home/TU_USUARIO`):
 # Directorio donde mic-daemon depositará los archivos .wav grabados
 MIC_OUTPUT_DIR=/home/TU_USUARIO/home-assistant/data/input
 
-# Intervalo de detección del hotkey (en milisegundos)
-MIC_POLL_INTERVAL_MS=100
+# URL del broker NATS para la recepción de eventos
+NATS_URL=nats://localhost:4222
 
 # Sample rate (debe ser 16000 Hz para compatibilidad con el servicio STT)
 MIC_SAMPLE_RATE=16000
