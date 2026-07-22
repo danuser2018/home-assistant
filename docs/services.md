@@ -38,12 +38,12 @@ Estos servicios se instalan directamente en tu sistema Linux como **servicios de
 
 **Repositorio:** `danuser2018/mic-daemon`
 
-**Propósito:** Graba audio del micrófono cuando el usuario lo solicita mediante un atajo de teclado, y deposita el resultado en la carpeta de entrada del sistema.
+**Propósito:** Graba audio del micrófono respondiendo a comandos de eventos NATS publicados via `nova-event-bus`, y deposita el resultado en la carpeta de entrada del sistema.
 
 **Cómo funciona:**
-1. El usuario presiona el hotkey configurado.
-2. Un script (`mic-toggle.sh`) crea o elimina un archivo de estado (`/tmp/voice_assistant/recording.flag`).
-3. `mic-daemon` observa ese archivo: si existe, graba; si desaparece, guarda el `.wav` y vuelve a esperar.
+1. El usuario o sistema activa la captura mediante `novactl start-capture` (o `mic-start.sh`), publicando `StartSpeechCaptureCommand` al broker NATS.
+2. `mic-daemon` recibe el evento asíncronamente a través de `nova-event-bus`, inicia el stream de audio con `sounddevice` y acumula frames.
+3. Al emitirse `novactl stop-capture` (o `mic-stop.sh`), se publica `StopSpeechCaptureCommand`; `mic-daemon` detiene la captura, guarda el archivo `.wav` en `MIC_OUTPUT_DIR` si supera la duración mínima y regresa al estado IDLE.
 
 **Archivos producidos:** `data/input/YYYY-MM-DD_HH-MM-SS.wav`
 
@@ -55,7 +55,7 @@ Estos servicios se instalan directamente en tu sistema Linux como **servicios de
 | `MIC_DEVICE` | ❌ No | Dispositivo del sistema | Índice o nombre del micrófono |
 | `MIC_SAMPLE_RATE` | ❌ No | `16000` | Sample rate en Hz |
 | `MIC_CHANNELS` | ❌ No | `1` | Número de canales (1=mono) |
-| `MIC_POLL_INTERVAL_MS` | ❌ No | `100` | Intervalo de polling en ms |
+| `NATS_URL` | ❌ No | `nats://localhost:4222` | URL del servidor broker NATS |
 
 **Gestión:**
 ```bash

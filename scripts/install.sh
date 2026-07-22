@@ -150,7 +150,6 @@ echo ""
 log_info "Creando estructura de carpetas de datos..."
 mkdir -p "$DATA_DIR/input" "$DATA_DIR/processing" "$DATA_DIR/output" "$DATA_DIR/error"
 mkdir -p "$DATA_DIR/mail/pending" "$DATA_DIR/mail/processing" "$DATA_DIR/mail/failed"
-mkdir -p /tmp/voice_assistant
 mkdir -p "$STT_MODEL_DIR"
 mkdir -p "$TTS_MODEL_DIR"
 mkdir -p "$PROJECT_DIR/calendar-data/holidays"
@@ -320,7 +319,7 @@ mkdir -p "$SYSTEMD_USER_DIR"
 # mic-daemon.service
 cat > "$SYSTEMD_USER_DIR/mic-daemon.service" << EOF
 [Unit]
-Description=Microphone recording daemon for Home Assistant
+Description=Microphone recording daemon controlled by NATS event bus
 Documentation=https://github.com/danuser2018/mic-daemon
 After=default.target pipewire.service pipewire-pulse.service
 

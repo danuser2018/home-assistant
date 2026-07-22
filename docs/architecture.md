@@ -98,9 +98,9 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 #### `mic-daemon`
 - **Repositorio:** `danuser2018/mic-daemon`
 - **Lenguaje:** Python 3.10+
-- **Rol:** Graba audio del micrófono al detectar la presencia de un archivo de estado (`recording.flag`) que es creado/eliminado por scripts de hotkey.
+- **Rol:** Graba audio del micrófono respondiendo a comandos NATS (`StartSpeechCaptureCommand` y `StopSpeechCaptureCommand`) emitidos vía `nova-event-bus`.
 - **Salida:** Archivos `.wav` con nombre en formato timestamp (`YYYY-MM-DD_HH-MM-SS.wav`) depositados en `data/input/`.
-- **Principio clave:** El daemon no mantiene estado en memoria; consulta el filesystem para decidir qué hacer. Extremadamente ligero.
+- **Principio clave:** Comunicación orientada a eventos pura sobre NATS (sin polling en el sistema de archivos).
 
 #### `speaker-watchdog`
 - **Repositorio:** `danuser2018/speaker-watchdog`
