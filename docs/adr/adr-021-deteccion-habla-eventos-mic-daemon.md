@@ -10,7 +10,7 @@
 - **Decisión**:
   1. Refactorizar `mic-daemon` eliminando `StateWatcher` y la supervisión de `/tmp/voice_assistant/recording.flag`.
   2. Implementar `EventSubscriber` utilizando la API pública de `nova-event-bus` para conectar `mic-daemon` con el broker NATS (obteniendo la configuración mediante `NATS_URL`).
-  3. Suscribir asíncronamente `mic-daemon` a los eventos tipados `StartSpeechCaptureCommand` (`novactl.command.start_speech_capture`) y `StopSpeechCaptureCommand` (`novactl.command.stop_speech_capture`).
+  3. Suscribir asíncronamente `mic-daemon` a los eventos tipados `StartSpeechCaptureCommand` (`novactl.command.start_speech_capture`) y `StopSpeechCaptureCommand` (`novactl.command.stop_speech_capture`). Dichos eventos no requieren parámetros (sin `correlation_id` ni `channel`), ya que la captura a nivel de micrófono del sistema gestionada por `mic-daemon` es un control global de hardware que no requiere contextualización por canal ni identificadores de correlación.
   4. Actualizar `scripts/mic-start.sh` y `scripts/mic-stop.sh` para delegar su ejecución exclusivamente en `novactl start-capture` y `novactl stop-capture`, eliminando la creación/borrado de flags en el filesystem.
   5. Eliminar de la configuración de `mic-daemon` los parámetros obsoletos `MIC_POLL_INTERVAL_MS` y `flag_path`.
 

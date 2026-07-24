@@ -164,7 +164,7 @@ journalctl --user -u host-service -f
 
 **Cómo funciona:**
 1. Ejecuta subcomandos nativos (`start-capture`, `stop-capture`, `execute`, `version`, `help`) procesados por plugins aislados (`CommandPlugin`).
-2. Genera un `correlation_id` UUIDv4 para cada solicitud y construye el evento tipado del dominio.
+2. Construye el evento tipado del dominio (generando un `correlation_id` UUIDv4 para los comandos que lo requieran).
 3. Se conecta de forma efímera a NATS mediante `nova-event-bus`, publica el evento y finaliza inmediatamente de forma limpia.
 
 **Instalación:**
@@ -174,7 +174,7 @@ pip install -e .
 
 **Ejemplo de uso:**
 ```bash
-novactl start-capture --channel voice
+novactl start-capture
 novactl stop-capture
 novactl execute volume-up
 ```
