@@ -21,7 +21,7 @@ Captura del micrófono, PipeWire/PulseAudio, encolamiento secuencial de audios d
 - **Control de volumen centralizado:** El control de volumen físico del host y el estado de silencio deben gestionarse exclusivamente a través de los endpoints REST expuestos por `host-service` en `http://host.docker.internal:8007/v1/audio/volume`. Queda estrictamente prohibido ejecutar comandos directos `pactl` o scripts de manipulación del mezclador de audio desde dentro de contenedores Docker o plugins.
 
 ## Reglas (Procedimientos — 🟡 Recomendadas — Soft Constraints)
-- Reaccionar a los comandos de control de grabación (`StartSpeechCaptureCommand` y `StopSpeechCaptureCommand`) recibidos a través del bus de eventos NATS via `nova-event-bus`, iniciando y deteniendo el buffer nativo de forma limpia y asíncrona.
+- Reaccionar a los comandos de control de grabación (`StartSpeechCaptureCommand` en `command.speech.start-capture` y `StopSpeechCaptureCommand` en `command.speech.stop-capture`) recibidos a través del bus de eventos NATS via `nova-event-bus`, e indicar la finalización de la captura emitiendo `SpeechCapturedEvent` en `event.speech.captured`.
 
 ## Buenas prácticas (Recomendaciones — 🟢 Opcionales)
 - Mantener niveles de ganancia normalizados de forma global para los audios de realimentación acústica del sistema.
@@ -36,3 +36,4 @@ Captura del micrófono, PipeWire/PulseAudio, encolamiento secuencial de audios d
 - [ADR-008: Modelo de Reproducción de Audio Física en speaker-watchdog](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-008.md) (Consolidación de subprocesos efímeros con SIGKILL ante fallos de socket daemon).
 - [ADR-013: Integración del Servicio Host (host-service)](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-013-integracion-host-service.md).
 - [ADR-021: Detección de Habla basada en Eventos en mic-daemon](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-021-deteccion-habla-eventos-mic-daemon.md).
+- [ADR-022: Estandarización de Nomenclatura para Comunicaciones Asíncronas y Publicación de Eventos de Dominio](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-022-estandarizacion-nomenclatura-mensajeria-asincrona.md).

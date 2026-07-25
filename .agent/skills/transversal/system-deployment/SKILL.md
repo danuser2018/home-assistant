@@ -44,3 +44,4 @@ Despliegue, configuraciones de red, variables globales y montaje de recursos.
 - [ADR-017: Integración de NATS como Message Broker en el Ecosistema Nova](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-017-integracion-nats.md) (Define la integración del broker de mensajería NATS en el plano de procesamiento).
 - [ADR-020: Integración del CLI novactl](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-020-integracion-novactl.md).
 - [ADR-021: Detección de Habla basada en Eventos en mic-daemon](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-021-deteccion-habla-eventos-mic-daemon.md).
+- [ADR-022: Estandarización de Nomenclatura para Comunicaciones Asíncronas y Publicación de Eventos de Dominio](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-022-estandarizacion-nomenclatura-mensajeria-asincrona.md).
