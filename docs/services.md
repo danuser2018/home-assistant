@@ -41,9 +41,9 @@ Estos servicios se instalan directamente en tu sistema Linux como **servicios de
 **Propósito:** Graba audio del micrófono respondiendo a comandos de eventos NATS publicados via `nova-event-bus`, y deposita el resultado en la carpeta de entrada del sistema.
 
 **Cómo funciona:**
-1. El usuario o sistema activa la captura mediante `novactl start-capture` (o `mic-start.sh`), publicando `StartSpeechCaptureCommand` al broker NATS.
+1. El usuario o sistema activa la captura mediante `novactl start-capture` (o `mic-start.sh`), publicando `StartSpeechCaptureCommand` en `command.speech.start-capture` al broker NATS.
 2. `mic-daemon` recibe el evento asíncronamente a través de `nova-event-bus`, inicia el stream de audio con `sounddevice` y acumula frames.
-3. Al emitirse `novactl stop-capture` (o `mic-stop.sh`), se publica `StopSpeechCaptureCommand`; `mic-daemon` detiene la captura, guarda el archivo `.wav` en `MIC_OUTPUT_DIR` si supera la duración mínima y regresa al estado IDLE.
+3. Al emitirse `novactl stop-capture` (o `mic-stop.sh`), se publica `StopSpeechCaptureCommand` en `command.speech.stop-capture`; `mic-daemon` detiene la captura, guarda el archivo `.wav` en `MIC_OUTPUT_DIR` si supera la duración mínima, publica `SpeechCapturedEvent` en `event.speech.captured` y regresa al estado IDLE.
 
 **Archivos producidos:** `data/input/YYYY-MM-DD_HH-MM-SS.wav`
 
@@ -693,7 +693,7 @@ Ejemplo de flujo registrado por el contenedor:
 **Propósito:** Almacena y proporciona el contexto conversacional del asistente Nova de forma centralizada en memoria.
 
 **Funcionamiento:**
-1. Escucha eventos `ResponseGeneratedEvent` publicados en el subject `orchestrator.response.generated` a través del bus de eventos NATS (`nova-event-bus`).
+1. Escucha eventos `ResponseGeneratedEvent` publicados en el subject `event.interaction.response-generated` a través del bus de eventos NATS (`nova-event-bus`).
 2. Al recibir un evento, actualiza el estado interno en memoria con la última respuesta, el plugin que la generó y la fecha/hora de la misma.
 3. Expone un endpoint HTTP REST para la consulta del contexto.
 

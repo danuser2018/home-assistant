@@ -20,7 +20,7 @@ Integración de la librería `nova-event-bus`, definición de eventos que hereda
 - **Asociación al ciclo de vida del servicio:** La conexión (`connect`) y desconexión (`disconnect`) del event bus deben vincularse de forma explícita al arranque y parada de la aplicación (por ejemplo, mediante los hooks de startup/shutdown en frameworks como FastAPI o sockets de daemons).
 
 ## Reglas (Procedimientos — 🟡 Recomendadas — Soft Constraints)
-- **Nomenclatura estructurada de subjects:** Los subjects registrados mediante el decorador `@event` deben escribirse en inglés y seguir una estructura jerárquica de puntos: `service.domain.event` (ej. `identity.user.created` o `calendar.event.updated`).
+- **Nomenclatura binaria y estructurada de subjects (ADR-022):** Todos los subjects registrados en `@event` deben seguir estrictamente la taxonomía de comandos (`command.{dominio}.{petición}`) o eventos de dominio (`event.{dominio}.{notificación}`) (ej. `command.speech.start-capture` o `event.speech.captured`).
 - **Control y captura en callbacks:** Las funciones callback de suscripción deben ser asíncronas (`async def`) y manejar de forma interna cualquier excepción de negocio que ocurra durante el procesamiento para evitar interrumpir el bucle de eventos del EventBus.
 
 ## Buenas prácticas (Recomendaciones — 🟢 Opcionales)
@@ -30,7 +30,7 @@ from dataclasses import dataclass
 from nova_event_bus import NatsEventBus, Event, event
 
 # 1. Definición del evento tipado
-@event("identity.user.created")
+@event("event.identity.user-created")
 @dataclass
 class UserCreatedEvent(Event):
     user_id: str
@@ -69,3 +69,4 @@ async def stop_service():
 - [ADR-018: Creación de la Librería de Abstracción nova-event-bus](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-018-libreria-nova-event-bus.md).
 - [ADR-020: Integración del CLI novactl](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-020-integracion-novactl.md).
 - [ADR-021: Detección de Habla basada en Eventos en mic-daemon](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-021-deteccion-habla-eventos-mic-daemon.md).
+- [ADR-022: Estandarización de Nomenclatura para Comunicaciones Asíncronas y Publicación de Eventos de Dominio](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-022-estandarizacion-nomenclatura-mensajeria-asincrona.md).
