@@ -9,6 +9,7 @@ services:
       STT_BASE_URL: http://stt:8000
       ORCHESTRATOR_BASE_URL: http://orchestrator:8000
       TTS_BASE_URL: http://tts:8000
+      NATS_URL: nats://nats:4222
       INPUT_DIR: /data/input
       PROCESSING_DIR: /data/processing
       OUTPUT_DIR: /data/output
@@ -19,9 +20,14 @@ services:
       - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
     depends_on:
-      - stt
-      - orchestrator
-      - tts
+      stt:
+        condition: service_started
+      orchestrator:
+        condition: service_started
+      tts:
+        condition: service_started
+      nats:
+        condition: service_healthy
     networks:
       - assistant-network
 

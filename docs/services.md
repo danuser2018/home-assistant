@@ -192,13 +192,13 @@ Estos servicios se ejecutan en contenedores Docker gestionados por el `docker-co
 **Imagen:** `danuser2018/interaction-manager:latest`  
 **Puerto:** No expuesto al host.
 
-**Propósito:** Coordinador central del pipeline de voz. Implementa una máquina de estados basada en el sistema de ficheros y orquesta las llamadas a los servicios STT, Orchestrator y TTS de forma síncrona y ordenada.
+**Propósito:** Coordinador central del pipeline de voz. Escucha de forma reactiva los eventos de dominio `SpeechCapturedEvent` publicados en NATS (`event.speech.captured`) por `mic-daemon` y orquesta las llamadas a los servicios STT, Orchestrator y TTS de forma síncrona y ordenada.
 
 **Flujo interno:**
 ```text
-data/input/ → [detecta .wav] → data/processing/ → STT → Orchestrator → TTS → data/output/
-                                                                                       ↕
-                                                               (si hay error) → data/error/
+[SpeechCapturedEvent] → data/input/ (resuelve .wav) → data/processing/ → STT → Orchestrator → TTS → data/output/
+                                                                                                            ↕
+                                                                                    (si hay error) → data/error/
 ```
 
 **Variables de entorno relevantes:**
@@ -207,7 +207,7 @@ data/input/ → [detecta .wav] → data/processing/ → STT → Orchestrator →
 
 | Variable | Valor por defecto | Descripción |
 |---|---|---|
-| `POLL_INTERVAL_SECONDS` | `1` | Intervalo de sondeo en segundos |
+| `NATS_URL` | `nats://nats:4222` | URL del servidor broker NATS |
 | `DEFAULT_LANGUAGE` | `es` | Código de idioma predeterminado para transcripción y procesamiento |
 | `TTS_TIMEOUT` | `30` | Tiempo de espera máximo en segundos para peticiones a tts-capability |
 | `LOG_LEVEL` | `INFO` | Nivel de logging (detalle de registros) |
@@ -219,6 +219,7 @@ data/input/ → [detecta .wav] → data/processing/ → STT → Orchestrator →
 | `STT_BASE_URL` | URL del servicio STT para comunicación interna en la red Docker (ej. `http://stt:8000`) |
 | `ORCHESTRATOR_BASE_URL` | URL del Orchestrator para comunicación interna en la red Docker (ej. `http://orchestrator:8000`) |
 | `TTS_BASE_URL` | URL del servicio TTS para comunicación interna en la red Docker (ej. `http://tts:8000`) |
+| `NATS_URL` | URL del servidor broker NATS (ej. `nats://nats:4222`) |
 | `INPUT_DIR` | Carpeta de entrada (por defecto: `/data/input`) |
 | `PROCESSING_DIR` | Carpeta de procesamiento (por defecto: `/data/processing`) |
 | `OUTPUT_DIR` | Carpeta de salida (por defecto: `/data/output`) |

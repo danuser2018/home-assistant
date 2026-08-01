@@ -58,35 +58,37 @@ Este bus permite un desacoplamiento reactivo de los servicios mediante la public
 ## Diagrama de Secuencia (Flujo End-to-End)
 
 ```text
-Usuario          mic-daemon        data/input   interaction-manager   stt-capability   orchestrator   system-service   identity-service   tts-capability   data/output   speaker-watchdog
-   |                  |                 |                |                    |               |                |                 |              |               |                |
-   |-- Presiona ----->|                 |                |                    |               |                |                 |              |               |                |
-   |   hotkey y habla |                 |                |                    |               |                |                 |              |               |                |
-   |                  |--- graba y ---->|                |                    |               |                |                 |              |               |                |
-   |                  |    guarda .wav  |                |                    |               |                |                 |              |               |                |
-   |                  |                 |-- inotify ---->|                    |               |                |                 |              |               |                |
-   |                  |                 |   evento       |-- mueve a -------->|               |                |                 |              |               |                |
-   |                  |                 |                |   /processing      |               |                |                 |              |               |                |
-   |                  |                 |                |-- POST ----------->|               |                |                 |              |               |                |
-   |                  |                 |                |   /v1/transcriptions|              |                |                 |              |               |                |
-   |                  |                 |                |<-- {"text": "..."} |               |                |                 |              |               |                |
-   |                  |                 |                |-- POST ------------|-------------->|                |                 |              |               |                |
-   |                  |                 |                |   /api/v1/resolve  |               |                |                 |              |               |                |
-   |                  |                 |                |<-- {"steps": [...]} |              |                |                 |              |               |                |
-   |                  |                 |                |-- POST ------------|-------------->|                |                 |              |               |                |
-   |                  |                 |                |   /execute-plan    |               |-- GET -------->|                 |              |               |                |
-   |                  |                 |                |                    |               |   /v1/system/info|               |              |               |                |
-   |                  |                 |                |                    |               |<-- JSON -------|                 |              |               |                |
-   |                  |                 |                |<------------------ |{"speech":"..."}|                |                 |              |               |                |
-   |                  |                 |                |-- POST ------------|---------------|----------------|-----------------|------------->|               |                |
-   |                  |                 |                |   /v1/synthesize   |               |                |                 |              |               |                |
-   |                  |                 |                |<--  audio/wav  ----|---------------|----------------|-----------------|------------- |               |                |
-   |                  |                 |                |-- guarda ----------|---------------|----------------|-----------------|--------------|-------------->|                |
-   |                  |                 |                |   respuesta .wav   |               |                |                 |              |               |                |
-   |                  |                 |                |                    |               |                |                 |              |               |-- inotify ----->|
-   |                  |                 |                |                    |               |                |                 |              |               |   evento       |
-   |<-- Escucha audio |                 |                |                    |               |                |                 |              |               |                |-- mpv reproduce
-   |   del altavoz    |                 |                |                    |               |                |                 |              |               |                |   y elimina .wav
+Usuario          mic-daemon           NATS        data/input   interaction-manager   stt-capability   orchestrator   system-service   identity-service   tts-capability   data/output   speaker-watchdog
+   |                  |                |               |                |                    |               |                |                 |              |               |                |
+   |-- Presiona ----->|                |               |                |                    |               |                |                 |              |               |                |
+   |   hotkey y habla |                |               |                |                    |               |                |                 |              |               |                |
+   |                  |--- graba y ------------------->|                |                    |               |                |                 |              |               |                |
+   |                  |    guarda .wav |               |                |                    |               |                |                 |              |               |                |
+   |                  |--- publica --->|               |                |                    |               |                |                 |              |               |                |
+   |                  |    SpeechCapturedEvent         |                |                    |               |                |                 |              |               |                |
+   |                  |                |--- evento --->|                |                    |               |                |                 |              |               |                |
+   |                  |                |    speech.captured             |-- mueve a -------->|               |                |                 |              |               |                |
+   |                  |                |               |                |   /processing      |               |                |                 |              |               |                |
+   |                  |                |               |                |-- POST ----------->|               |                |                 |              |               |                |
+   |                  |                |               |                |   /v1/transcriptions|              |                |                 |              |               |                |
+   |                  |                |               |                |<-- {"text": "..."} |               |                |                 |              |               |                |
+   |                  |                |               |                |-- POST ------------|-------------->|                |                 |              |               |                |
+   |                  |                |               |                |   /api/v1/resolve  |               |                |                 |              |               |                |
+   |                  |                |               |                |<-- {"steps": [...]} |              |                |                 |              |               |                |
+   |                  |                |               |                |-- POST ------------|-------------->|                |                 |              |               |                |
+   |                  |                |               |                |   /execute-plan    |               |-- GET -------->|                 |              |               |                |
+   |                  |                |               |                |                    |               |   /v1/system/info|               |              |               |                |
+   |                  |                |               |                |                    |               |<-- JSON -------|                 |              |               |                |
+   |                  |                |               |                |<------------------ |{"speech":"..."}|                |                 |              |               |                |
+   |                  |                |               |                |-- POST ------------|---------------|----------------|-----------------|------------->|               |                |
+   |                  |                |               |                |   /v1/synthesize   |               |                |                 |              |               |                |
+   |                  |                |               |                |<--  audio/wav  ----|---------------|----------------|-----------------|------------- |               |                |
+   |                  |                |               |                |-- guarda ----------|---------------|----------------|-----------------|--------------|-------------->|                |
+   |                  |                |               |                |   respuesta .wav   |               |                |                 |              |               |                |
+   |                  |                |               |                |                    |               |                |                 |              |               |-- inotify ----->|
+   |                  |                |               |                |                    |               |                |                 |              |               |   evento       |
+   |<-- Escucha audio |                |               |                |                    |               |                |                 |              |               |                |-- mpv reproduce
+   |   del altavoz    |                |               |                |                    |               |                |                 |              |               |                |   y elimina .wav
 ```
 
 ---
@@ -131,8 +133,8 @@ Usuario          mic-daemon        data/input   interaction-manager   stt-capabi
 #### `interaction-manager`
 - **Imagen:** `danuser2018/interaction-manager:latest`
 - **Puerto:** ninguno expuesto al host
-- **Rol:** Coordinador del flujo completo. Implementa una máquina de estados basada en directorios: detecta archivos en `input/`, los mueve a `processing/` y orquesta las llamadas síncronas a STT → Orchestrator → TTS. El resultado se guarda en `output/` o, en caso de error, en `error/`.
-- **Comunicación:** Volumen Docker compartido para los directorios `data/`, HTTP/REST para los servicios internos.
+- **Rol:** Coordinador del flujo completo. Reacciona de forma asíncrona al evento `SpeechCapturedEvent` publicado por `mic-daemon` en NATS (`event.speech.captured`), resuelve la ruta física en `input/`, mueve el archivo a `processing/` y orquesta las llamadas síncronas a STT → Orchestrator → TTS. El resultado se guarda en `output/` o, en caso de error, en `error/`.
+- **Comunicación:** Eventos NATS vía `nova-event-bus`, volumen Docker compartido para los directorios `data/`, HTTP/REST para los servicios internos.
 
 #### `stt-capability`
 - **Imagen:** `danuser2018/stt-capability:latest`

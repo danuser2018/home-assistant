@@ -23,6 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevo documento de refinamiento `docs/refinement/response_generated_event_consumed_refinement.md` formalizando la Fase 5 del Refactor de Entrada para el consumo asíncrono de `SpeechCapturedEvent` en `interaction-manager`.
+- Integración de la variable de entorno `NATS_URL=nats://nats:4222` y dependencia `depends_on: nats: condition: service_healthy` en el servicio `interaction-manager` dentro de `docker-compose.yml`.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-022-estandarizacion-nomenclatura-mensajeria-asincrona.md` formalizando la taxonomía binaria de mensajería asíncrona (`command.*` y `event.*`) y la canonización de `SpeechCapturedEvent`.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-021-deteccion-habla-eventos-mic-daemon.md` formalizando la migración de `mic-daemon` desde la supervisión de archivos hacia la recepción de eventos NATS via `nova-event-bus`.
 - Nuevo documento de refinamiento `docs/refinement/novactl_scripts_integration_refinement.md` formalizando la integración del CLI `novactl` en los scripts del sistema.
@@ -64,6 +66,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Actualización de la configuración en `config/interaction-manager.env` para incluir `NATS_URL=nats://nats:4222` y eliminar la variable obsoleta `POLL_INTERVAL_SECONDS`.
+- Actualización de la documentación técnica general del ecosistema (`docs/services.md` y `docs/architecture.md`) para reflejar la migración de `interaction-manager` a una arquitectura 100% orientada a eventos sobre NATS (`SpeechCapturedEvent`), eliminando la máquina de estados basada en polling del sistema de archivos.
 - Actualización de la documentación general del sistema (`docs/services.md`, `docs/architecture.md`, `docs/installation.md` y `docs/troubleshooting.md`) reflejando la transición de `mic-daemon` hacia la arquitectura event-driven sobre NATS y la eliminación del flag de estado `/tmp/voice_assistant/recording.flag`.
 - Sincronización de las skills transversales (`architecture-decisions`, `communication-patterns`, `event-driven-architecture`, `service-responsibilities`, `system-deployment`) y de dominio (`audio-subsystem`) incorporando la directriz de eventos NATS y la referencia al nuevo `ADR-021`.
 - Incorporación de la variable de entorno `NATS_URL` en `config/mic-daemon.env` para la conexión del daemon de micrófono al broker de mensajería NATS.
