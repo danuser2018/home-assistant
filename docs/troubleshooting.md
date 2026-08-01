@@ -41,10 +41,10 @@ journalctl --user -u mic-daemon -f  # Ver el error en tiempo real
 
 ### Verificar la emisión de comandos NATS y novactl
 
-Prueba la invocación manual del CLI `novactl` o los scripts de control:
+Prueba la invocación manual del CLI `novactl`:
 ```bash
-novactl start-capture  # O ~/.local/bin/mic-start
-novactl stop-capture   # O ~/.local/bin/mic-stop
+novactl start-capture
+novactl stop-capture
 ```
 
 Comprueba en los logs del daemon que se reciben los eventos:
@@ -317,10 +317,10 @@ systemctl --user start mic-daemon
 
 **Síntoma:** Pulsas el atajo de teclado pero no ocurre nada (no se emiten eventos NATS o mic-daemon no reacciona).
 
-### Prueba el script manualmente
+### Prueba el comando manualmente
 
 ```bash
-~/.local/bin/mic-toggle
+novactl start-capture
 ```
 
 Si funciona desde la terminal pero no con el hotkey, el problema está en la configuración del gestor de atajos de teclado, no en el asistente.
@@ -331,12 +331,12 @@ Si funciona desde la terminal pero no con el hotkey, el problema está en la con
 pkill -USR1 sxhkd
 ```
 
-### Comprueba que el script es ejecutable
+### Comprueba que novactl es ejecutable
 
 ```bash
-ls -la ~/.local/bin/mic-toggle
+ls -la ~/.local/bin/novactl
 # Debe mostrar -rwxr-xr-x
-chmod +x ~/.local/bin/mic-toggle
+chmod +x ~/.local/bin/novactl
 ```
 
 ### El PATH no incluye `~/.local/bin`
@@ -348,7 +348,7 @@ echo $PATH | grep ".local/bin"
 
 Si no aparece, usa la **ruta absoluta** en la configuración del hotkey:
 ```
-/home/TU_USUARIO/.local/bin/mic-toggle
+/home/TU_USUARIO/.local/bin/novactl start-capture
 ```
 
 ---
