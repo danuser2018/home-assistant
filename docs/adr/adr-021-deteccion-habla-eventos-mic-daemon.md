@@ -22,3 +22,9 @@
   - **Baja Latencia**: Activación y detención inmediata de la captura de micrófono al recibir eventos NATS sin esperar intervalos de polling.
   - **Mayor Robustez**: Inexistencia de ficheros residuo en `/tmp` o estados incoherentes tras caídas del daemon.
   - **Alineación Arquitectónica**: `mic-daemon` se integra homogéneamente con la CLI `novactl` y la arquitectura event-driven global del ecosistema Nova.
+
+---
+
+### Addendum (2026-08-02): Eliminación definitiva de scripts legacy
+El punto 4 de las decisiones de este ADR establecía la actualización de `scripts/mic-start.sh` y `scripts/mic-stop.sh` para delegar en `novactl`. Tras la consolidación total del CLI oficial `novactl` (ADR-020), dichos scripts han sido eliminados definitivamente del ecosistema. La interacción CLI se realiza de forma directa e incontestable a través de `novactl start-capture` y `novactl stop-capture`.
+

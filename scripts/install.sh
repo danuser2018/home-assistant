@@ -276,25 +276,9 @@ fi
 log_ok "Dependencias y CLI de novactl instalados."
 echo ""
 
-# ─── Instalar scripts de control de mic-daemon y novactl ───────────────────
-log_info "Instalando scripts de control del micrófono y novactl CLI..."
+# ─── Instalar wrapper de novactl CLI ─────────────────────────────────────────
+log_info "Instalando wrapper de novactl CLI..."
 mkdir -p "$HOME/.local/bin"
-
-if [ -f "$MIC_DAEMON_DIR/scripts/mic-toggle.sh" ]; then
-    cp "$MIC_DAEMON_DIR/scripts/mic-toggle.sh" "$HOME/.local/bin/mic-toggle"
-    chmod +x "$HOME/.local/bin/mic-toggle"
-    log_ok "mic-toggle instalado en ~/.local/bin/"
-fi
-
-if [ -f "$MIC_DAEMON_DIR/scripts/mic-start.sh" ]; then
-    cp "$MIC_DAEMON_DIR/scripts/mic-start.sh" "$HOME/.local/bin/mic-start"
-    chmod +x "$HOME/.local/bin/mic-start"
-fi
-
-if [ -f "$MIC_DAEMON_DIR/scripts/mic-stop.sh" ]; then
-    cp "$MIC_DAEMON_DIR/scripts/mic-stop.sh" "$HOME/.local/bin/mic-stop"
-    chmod +x "$HOME/.local/bin/mic-stop"
-fi
 
 # Wrapper script para novactl inyectando NATS_URL por defecto si no está definida
 cat > "$HOME/.local/bin/novactl" << EOF
@@ -462,7 +446,7 @@ fi
                                  || echo -e "  ${RED}✗${NC} novactl CLI"
 echo ""
 echo "Próximos pasos:"
-echo "  1. Configura un atajo de teclado que ejecute: mic-toggle"
+echo "  1. Configura un atajo de teclado que ejecute: novactl start-capture / novactl stop-capture"
 echo "     Consulta docs/installation.md para instrucciones por entorno de escritorio."
 echo ""
 echo "  2. Verifica la instalación con:"

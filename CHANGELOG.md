@@ -23,6 +23,19 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevo documento de refinamiento `docs/refinement/eliminate_mic_scripts_refinement.md` formalizando la eliminación definitiva de los scripts de control de micrófono (`mic-start.sh`, `mic-stop.sh`, `mic-toggle.sh`) y la migración total hacia `novactl`.
+
+### Cambiado
+
+- Actualizado `scripts/install.sh` y `scripts/uninstall.sh` para eliminar la copia y limpieza de los scripts legacy de micrófono en `~/.local/bin/`.
+- Actualizado `docs/installation.md` (Paso 8) orientando la configuración de atajos de teclado directamente a los comandos `novactl start-capture` y `novactl stop-capture`.
+- Añadido un `Addendum (2026-08-02)` al `docs/adr/adr-021-deteccion-habla-eventos-mic-daemon.md` documentando la anulación del punto 4 por la eliminación de los scripts legacy.
+
+### Eliminado
+
+- Eliminada la copia de los scripts `mic-start`, `mic-stop` y `mic-toggle` hacia `~/.local/bin/`. *Nota de migración para usuarios con instalaciones previas:* ejecutar `rm -f ~/.local/bin/mic-toggle ~/.local/bin/mic-start ~/.local/bin/mic-stop` para eliminar binarios residuos.
+
+
 - Nuevo documento de refinamiento `docs/refinement/response_generated_event_consumed_refinement.md` formalizando la Fase 5 del Refactor de Entrada para el consumo asíncrono de `SpeechCapturedEvent` en `interaction-manager`.
 - Integración de la variable de entorno `NATS_URL=nats://nats:4222` y dependencia `depends_on: nats: condition: service_healthy` en el servicio `interaction-manager` dentro de `docker-compose.yml`.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-022-estandarizacion-nomenclatura-mensajeria-asincrona.md` formalizando la taxonomía binaria de mensajería asíncrona (`command.*` y `event.*`) y la canonización de `SpeechCapturedEvent`.

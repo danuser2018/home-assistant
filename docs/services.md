@@ -41,9 +41,9 @@ Estos servicios se instalan directamente en tu sistema Linux como **servicios de
 **Propósito:** Graba audio del micrófono respondiendo a comandos de eventos NATS publicados via `nova-event-bus`, y deposita el resultado en la carpeta de entrada del sistema.
 
 **Cómo funciona:**
-1. El usuario o sistema activa la captura mediante `novactl start-capture` (o `mic-start.sh`), publicando `StartSpeechCaptureCommand` en `command.speech.start-capture` al broker NATS.
+1. El usuario o sistema activa la captura mediante `novactl start-capture`, publicando `StartSpeechCaptureCommand` en `command.speech.start-capture` al broker NATS.
 2. `mic-daemon` recibe el evento asíncronamente a través de `nova-event-bus`, inicia el stream de audio con `sounddevice` y acumula frames.
-3. Al emitirse `novactl stop-capture` (o `mic-stop.sh`), se publica `StopSpeechCaptureCommand` en `command.speech.stop-capture`; `mic-daemon` detiene la captura, guarda el archivo `.wav` en `MIC_OUTPUT_DIR` si supera la duración mínima, publica `SpeechCapturedEvent` en `event.speech.captured` y regresa al estado IDLE.
+3. Al emitirse `novactl stop-capture`, se publica `StopSpeechCaptureCommand` en `command.speech.stop-capture`; `mic-daemon` detiene la captura, guarda el archivo `.wav` en `MIC_OUTPUT_DIR` si supera la duración mínima, publica `SpeechCapturedEvent` en `event.speech.captured` y regresa al estado IDLE.
 
 **Archivos producidos:** `data/input/YYYY-MM-DD_HH-MM-SS.wav`
 
@@ -106,7 +106,7 @@ journalctl --user -u speaker-watchdog -f
 1. Abre de forma exclusiva o compartida el archivo de dispositivo especial en `/dev/input/event*`.
 2. Lee el flujo de eventos de entrada. Filtra los eventos que no son de tipo tecla o que corresponden a repetición de tecla (`value == 2`).
 3. Mapea la tecla correspondiente (por nombre o código numérico) contra la configuración definida.
-4. Delega la ejecución del comando asociado (ej. `mic-toggle.sh`) a un ejecutor de subprocesos.
+4. Delega la ejecución del comando asociado (ej. `novactl start-capture`) a un ejecutor de subprocesos.
 5. Si el dispositivo se desconecta, inicia un bucle de reconexión automático esperando de forma responsiva sin bloquear las señales de apagado de systemd.
 
 **Configuración relevante** (`config/hid-daemon.env`):

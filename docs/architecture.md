@@ -113,7 +113,7 @@ Usuario          mic-daemon           NATS        data/input   interaction-manag
 #### `hid-daemon`
 - **Repositorio:** `danuser2018/hid-daemon`
 - **Lenguaje:** Python 3.10+
-- **Rol:** Escucha eventos de entrada de bajo nivel desde dispositivos HID físicos mediante la biblioteca `evdev` y ejecuta comandos del sistema configurados (ej. `mic-toggle.sh`) en un subproceso de forma aislada.
+- **Rol:** Escucha eventos de entrada de bajo nivel desde dispositivos HID físicos mediante la biblioteca `evdev` y ejecuta comandos del sistema configurados (ej. `novactl start-capture`) en un subproceso de forma aislada.
 - **Principio clave:** Integración robusta de hardware físico desacoplada de gestores gráficos.
 
 #### `host-service`

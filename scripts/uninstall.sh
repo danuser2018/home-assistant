@@ -86,8 +86,8 @@ fi
 echo ""
 
 # ─── Eliminar scripts de control ──────────────────────────────────────────────
-log_info "Eliminando scripts de control del micrófono y novactl CLI..."
-for script in mic-toggle mic-start mic-stop novactl; do
+log_info "Eliminando CLI novactl..."
+for script in novactl; do
     if [ -f "$HOME/.local/bin/$script" ] || [ -L "$HOME/.local/bin/$script" ]; then
         rm -f "$HOME/.local/bin/$script"
         log_ok "$script eliminado de ~/.local/bin/"

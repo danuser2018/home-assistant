@@ -240,42 +240,42 @@ Deberías ver 8 contenedores con estado `Up`.
 
 ## Paso 8: Configurar el atajo de teclado (Hotkey)
 
-Necesitas asociar un atajo de teclado de tu sistema operativo al script `mic-toggle.sh` del repositorio `mic-daemon`. Aquí tienes las instrucciones para los entornos de escritorio más comunes.
+El script `install.sh` instala automáticamente el CLI oficial `novactl` en `~/.local/bin/novactl`.
+Configura atajos de teclado en tu entorno de escritorio para invocar directamente los comandos de captura.
 
-Primero, instala el script de control:
-```bash
-mkdir -p ~/.local/bin
-# Asumiendo que también tienes el repositorio mic-daemon disponible
-cp /ruta/a/mic-daemon/scripts/mic-toggle.sh ~/.local/bin/mic-toggle
-chmod +x ~/.local/bin/mic-toggle
-```
+### Modo Push-to-Talk (recomendado)
+
+Asigna **dos atajos de teclado** en tu gestor de atajos:
+- **Inicio de captura:** `novactl start-capture`
+- **Fin de captura:** `novactl stop-capture`
 
 ### GNOME
 1. Ve a **Configuración → Teclado → Atajos de teclado → Ver y personalizar atajos**.
-2. Desplázate hasta abajo y haz clic en el botón **+** para añadir un atajo personalizado.
-3. **Nombre:** `Asistente de Voz`
-4. **Comando:** `/home/TU_USUARIO/.local/bin/mic-toggle`
-5. **Atajo:** Pulsa la combinación deseada (ej. `Super + F9`).
+2. Haz clic en **+** para añadir un atajo personalizado.
+3. **Nombre:** `Nova — Iniciar captura` | **Comando:** `novactl start-capture` | **Atajo:** `Super + F8`
+4. Repite el proceso: **Nombre:** `Nova — Detener captura` | **Comando:** `novactl stop-capture` | **Atajo:** `Super + F9`
 
 ### KDE Plasma
 1. Ve a **Configuración del sistema → Atajos → Atajos personalizados**.
-2. Crea un nuevo atajo de tipo **Ejecutar comando**.
-3. **Comando:** `/home/TU_USUARIO/.local/bin/mic-toggle`
-4. **Atajo:** Asigna la combinación deseada.
+2. Crea dos atajos de tipo **Ejecutar comando**:
+   - `novactl start-capture` → atajo deseado.
+   - `novactl stop-capture` → atajo deseado.
 
 ### sxhkd (bspwm, i3, Openbox)
 Añade esto a `~/.config/sxhkd/sxhkdrc`:
 ```ini
-# Modo toggle: una pulsación inicia, otra detiene
+super + F8
+    novactl start-capture
 super + F9
-    mic-toggle
+    novactl stop-capture
 ```
 Luego recarga sxhkd: `pkill -USR1 sxhkd`
 
 ### Hyprland (Wayland)
 Añade a `~/.config/hypr/hyprland.conf`:
 ```ini
-bind = SUPER, F9, exec, mic-toggle
+bind = SUPER, F8, exec, novactl start-capture
+bind = SUPER, F9, exec, novactl stop-capture
 ```
 
 ---
