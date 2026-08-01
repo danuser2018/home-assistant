@@ -192,12 +192,21 @@ Estos servicios se ejecutan en contenedores Docker gestionados por el `docker-co
 **Imagen:** `danuser2018/interaction-manager:latest`  
 **Puerto:** No expuesto al host.
 
-**Propósito:** Coordinador central del pipeline de voz. Escucha de forma reactiva los eventos de dominio `SpeechCapturedEvent` publicados en NATS (`event.speech.captured`) por `mic-daemon` y orquesta las llamadas a los servicios STT, Orchestrator y TTS de forma síncrona y ordenada.
+**Propósito:** Coordinador central del pipeline de interacción. Escucha de forma reactiva los eventos de dominio `SpeechCapturedEvent` publicados en NATS (`event.speech.captured`) por `mic-daemon` u órdenes directas `ExecuteShortcutCommand` (`command.interaction.execute-shortcut`) desde la CLI (`novactl execute`) u otros clientes. Orquesta las llamadas a los servicios STT, Orchestrator y TTS de forma síncrona y ordenada.
 
-**Flujo interno:**
+**Flujos internos:**
+
+*Flujo de voz:*
 ```text
 [SpeechCapturedEvent] → data/input/ (resuelve .wav) → data/processing/ → STT → Orchestrator → TTS → data/output/
-                                                                                                            ↕
+                                                                                                             ↕
+                                                                                     (si hay error) → data/error/
+```
+
+*Flujo de shortcut CLI (`ExecuteShortcutCommand`):*
+```text
+[ExecuteShortcutCommand] → ExecutionPlan (confidence=100.0) → Orchestrator (POST /api/v1/execute-plan) → TTS → data/output/
+                                                                                                             ↕
                                                                                     (si hay error) → data/error/
 ```
 

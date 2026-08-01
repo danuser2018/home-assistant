@@ -133,7 +133,8 @@ Usuario          mic-daemon           NATS        data/input   interaction-manag
 #### `interaction-manager`
 - **Imagen:** `danuser2018/interaction-manager:latest`
 - **Puerto:** ninguno expuesto al host
-- **Rol:** Coordinador del flujo completo. Reacciona de forma asíncrona al evento `SpeechCapturedEvent` publicado por `mic-daemon` en NATS (`event.speech.captured`), resuelve la ruta física en `input/`, mueve el archivo a `processing/` y orquesta las llamadas síncronas a STT → Orchestrator → TTS. El resultado se guarda en `output/` o, en caso de error, en `error/`.
+- **Rol:** Coordinador del flujo completo. Reacciona de forma asíncrona al evento `SpeechCapturedEvent` publicado por `mic-daemon` en NATS (`event.speech.captured`) o a órdenes de ejecución directa `ExecuteShortcutCommand` desde la CLI (`novactl execute`) en `command.interaction.execute-shortcut`. Para el flujo de voz, orquesta las llamadas síncronas STT → Orchestrator → TTS. Para el flujo de shortcuts, construye directamente un `ExecutionPlan` (confidence=100.0) e invoca `POST /api/v1/execute-plan` en Orchestrator → TTS. El resultado se guarda en `output/` o, en caso de error, en `error/`.
+
 - **Comunicación:** Eventos NATS vía `nova-event-bus`, volumen Docker compartido para los directorios `data/`, HTTP/REST para los servicios internos.
 
 #### `stt-capability`
