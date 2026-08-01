@@ -27,7 +27,7 @@ Integración de la librería `nova-event-bus`, definición de eventos que hereda
 - Ejemplo básico de uso en un servicio:
 ```python
 from dataclasses import dataclass
-from nova_event_bus import NatsEventBus, Event, event
+from nova_event_bus import NatsEventBus, EventBusConfig, Event, event
 
 # 1. Definición del evento tipado
 @event("event.identity.user-created")
@@ -37,14 +37,19 @@ class UserCreatedEvent(Event):
     username: str
     email: str
 
-event_bus = NatsEventBus()
+# 2. Instanciación del bus
+#    Opción A (recomendada en microservicios): leer config desde variables de entorno
+event_bus = NatsEventBus(config=EventBusConfig.from_env())
+
+#    Opción B (cuando la URL se gestiona explícitamente, p.ej. desde settings):
+#    event_bus = NatsEventBus(config=EventBusConfig(nats_url=settings.NATS_URL))
 
 async def handle_user_created(evt: UserCreatedEvent):
     # El callback recibe una instancia tipada de la clase del evento
     print(f"New user created: {evt.username} ({evt.user_id})")
 
 async def start_service():
-    # Inicialización del bus al arrancar el servicio (carga configuración desde env)
+    # Conexión al broker al arrancar el servicio
     await event_bus.connect()
     
     # Registro de suscripción tipada
@@ -63,6 +68,7 @@ async def stop_service():
 - ❌ Publicar diccionarios de datos planos directamente sin envolverlos en una clase `Event` decorada.
 - ❌ Crear subjects de forma dinámica concatenando variables en la llamada a `publish` en lugar de declararlos estáticamente en el decorador `@event`.
 - ❌ No capturar excepciones dentro del callback, delegando el control de flujo al bucle interno de mensajería.
+- ❌ Instanciar `NatsEventBus` con argumentos no declarados en su constructor (p.ej. `NatsEventBus(url=...)`). La URL de conexión se pasa siempre a través de `EventBusConfig`, nunca como argumento directo al constructor.
 
 ## Referencias
 - [ADR-017: Integración de NATS como Message Broker en el Ecosistema Nova](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-017-integracion-nats.md).
