@@ -1,211 +1,403 @@
 ---
-name: system_context_snapshot
-description: Workflow para generar una fotografía arquitectónica actualizada del ecosistema Nova, consolidando la información distribuida de los distintos servicios en un único documento de contexto para asistentes de IA y revisiones técnicas.
+name: ai_context_snapshot
+description: Genera un contexto arquitectónico condensado del ecosistema Nova optimizado para asistentes de IA. Su objetivo es proporcionar el mínimo contexto necesario para comprender el estado actual del sistema y tomar decisiones técnicas coherentes, no sustituir la documentación del proyecto.
 ---
 
-# Workflow: Generación del System Context Snapshot
-
-Este workflow guía al asistente de IA en la generación de un documento de contexto arquitectónico del ecosistema Nova a partir del estado actual de todos los servicios y su documentación.
+# Workflow: AI Context Snapshot
 
 ## Objetivo
 
-Generar una fotografía coherente y autocontenida del estado del ecosistema Nova, consolidando arquitectura, servicios, contratos, capacidades y decisiones arquitectónicas en un único documento que sirva como contexto para futuras conversaciones técnicas, revisiones de arquitectura y desarrollo de nuevas funcionalidades.
+Este workflow genera un **AI Context Snapshot**, un documento autocontenido y altamente sintetizado destinado exclusivamente a servir como contexto inicial para otro asistente de IA.
 
-El workflow no modifica ningún archivo existente. Su única salida es un documento denominado **System Context Snapshot**.
+El documento debe permitir comprender rápidamente:
 
-## Parámetros de Entrada
+- la arquitectura del ecosistema;
+- las responsabilidades de cada componente;
+- las reglas arquitectónicas permanentes;
+- el estado actual del sistema;
+- las migraciones activas;
+- la dirección de evolución del proyecto.
+
+El resultado **no es documentación técnica**, sino un contexto optimizado para IA.
+
+---
+
+# Principios
+
+El documento debe seguir siempre estas prioridades:
+
+1. Arquitectura antes que implementación.
+2. Responsabilidades antes que detalles internos.
+3. Restricciones antes que ejemplos.
+4. Contratos antes que endpoints.
+5. Estado actual antes que historia.
+6. Síntesis antes que exhaustividad.
+
+---
+
+# Restricciones
+
+El documento generado deberá cumplir obligatoriamente:
+
+- Longitud aproximada entre **2 y 4 páginas**.
+- Lectura completa en menos de **cinco minutos**.
+- Optimizado para minimizar consumo de tokens.
+- Autocontenido.
+- Sin ejemplos de código.
+- Sin payloads JSON.
+- Sin documentación REST detallada.
+- Sin reproducir ADRs.
+- Sin información histórica salvo cuando siga condicionando decisiones actuales.
+
+---
+
+# Regla Fundamental
+
+Antes de incluir cualquier información, el asistente deberá responder mentalmente:
+
+> **¿Este dato cambiaría una futura decisión técnica de otra IA?**
+
+Si la respuesta es **NO**, deberá omitirse.
+
+---
+
+# Información que normalmente debe omitirse
+
+- ejemplos de código;
+- payloads completos;
+- parámetros REST;
+- formatos JSON;
+- puertos;
+- configuración Docker;
+- variables de entorno;
+- detalles internos de implementación;
+- cronología histórica;
+- información repetida.
+
+---
+
+# Información que debe priorizarse
+
+- responsabilidades;
+- contratos públicos;
+- límites entre servicios;
+- restricciones;
+- invariantes;
+- componentes deprecados;
+- migraciones;
+- riesgos;
+- dirección arquitectónica.
+
+---
+
+# Parámetros de Entrada
 
 - Workspace completo del ecosistema Nova.
-- Opcionalmente, subconjunto de repositorios a incluir.
-- Opcionalmente, versión o conjunto de versiones desplegadas.
+- Repositorios disponibles.
+- Documentación.
+- ADRs.
+- Skills.
+- Contratos públicos.
 
 ---
 
 # Pasos del Workflow
 
-## Paso 1: Descubrimiento del Ecosistema
+## Paso 1 — Descubrimiento del Ecosistema
 
-Identificar todos los servicios que forman parte del ecosistema.
+Identificar automáticamente:
 
-Para cada uno obtener:
+- servicios;
+- daemons;
+- herramientas CLI;
+- librerías compartidas;
+- plugins;
+- infraestructura;
+- componentes Host;
+- componentes Docker.
 
-- Nombre.
-- Responsabilidad.
-- Estado de madurez.
-- Versión (si existe).
-- Repositorio correspondiente.
-
-Identificar igualmente:
-
-- Librerías compartidas.
-- Componentes de infraestructura.
-- Herramientas de línea de comandos.
-- Plugins disponibles.
+Construir un inventario lógico del ecosistema.
 
 ---
 
-## Paso 2: Carga del Contexto Arquitectónico
+## Paso 2 — Reconstrucción Arquitectónica
 
-Cargar toda la documentación relevante del ecosistema:
+Cargar únicamente la documentación necesaria para reconstruir el estado actual del sistema.
+
+Fuentes principales:
 
 - `docs/architecture.md`
 - `docs/services.md`
-- Directorio `docs/adr/`
-- Skills transversales relevantes.
-- Skills de dominio.
-- Documentación de contratos.
-- README de cada servicio cuando aporte información arquitectónica.
+- `docs/adr/`
+- documentación de contratos
+- skills
+- README con contenido arquitectónico
 
-El objetivo es reconstruir el estado arquitectónico real del sistema.
-
----
-
-## Paso 3: Inventario de Servicios
-
-Generar un inventario de todos los servicios indicando para cada uno:
-
-- Responsabilidad.
-- Interfaces públicas.
-- Dependencias.
-- Eventos publicados.
-- Eventos consumidos.
-- Estado de madurez.
-
-El inventario debe describir responsabilidades, nunca detalles internos de implementación.
+La documentación debe utilizarse para inferir el estado del sistema, nunca para reproducirla.
 
 ---
 
-## Paso 4: Reconstrucción de la Topología
+## Paso 3 — Validación de Consistencia
 
-Reconstruir la arquitectura lógica del ecosistema identificando:
+Detectar automáticamente:
 
-- Flujo principal de ejecución.
-- Relaciones entre servicios.
-- Dependencias síncronas.
-- Comunicación mediante Event Bus.
-- Componentes externos.
+- servicios no documentados;
+- documentación obsoleta;
+- contratos inconsistentes;
+- eventos sin productor;
+- eventos sin consumidor;
+- ADRs obsoletos;
+- referencias cruzadas rotas;
+- discrepancias entre repositorios.
 
-El objetivo es describir cómo coopera el conjunto del sistema.
-
----
-
-## Paso 5: Inventario de Contratos
-
-Documentar todos los contratos públicos utilizados por el ecosistema.
-
-Incluir:
-
-- APIs REST.
-- Eventos.
-- Modelos compartidos.
-- Protocolos de comunicación.
-- Versiones de contrato cuando existan.
-
-No describir implementaciones internas.
+Las inconsistencias deberán aparecer resumidas en el documento final.
 
 ---
 
-## Paso 6: Estado Funcional del Sistema
+## Paso 4 — Extracción del Modelo Mental
 
-Generar un inventario de capacidades disponibles.
+Generar un resumen muy breve que permita comprender inmediatamente:
+
+- qué es Nova;
+- qué NO es Nova;
+- cómo está organizado;
+- cuál es su filosofía;
+- qué principios condicionan todas las decisiones futuras.
+
+Esta sección debe ocupar únicamente unas pocas líneas.
+
+---
+
+## Paso 5 — Invariantes Arquitectónicos
+
+Extraer únicamente las reglas permanentes del ecosistema.
+
+Ejemplos:
+
+- Local First
+- Plugin First
+- Servicios independientes
+- Host/Docker Boundary
+- HAL obligatorio
+- REST síncrono
+- Event Bus asíncrono
+- Contratos estables
+
+No incluir reglas temporales.
+
+---
+
+## Paso 6 — Fronteras de Servicio
+
+Para cada servicio generar únicamente:
+
+- responsabilidad principal;
+- qué NO hace;
+- dependencias relevantes.
+
+No describir implementación interna.
+
+---
+
+## Paso 7 — Estado del Ecosistema
+
+Resumir:
+
+- componentes estables;
+- componentes experimentales;
+- migraciones activas;
+- componentes deprecados;
+- deuda técnica;
+- riesgos.
+
+No incluir historia del proyecto.
+
+---
+
+## Paso 8 — Dirección del Desarrollo
+
+Identificar automáticamente:
+
+- iniciativas activas;
+- roadmap inmediato;
+- refactorizaciones;
+- componentes que evolucionarán próximamente.
+
+Esta información debe ayudar a orientar futuras propuestas.
+
+---
+
+## Paso 9 — Guías de Diseño
+
+Generar una pequeña colección de reglas prácticas para futuras implementaciones.
 
 Por ejemplo:
 
-- Audio.
-- Reconocimiento de voz.
-- Síntesis de voz.
-- Plugins.
-- Host.
-- Identidad.
-- Clima.
-- Inferencia.
-- Conversación.
+- Preferir nuevos plugins antes que ampliar el orquestador.
+- Reutilizar contratos existentes.
+- Evitar nuevas dependencias síncronas.
+- Priorizar eventos frente a llamadas REST cuando sea posible.
+- Mantener servicios stateless.
+- Nunca acceder al hardware desde Docker.
+- Nunca bypassar HAL.
 
-Para cada capacidad indicar:
-
-- Estado.
-- Servicio responsable.
-- Limitaciones conocidas.
+Estas reglas deben representar la forma recomendada de extender el ecosistema.
 
 ---
 
-## Paso 7: Decisiones Arquitectónicas
+## Paso 10 — Generación del AI Context Snapshot
 
-Resumir las decisiones arquitectónicas actualmente vigentes obtenidas de los ADRs.
-
-Para cada decisión indicar:
-
-- Identificador.
-- Resumen.
-- Impacto sobre el diseño.
-
-No reproducir completamente el contenido de los ADRs.
-
----
-
-## Paso 8: Principios Arquitectónicos
-
-Identificar las reglas fundamentales que gobiernan el ecosistema.
-
-Por ejemplo:
-
-- Separación de responsabilidades.
-- Comunicación entre servicios.
-- Uso de REST.
-- Uso del Event Bus.
-- Filosofía Plugin First.
-- Local First.
-- Independencia entre microservicios.
-
-Estos principios representan los invariantes arquitectónicos del sistema.
-
----
-
-## Paso 9: Estado del Ecosistema
-
-Documentar el estado general del sistema indicando:
-
-- Componentes estables.
-- Componentes experimentales.
-- Componentes en desarrollo.
-- Funcionalidades previstas.
-- Problemas arquitectónicos conocidos.
-- Migraciones en curso.
-- Deudas técnicas relevantes.
-
----
-
-## Paso 10: Generación del System Context Snapshot
-
-El workflow genera un documento con la siguiente estructura:
+El documento generado deberá seguir exactamente esta estructura:
 
 ````markdown
-# Nova System Context Snapshot
+# Nova AI Context Snapshot
 
-- Fecha de generación
-- Servicios analizados
-- Estado general del ecosistema
+## Current Snapshot
 
-## 1. Resumen Ejecutivo
+Resumen ejecutivo del estado actual.
 
-## 2. Arquitectura General
+Debe incluir únicamente:
 
-## 3. Topología del Sistema
+- arquitectura;
+- número aproximado de servicios;
+- backend del Event Bus;
+- migraciones activas;
+- componentes deprecados;
+- foco actual;
+- restricciones principales.
 
-## 4. Inventario de Servicios
+---
 
-## 5. Contratos Públicos
+## Mental Model
 
-## 6. Capacidades Disponibles
+Qué es Nova.
 
-## 7. Plugins
+Qué NO es Nova.
 
-## 8. Decisiones Arquitectónicas
+Cómo debe entenderlo una IA.
 
-## 9. Principios Arquitectónicos
+---
 
-## 10. Estado del Ecosistema
+## Architectural Invariants
 
-## 11. Roadmap Técnico
+Reglas permanentes del sistema.
 
-## 12. Riesgos y Problemas Conocidos
+---
+
+## System Topology
+
+Topología simplificada.
+
+Máximo un diagrama.
+
+---
+
+## Vocabulary
+
+Glosario de los conceptos fundamentales del proyecto.
+
+---
+
+## Service Boundaries
+
+Tabla resumida:
+
+- servicio;
+- responsabilidad;
+- qué NO hace;
+- dependencias.
+
+---
+
+## Public Contracts
+
+Resumen de:
+
+- APIs relevantes;
+- eventos;
+- modelos compartidos.
+
+No incluir payloads ni endpoints completos.
+
+---
+
+## Migration Status
+
+- migraciones;
+- elementos deprecados;
+- compatibilidad.
+
+---
+
+## Current Development Focus
+
+Qué partes están evolucionando actualmente.
+
+---
+
+## Design Guidelines
+
+Buenas prácticas para añadir nuevas capacidades al ecosistema.
+
+---
+
+## Expected Architectural Evolution
+
+Descripción muy breve (máximo 5-10 líneas) de la dirección prevista para la arquitectura.
+
+Debe responder preguntas como:
+
+- ¿Qué componentes tenderán a desaparecer?
+- ¿Qué mecanismos se convertirán en el estándar?
+- ¿Qué principios seguirán reforzándose?
+
+Esta sección debe describir únicamente la evolución esperada, nunca el roadmap funcional.
+
+---
+
+## Known Constraints
+
+Restricciones que cualquier cambio futuro debe respetar.
+
+---
+
+## Known Inconsistencies
+
+Discrepancias detectadas entre documentación y estado del ecosistema.
+
+---
+
+## Architectural Decisions
+
+Resumen de los ADRs vigentes.
+
+Una única línea por ADR.
+
+No reproducir el contenido de los documentos.
+
+---
+
+## Criterios de Calidad
+
+El AI Context Snapshot solo se considerará correcto si cumple todos los siguientes criterios:
+
+- Puede utilizarse directamente como contexto inicial para otra IA.
+- Permite comprender Nova en menos de cinco minutos.
+- No supera aproximadamente cuatro páginas.
+- No contiene información redundante.
+- No reproduce documentación existente.
+- No describe implementaciones salvo cuando constituyan invariantes arquitectónicos.
+- Todo el contenido influye en futuras decisiones técnicas.
+- Una IA puede responder correctamente a la mayoría de preguntas sobre arquitectura utilizando únicamente este documento.
+- El documento transmite tanto el estado actual como la dirección arquitectónica del ecosistema.
+
+---
+
+## Referencias
+
+- `docs/architecture.md`
+- `docs/services.md`
+- `docs/adr/`
+- Documentación de contratos
+- Skills transversales
+- Skills de dominio
