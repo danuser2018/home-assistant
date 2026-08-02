@@ -23,6 +23,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevo documento de workflow `.agent/workflows/System_snapshot_generation.md` que permite la generación de un documento sintético que sirve de base a modelos de IA para entender el estado del sistema en un momento dado sin necesidad de leer toda la documentación disponible.
 - Nuevo documento de refinamiento `docs/refinement/execute_shortcuts_refinement.md` formalizando la ejecución directa de shortcuts desde CLI en `interaction-manager`.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-023-estandarizacion-identificador-plugin-execution-plan.md` formalizando la estandarización del atributo `plugin.id` en el modelo `ExecutionPlan`.
 - Nuevo documento de refinamiento `docs/refinement/eliminate_mic_scripts_refinement.md` formalizando la eliminación definitiva de los scripts de control de micrófono (`mic-start.sh`, `mic-stop.sh`, `mic-toggle.sh`) y la migración total hacia `novactl`.
