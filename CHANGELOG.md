@@ -23,9 +23,15 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevo documento de refinamiento `docs/refinement/execute_shortcuts_refinement.md` formalizando la ejecución directa de shortcuts desde CLI en `interaction-manager`.
+- Nuevo registro de decisión arquitectónica `docs/adr/adr-023-estandarizacion-identificador-plugin-execution-plan.md` formalizando la estandarización del atributo `plugin.id` en el modelo `ExecutionPlan`.
 - Nuevo documento de refinamiento `docs/refinement/eliminate_mic_scripts_refinement.md` formalizando la eliminación definitiva de los scripts de control de micrófono (`mic-start.sh`, `mic-stop.sh`, `mic-toggle.sh`) y la migración total hacia `novactl`.
 
 ### Cambiado
+
+- Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para incorporar el flujo de shortcuts en `interaction-manager` y unificar los payloads de respuesta con `plugin.id`.
+- Sincronización de las skills transversales (`api-contracts` y `service-responsibilities`) incorporando referencias al nuevo `ADR-023`.
+
 
 - Actualizado `scripts/install.sh` y `scripts/uninstall.sh` para eliminar la copia y limpieza de los scripts legacy de micrófono en `~/.local/bin/`.
 - Actualizado `docs/installation.md` (Paso 8) orientando la configuración de atajos de teclado directamente a los comandos `novactl start-capture` y `novactl stop-capture`.
