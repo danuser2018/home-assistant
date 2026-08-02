@@ -350,7 +350,7 @@ Content-Type: application/json
 {
   "steps": [
     {
-      "plugin": "WeatherPlugin",
+      "plugin": "weather",
       "confidence": 100.0,
       "parameters": {},
       "channel": "voice",
@@ -375,7 +375,7 @@ Content-Type: application/json
 {
   "steps": [
     {
-      "plugin": "WeatherPlugin",
+      "plugin": "weather",
       "confidence": 100.0,
       "parameters": {},
       "channel": "voice",
@@ -383,6 +383,7 @@ Content-Type: application/json
         "raw_text": "qué tiempo hace hoy",
         "normalized_text": "que tiempo hace hoy",
         "correlation_id": "a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6",
+
         "channel": "voice",
         "metadata": {}
       },
