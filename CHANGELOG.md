@@ -23,6 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Implementación del plugin de intenciones `VolumeSetPlugin` (identificador canónico `volume-set`) en `orchestrator` para permitir el ajuste de volumen objetivo absoluto entre 0 y 100%, delegando en `POST /v1/audio/volume/set` de `host-service`.
+
 - Implementación del resolver especializado `IntegerResolver` en `orchestrator` para extracción determinista de enteros en español y dígitos, junto con la adaptación de `RandomNumberPlugin` (`max: Integer`).
 - Nuevo documento de refinamiento `docs/refinement/integer_resolver_refinement.md` formalizando el resolver de enteros (Fase 2) en `orchestrator`.
 - Nuevo documento de refinamiento `docs/refinement/parameter_resolution_interfaces_refinement.md` formalizando la capa contractual de resolución de parámetros (Fase 1) en `orchestrator`.
