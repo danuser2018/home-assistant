@@ -154,6 +154,24 @@ systemctl --user restart host-service
 journalctl --user -u host-service -f
 ```
 
+**Endpoints principales:**
+
+* **Establecer volumen objetivo absoluto:**
+```http
+POST /v1/audio/volume/set
+Content-Type: application/json
+
+{"volume": 80}
+```
+
+**Respuesta:**
+```json
+{
+  "volume": 80,
+  "muted": false
+}
+```
+
 ---
 
 ### novactl
@@ -492,6 +510,7 @@ Content-Type: application/json
     {"id": "volume-up", "description": "Incrementa el volumen del sistema"},
     {"id": "volume-down", "description": "Disminuye el volumen del sistema"},
     {"id": "volume-status", "description": "Consulta el volumen actual del sistema"},
+    {"id": "volume-set", "description": "Establece el volumen de audio del sistema a un valor absoluto entre 0 y 100"},
     {"id": "mute", "description": "Silencia el sistema"},
     {"id": "unmute", "description": "Restaura el sonido del sistema"},
     {"id": "today_holiday", "description": "Determina si la fecha actual es festiva"},
@@ -531,6 +550,7 @@ GET /v1/system/capabilities
     {"id": "volume-up", "description": "Incrementa el volumen del sistema"},
     {"id": "volume-down", "description": "Disminuye el volumen del sistema"},
     {"id": "volume-status", "description": "Consulta el volumen actual del sistema"},
+    {"id": "volume-set", "description": "Establece el volumen de audio del sistema a un valor absoluto entre 0 y 100"},
     {"id": "mute", "description": "Silencia el sistema"},
     {"id": "unmute", "description": "Restaura el sonido del sistema"},
     {"id": "today_holiday", "description": "Determina si la fecha actual es festiva"},
