@@ -294,8 +294,13 @@ curl http://localhost:8001/ready     # {"status": "ready"}
 
 **Sistema de plugins:**
 - Los plugins se cargan dinámicamente desde el directorio `plugins/` del contenedor.
-- Cada plugin funcional define un conjunto de frases de ejemplo (`examples`) y un nivel de prioridad (`priority`) para resolver ambigüedades.
+- Cada plugin funcional define un conjunto de frases de ejemplo (`examples`), un nivel de prioridad (`priority`) y opcionalmente su lista de parámetros requeridos (`parameters`).
 - Si ninguna puntuación de coincidencia supera el umbral de similitud configurado, responde el `FallbackPlugin`.
+
+**Resolución de Parámetros:**
+- Incorpora la capa contractual desacoplada (`core/parameter_resolution/`) con `ParameterResolverRegistry` y `ParameterResolverEngine`.
+- Permite resolver parámetros por tipo lógico sin acoplar el núcleo del orquestador a la lógica de cada tipo ni a plugins específicos.
+
 
 **Plugin de Capacidades (CapabilitiesPlugin):**
 Este nuevo plugin permite al usuario preguntar a Nova sobre las funciones disponibles.

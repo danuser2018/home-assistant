@@ -45,4 +45,5 @@ Definición de dependencias, fuentes de verdad (*sources of truth*) y propiedad 
 - [ADR-021: Detección de Habla basada en Eventos en mic-daemon](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-021-deteccion-habla-eventos-mic-daemon.md).
 - [ADR-022: Estandarización de Nomenclatura para Comunicaciones Asíncronas y Publicación de Eventos de Dominio](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-022-estandarizacion-nomenclatura-mensajeria-asincrona.md).
 - [ADR-023: Estandarización del Identificador de Plugin en el Modelo ExecutionPlan](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-023-estandarizacion-identificador-plugin-execution-plan.md).
+- [ADR-024: Arquitectura e Interfaces de Resolución de Parámetros en Orchestrator](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-024-interfaces-resolucion-parametros-orquestador.md).
 - [event-driven-architecture](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/event-driven-architecture/SKILL.md).

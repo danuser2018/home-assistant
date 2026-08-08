@@ -34,3 +34,5 @@ Scoring determinista de intenciones, matching por similitud semántica determini
 - [ADR-003: Scoring Determinista de Plugins de Intenciones (Superado)](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-003.md)
 - [ADR-004 (Orchestrator): Motor de Selección de Plugins por Similitud](file:///home/danuser2018/workspace/orchestrator/doc/adr/adr-004-motor-seleccion-plugins-similitud.md)
 - [ADR-002 (Orchestrator): Alineación de mensajes de error genéricos en plugins](file:///home/danuser2018/workspace/orchestrator/doc/adr/adr-002-alineacion-mensajes-error-plugins.md)
+- [ADR-024: Arquitectura e Interfaces de Resolución de Parámetros en Orchestrator](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-024-interfaces-resolucion-parametros-orquestador.md)
+

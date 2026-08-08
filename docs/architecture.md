@@ -146,12 +146,12 @@ Usuario          mic-daemon           NATS        data/input   interaction-manag
 #### `orchestrator`
 - **Imagen:** `danuser2018/orchestrator:latest`
 - **Puerto interno:** `8000` (expuesto en puerto host `8002`)
-- **Rol:** Motor de intenciones determinista. Se compone de dos módulos desacoplados: `ExecutionPlanner` (procesamiento del lenguaje natural, cálculo de similitud mediante RapidFuzz y generación del plan `ExecutionPlan`) y `PlanExecutor` (validación y ejecución secuencial del plan de pasos usando los plugins).
+- **Rol:** Motor de intenciones determinista. Se compone de módulos desacoplados: `ExecutionPlanner` (procesamiento del lenguaje natural, cálculo de similitud mediante RapidFuzz, resolución contractual de parámetros mediante `ParameterResolverEngine` y generación del plan `ExecutionPlan`) y `PlanExecutor` (validación y ejecución secuencial del plan de pasos usando los plugins).
 - **Integraciones externas:** Además de conectarse a `system-service` para consultar identidad y capacidades, monta el volumen compartido `data/mail` para interactuar de forma asíncrona con `mail-watchdog` escribiendo peticiones de correo cuando se ejecuta el plugin `capabilities`.
 - **API:**
   - `POST /api/v1/resolve` (JSON `{"text": "..."}`)
   - `POST /api/v1/execute-plan` (JSON `ExecutionPlan`)
-- **Extensibilidad:** Se pueden añadir nuevos plugins sin tocar el núcleo del orquestador.
+- **Extensibilidad:** Se pueden añadir nuevos plugins y resolvers de parámetros sin tocar el núcleo del orquestador.
 
 #### `system-service`
 - **Imagen:** `danuser2018/system-service:latest`
@@ -257,4 +257,6 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 | [ADR-020: Integración del CLI novactl](adr/adr-020-integracion-novactl.md) | Endpoint REST directo / Scripts Bash | Consolida las interacciones CLI mediante una herramienta modular de plugins en Python que publica eventos estructurados mediante `nova-event-bus`. |
 | [ADR-021: Detección de Habla basada en Eventos en mic-daemon](adr/adr-021-deteccion-habla-eventos-mic-daemon.md) | Polling de /tmp/voice_assistant/recording.flag | Elimina latencia de I/O, riesgo de flags residuo y acoplamiento a ficheros temporales; integra mic-daemon en la arquitectura event-driven. |
 | [ADR-022: Estandarización de Nomenclatura para Comunicaciones Asíncronas](adr/adr-022-estandarizacion-nomenclatura-mensajeria-asincrona.md) | Nombres heterogéneos y `novactl.command.*` | Define la taxonomía `command.{dominio}.{petición}` y `event.{dominio}.{notificación}`, e integra `SpeechCapturedEvent`. |
+| [ADR-024: Interfaces de Resolución de Parámetros en Orchestrator](adr/adr-024-interfaces-resolucion-parametros-orquestador.md) | Acoplamiento por tipo de parámetro en ExecutionPlanner | Establece la infraestructura contractual desacoplada por registros (`ParameterResolverRegistry` y `BaseParameterResolver`) para la extracción determinista de parámetros. |
+
 
