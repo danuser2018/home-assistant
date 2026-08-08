@@ -298,8 +298,8 @@ curl http://localhost:8001/ready     # {"status": "ready"}
 - Si ninguna puntuación de coincidencia supera el umbral de similitud configurado, responde el `FallbackPlugin`.
 
 **Resolución de Parámetros:**
-- Incorpora la capa contractual desacoplada (`core/parameter_resolution/`) con `ParameterResolverRegistry` y `ParameterResolverEngine`.
-- Permite resolver parámetros por tipo lógico sin acoplar el núcleo del orquestador a la lógica de cada tipo ni a plugins específicos.
+- Incorpora la capa contractual desacoplada (`core/parameter_resolution/`) con `ParameterResolverRegistry`, `ParameterResolverEngine` y el extractor especializado `IntegerResolver` para el tipo lógico `"Integer"`.
+- Permite resolver parámetros por tipo lógico sin acoplar el núcleo del orquestador a la lógica de cada tipo ni a plugins específicos. Extrae números cardinales en español (ej. `"cinco"`, `"ochenta"`, `"ciento veinte"`, `"mil"`) y cifras numéricas (ej. `"50"`), inyectando los parámetros resueltos en `PluginContext.parameters` (ej. parámetro `max` en `RandomNumberPlugin`).
 
 
 **Plugin de Capacidades (CapabilitiesPlugin):**

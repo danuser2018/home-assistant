@@ -23,6 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Implementación del resolver especializado `IntegerResolver` en `orchestrator` para extracción determinista de enteros en español y dígitos, junto con la adaptación de `RandomNumberPlugin` (`max: Integer`).
+- Nuevo documento de refinamiento `docs/refinement/integer_resolver_refinement.md` formalizando el resolver de enteros (Fase 2) en `orchestrator`.
 - Nuevo documento de refinamiento `docs/refinement/parameter_resolution_interfaces_refinement.md` formalizando la capa contractual de resolución de parámetros (Fase 1) en `orchestrator`.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-024-interfaces-resolucion-parametros-orquestador.md` formalizando la arquitectura contractual e interfaces desacopladas de resolución de parámetros en `orchestrator`.
 - Nuevo documento de workflow `.agent/workflows/System_snapshot_generation.md` que permite la generación de un documento sintético que sirve de base a modelos de IA para entender el estado del sistema en un momento dado sin necesidad de leer toda la documentación disponible.
