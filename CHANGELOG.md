@@ -23,6 +23,8 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Nuevo documento de refinamiento `docs/refinement/parameter_resolution_interfaces_refinement.md` formalizando la capa contractual de resolución de parámetros (Fase 1) en `orchestrator`.
+- Nuevo registro de decisión arquitectónica `docs/adr/adr-024-interfaces-resolucion-parametros-orquestador.md` formalizando la arquitectura contractual e interfaces desacopladas de resolución de parámetros en `orchestrator`.
 - Nuevo documento de workflow `.agent/workflows/System_snapshot_generation.md` que permite la generación de un documento sintético que sirve de base a modelos de IA para entender el estado del sistema en un momento dado sin necesidad de leer toda la documentación disponible.
 - Nuevo documento de refinamiento `docs/refinement/execute_shortcuts_refinement.md` formalizando la ejecución directa de shortcuts desde CLI en `interaction-manager`.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-023-estandarizacion-identificador-plugin-execution-plan.md` formalizando la estandarización del atributo `plugin.id` en el modelo `ExecutionPlan`.
@@ -30,8 +32,10 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
-- Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para incorporar el flujo de shortcuts en `interaction-manager` y unificar los payloads de respuesta con `plugin.id`.
-- Sincronización de las skills transversales (`api-contracts` y `service-responsibilities`) incorporando referencias al nuevo `ADR-023`.
+- Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para incorporar la resolución de parámetros en el orquestador, el registro del ADR-024, el flujo de shortcuts en `interaction-manager` y unificar los payloads de respuesta con `plugin.id`.
+
+- Sincronización de las skills transversales y de dominio (`api-contracts`, `service-responsibilities`, `architecture-decisions` y `plugin-domain`) incorporando referencias a `ADR-023` y `ADR-024`.
+
 
 
 - Actualizado `scripts/install.sh` y `scripts/uninstall.sh` para eliminar la copia y limpieza de los scripts legacy de micrófono en `~/.local/bin/`.

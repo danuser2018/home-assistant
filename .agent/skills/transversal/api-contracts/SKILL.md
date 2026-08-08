@@ -37,4 +37,6 @@ Versionado de APIs, nomenclatura de recursos, esquemas de error comunes y consis
 - [ADR-014: Separación de Responsabilidades en el Orquestador](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-014-refactorizacion-orquestador.md).
 - [ADR-015: Consolidación del Modelo ExecutionPlan y Eliminación del Endpoint Legado](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-015-consolidacion-execution-plan.md).
 - [ADR-023: Estandarización del Identificador de Plugin en el Modelo ExecutionPlan](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-023-estandarizacion-identificador-plugin-execution-plan.md).
+- [ADR-024: Arquitectura e Interfaces de Resolución de Parámetros en Orchestrator](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-024-interfaces-resolucion-parametros-orquestador.md).
+
 
