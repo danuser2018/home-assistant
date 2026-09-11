@@ -21,12 +21,15 @@ Los cambios se agrupan en las siguientes categorías:
 
 ## [Sin publicar]
 
+
 ### Añadido
 
 - Integración del nuevo microservicio **Security Service** (`security-service`) como autoridad central de autorización **User → Service** (MVP) en el ecosistema Nova:
   - Definición del contenedor `security-service` (`danuser2018/security-service:latest`) en `docker-compose.yml`, con puerto host `8010:8000`, red `assistant-network` y healthcheck en `GET /health`.
   - Configuración de dependencias de arranque (`depends_on: security-service: condition: service_healthy`) y variable `SECURITY_SERVICE_BASE_URL: http://security-service:8000` en los servicios `interaction-manager` y `orchestrator`.
   - Nuevo archivo de variables de entorno `config/security-service.env` para configurar la clave de firma `SECURITY_HMAC_SECRET`, `LOG_LEVEL` y tiempo de vida `TOKEN_TTL_SECONDS`.
+  - Configuración explícita de `SECURITY_HMAC_SECRET` en `config/orchestrator.env` para garantizar la correspondencia de firma criptográfica y validación de tokens entre `security-service` y `orchestrator`.
+  - Soporte para políticas de riesgo por canal (`voice` [high], `cli` [medium], `hotkey` [medium], `api` [low]).
   - Nuevo registro de decisión arquitectónica `docs/adr/adr-025-security-service-user-authorization.md` formalizando la autorización User → Service, el principio Fail Closed, la emisión de tokens HMAC-SHA256 y la publicación síncrona vía HTTP REST en el arranque.
   - Actualización del índice de decisiones arquitectónicas en `docs/adr/README.md` indexando el `ADR-025`.
   - Nueva skill de dominio de seguridad `.agent/skills/domains/security-domain/SKILL.md` estableciendo las leyes, invariantes (Fail Closed, atomicidad del plan, single-use tokens), reglas y antipatrones del subsistema de seguridad.
@@ -41,22 +44,6 @@ Los cambios se agrupan en las siguientes categorías:
 - Nuevo documento de refinamiento `docs/refinement/execute_shortcuts_refinement.md` formalizando la ejecución directa de shortcuts desde CLI en `interaction-manager`.
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-023-estandarizacion-identificador-plugin-execution-plan.md` formalizando la estandarización del atributo `plugin.id` en el modelo `ExecutionPlan`.
 - Nuevo documento de refinamiento `docs/refinement/eliminate_mic_scripts_refinement.md` formalizando la eliminación definitiva de los scripts de control de micrófono (`mic-start.sh`, `mic-stop.sh`, `mic-toggle.sh`) y la migración total hacia `novactl`.
-
-### Cambiado
-
-- Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para incorporar el microservicio `security-service`, documentar sus endpoints REST, sus responsabilidades como autoridad de seguridad User → Service, la resolución de parámetros en el orquestador, el registro del ADR-024 y ADR-025, el flujo de shortcuts en `interaction-manager` y unificar los payloads de respuesta con `plugin.id`.
-
-- Sincronización de las skills transversales y de dominio (`api-contracts`, `service-responsibilities`, `architecture-decisions` y `plugin-domain`) incorporando referencias a `ADR-023` y `ADR-024`.
-
-
-
-- Actualizado `scripts/install.sh` y `scripts/uninstall.sh` para eliminar la copia y limpieza de los scripts legacy de micrófono en `~/.local/bin/`.
-- Actualizado `docs/installation.md` (Paso 8) orientando la configuración de atajos de teclado directamente a los comandos `novactl start-capture` y `novactl stop-capture`.
-- Añadido un `Addendum (2026-08-02)` al `docs/adr/adr-021-deteccion-habla-eventos-mic-daemon.md` documentando la anulación del punto 4 por la eliminación de los scripts legacy.
-
-### Eliminado
-
-- Eliminada la copia de los scripts `mic-start`, `mic-stop` y `mic-toggle` hacia `~/.local/bin/`. *Nota de migración para usuarios con instalaciones previas:* ejecutar `rm -f ~/.local/bin/mic-toggle ~/.local/bin/mic-start ~/.local/bin/mic-stop` para eliminar binarios residuos.
 
 
 - Nuevo documento de refinamiento `docs/refinement/response_generated_event_consumed_refinement.md` formalizando la Fase 5 del Refactor de Entrada para el consumo asíncrono de `SpeechCapturedEvent` en `interaction-manager`.
@@ -79,7 +66,6 @@ Los cambios se agrupan en las siguientes categorías:
 - Registro de decisión arquitectónica `docs/adr/adr-016-integracion-calendar-service.md` formalizando la integración de `calendar-service` en el ecosistema.
 - Nuevo archivo de variables de entorno `config/calendar-service.env` para configurar el nivel de logs y ruta de datos de `calendar-service`.
 - Automatización de la creación y verificación de las carpetas de datos de calendario en `scripts/install.sh`, `scripts/uninstall.sh` y `scripts/healthcheck.sh`.
-
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-015-consolidacion-execution-plan.md` formalizando la consolidación del flujo desacoplado y la remoción de compatibilidades legacy.
 - Dos nuevos endpoints REST en el orquestador (`POST /api/v1/resolve` y `POST /api/v1/execute-plan`) y soporte para el esquema de plan de ejecución (`ExecutionPlan`).
 - Nuevo registro de decisión arquitectónica `docs/adr/adr-014-refactorizacion-orquestador.md` para formalizar la separación de responsabilidades entre el Intent Resolver y el Plugin Executor en el orquestador.
@@ -102,6 +88,12 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para incorporar el microservicio `security-service`, documentar sus endpoints REST, sus responsabilidades como autoridad de seguridad User → Service, la resolución de parámetros en el orquestador, el registro del ADR-024 y ADR-025, el flujo de shortcuts en `interaction-manager` y unificar los payloads de respuesta con `plugin.id`.
+- Sincronización de las skills transversales y de dominio (`api-contracts`, `service-responsibilities`, `architecture-decisions` y `plugin-domain`) incorporando referencias a `ADR-023` y `ADR-024`.
+- Actualizado `scripts/install.sh` y `scripts/uninstall.sh` para eliminar la copia y limpieza de los scripts legacy de micrófono en `~/.local/bin/`.
+- Actualizado `docs/installation.md` (Paso 8) orientando la configuración de atajos de teclado directamente a los comandos `novactl start-capture` y `novactl stop-capture`.
+- Añadido un `Addendum (2026-08-02)` al `docs/adr/adr-021-deteccion-habla-eventos-mic-daemon.md` documentando la anulación del punto 4 por la eliminación de los scripts legacy.
+
 - Actualización de la configuración en `config/interaction-manager.env` para incluir `NATS_URL=nats://nats:4222` y eliminar la variable obsoleta `POLL_INTERVAL_SECONDS`.
 - Actualización de la documentación técnica general del ecosistema (`docs/services.md` y `docs/architecture.md`) para reflejar la migración de `interaction-manager` a una arquitectura 100% orientada a eventos sobre NATS (`SpeechCapturedEvent`), eliminando la máquina de estados basada en polling del sistema de archivos.
 - Actualización de la documentación general del sistema (`docs/services.md`, `docs/architecture.md`, `docs/installation.md` y `docs/troubleshooting.md`) reflejando la transición de `mic-daemon` hacia la arquitectura event-driven sobre NATS y la eliminación del flag de estado `/tmp/voice_assistant/recording.flag`.
@@ -113,7 +105,6 @@ Los cambios se agrupan en las siguientes categorías:
 - Actualización de la documentación general (`docs/services.md` y `docs/architecture.md`) para incorporar la librería común `nova-event-bus` al catálogo de servicios y la topología de red y componentes.
 - Modificado el script de verificación global `scripts/healthcheck.sh` para verificar el Docker health status (`healthy`) de los contenedores que tengan healthcheck, y validar la disponibilidad del puerto de mensajería `4222` de NATS mediante sockets nativos de bash.
 - Sincronización de las skills transversales `system-deployment` y `communication-patterns` con la referencia al nuevo ADR-017 de NATS.
-
 - Actualización de la documentación general del sistema (`docs/services.md` y `docs/architecture.md`) para incorporar el servicio NATS en la topología de red privada, catálogo y decisiones de diseño clave.
 - Renombradas las clases del orquestador a `ExecutionPlanner` (antes `IntentResolver`) y `PlanExecutor` (antes `PluginExecutor`), y eliminada la clase `Router` junto con su método `route_request`.
 - Refactorizado el motor de decisión del orquestador en dos módulos desacoplados: `IntentResolver` (resolución semántica) y `PluginExecutor` (ejecución física de planes).
@@ -126,7 +117,6 @@ Los cambios se agrupan en las siguientes categorías:
 - Adaptación de los scripts globales `install.sh`, `uninstall.sh`, `update.sh` y `healthcheck.sh` para soportar la instalación, mantenimiento, actualización y monitoreo del servicio `hid-daemon`.
 - Actualización de la documentación general (`docs/services.md` y `docs/architecture.md`) para agregar `weather-service` al catálogo de servicios y descripción de componentes.
 - Actualización de la skill `system-deployment` para referenciar el nuevo `ADR-011`.
-
 - Actualización de la documentación global (`docs/architecture.md` y `docs/troubleshooting.md`) y del skill de dominio `plugin-domain` (`.agent/skills/domains/plugin-domain/SKILL.md`) en `home-assistant` para reflejar la eliminación de la lógica de coincidencia por keywords/regex legada en el `orchestrator`, consolidando el enrutamiento por similitud semántica determinista (RapidFuzz) y prioridad.
 - Migración del archivo de configuración unificado `config/assistant.env` a archivos `.env` específicos por servicio: se actualiza `docker-compose.yml` para que cada servicio Docker referencie su propio archivo de configuración mediante la directiva `env_file`, y las variables de infraestructura interna (URLs entre servicios, rutas de directorios compartidos) se mantienen declaradas inline bajo `environment:` en `docker-compose.yml`.
 - Actualización de `scripts/install.sh` y `scripts/update.sh` para leer las variables del modelo de voz TTS (`TTS_MODEL_NAME`, `TTS_MODEL_URL`) desde `config/tts-capability.env` en lugar del antiguo `config/assistant.env`.
@@ -165,6 +155,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Eliminado
 
+- Eliminada la copia de los scripts `mic-start`, `mic-stop` y `mic-toggle` hacia `~/.local/bin/`. *Nota de migración para usuarios con instalaciones previas:* ejecutar `rm -f ~/.local/bin/mic-toggle ~/.local/bin/mic-start ~/.local/bin/mic-stop` para eliminar binarios residuos.
 - Eliminado definitivamente el endpoint legado `POST /api/v1/execute` en el orquestador y toda su documentación asociada.
 - Eliminación total de la lógica de coincidencia y propiedades heredadas (`keywords`, `regex_patterns`, `exclusive_regex`) en todos los plugins del sistema `orchestrator` y en la clase base `Plugin`.
 - Archivo `config/assistant.env` eliminado definitivamente del repositorio. Su contenido ha sido distribuido en los 6 archivos `.env` individuales por servicio.
