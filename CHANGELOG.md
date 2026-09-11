@@ -24,6 +24,10 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Ampliación de las capacidades de la Capa de Abstracción de Host (**Host Service** / HAL) para la ejecución segura y desacoplada de comandos y aplicaciones locales del host:
+  - Nuevo registro de decisión arquitectónica `docs/adr/adr-026-host-service-command-execution.md` formalizando la ejecución controlada mediante identificador lógico canónico (`name`), catálogo cerrado declarativo (`config/host_commands.yaml`), ejecución sin shell (`shell=False`), política Fail Closed en el arranque y prevención de procesos zombies (`SIGCHLD`).
+  - Actualización del índice central de Architectural Decision Records en `docs/adr/README.md` indexando el `ADR-026`.
+  - Nuevo documento de refinamiento técnico `docs/refinement/host_service_command_execution_refinement.md` formalizando requisitos funcionales, criterios de aceptación Gherkin, arquitectura de ejecución y estrategia de pruebas.
 - Integración del nuevo microservicio **Security Service** (`security-service`) como autoridad central de autorización **User → Service** (MVP) en el ecosistema Nova:
   - Definición del contenedor `security-service` (`danuser2018/security-service:latest`) en `docker-compose.yml`, con puerto host `8010:8000`, red `assistant-network` y healthcheck en `GET /health`.
   - Configuración de dependencias de arranque (`depends_on: security-service: condition: service_healthy`) y variable `SECURITY_SERVICE_BASE_URL: http://security-service:8000` en los servicios `interaction-manager` y `orchestrator`.
@@ -88,6 +92,10 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
+- Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para reflejar la ampliación funcional de `host-service` (HAL):
+  - Documentación del nuevo endpoint `POST /v1/commands/execute` para ejecución asíncrona y no bloqueante de aplicaciones locales por identificador lógico bajo el estándar ADR-004 (`COMMAND_NOT_FOUND`, `VALIDATION_ERROR`, `COMMAND_EXECUTION_FAILED`).
+  - Sustitución de `config/host_commands_risk.yaml` por `config/host_commands.yaml` como fuente única de verdad para la definición física de argumentos (`argv`) y niveles de riesgo (`risk`).
+  - Documentación del mecanismo de publicación automática del catálogo de riesgos (`name` + `risk`) hacia `security-service` durante el arranque.
 - Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para incorporar el microservicio `security-service`, documentar sus endpoints REST, sus responsabilidades como autoridad de seguridad User → Service, la resolución de parámetros en el orquestador, el registro del ADR-024 y ADR-025, el flujo de shortcuts en `interaction-manager` y unificar los payloads de respuesta con `plugin.id`.
 - Sincronización de las skills transversales y de dominio (`api-contracts`, `service-responsibilities`, `architecture-decisions` y `plugin-domain`) incorporando referencias a `ADR-023` y `ADR-024`.
 - Actualizado `scripts/install.sh` y `scripts/uninstall.sh` para eliminar la copia y limpieza de los scripts legacy de micrófono en `~/.local/bin/`.
