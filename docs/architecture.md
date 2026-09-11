@@ -225,14 +225,20 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 │                                                             │
 │  interaction-manager ──► stt:8000                           │
 │                      ──► orchestrator:8000                  │
+│                      ──► security-service:8000              │
 │                      ──► tts:8000                           │
+│                      ──► nats:4222                          │
+│  orchestrator        ──► security-service:8000              │
 │  orchestrator        ──► system-service:8000                │
 │  orchestrator        ──► weather-service:8000               │
 │  orchestrator        ──► calendar-service:8000              │
+│  orchestrator        ──► context-service:8000               │
+│  orchestrator        ──► nats:4222                          │
 │  orchestrator        ──► host.docker.internal:8007 ────────►│── host-service (HAL)
+│  context-service     ──► nats:4222                          │
 │  mail-watchdog       ──► identity-service:8000              │
 │  mail-watchdog (salida SMTP al exterior)                    │
-│  nats (sin acoplar - puerto 4222)                           │
+│  nats (puerto 4222 clientes / 8222 healthz)                 │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
