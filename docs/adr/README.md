@@ -26,5 +26,6 @@
 | ADR-020 | Integración del CLI novactl | 20-07-2026 | Aceptado | [adr-020-integracion-novactl.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-020-integracion-novactl.md) |
 | ADR-021 | Detección de Habla basada en Eventos en mic-daemon | 22-07-2026 | Aceptado | [adr-021-deteccion-habla-eventos-mic-daemon.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-021-deteccion-habla-eventos-mic-daemon.md) |
 | ADR-022 | Estandarización de Nomenclatura para Comunicaciones Asíncronas | 24-07-2026 | Aceptado | [adr-022-estandarizacion-nomenclatura-mensajeria-asincrona.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-022-estandarizacion-nomenclatura-mensajeria-asincrona.md) |
-| ADR-023 | Estandarización del Identificador de Plugin en el Modelo ExecutionPlan | 02-08-2026 | Aceptado | [adr-023-estandarizacion-identificador-plugin-execution-plan.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-023-estandarizacion-identificador-plugin-execution-plan.md) |
+| ADR-024 | Arquitectura e Interfaces de Resolución de Parámetros en Orchestrator | 08-08-2026 | Aceptado | [adr-024-interfaces-resolucion-parametros-orquestador.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-024-interfaces-resolucion-parametros-orquestador.md) |
+| ADR-025 | Autorización User → Service (Security Service MVP) | 30-08-2026 | Aceptado | [adr-025-security-service-user-authorization.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-025-security-service-user-authorization.md) |
 

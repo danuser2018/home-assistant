@@ -1,6 +1,6 @@
 # Catálogo de Servicios
 
-El sistema Home Assistant está compuesto por **16 microservicios** (11 en Docker y 5 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
+El sistema Home Assistant está compuesto por **17 microservicios** (12 en Docker y 5 en el Host) con responsabilidades claramente delimitadas. Cada servicio tiene su propio repositorio con documentación técnica detallada.
 
 ---
 
@@ -14,6 +14,7 @@ El sistema Home Assistant está compuesto por **16 microservicios** (11 en Docke
 | `host-service` | Host (Systemd) | `danuser2018/host-service` | Capa de Abstracción de Host (HAL) y API de Audio |
 | `novactl` | Host (CLI) | `danuser2018/novactl` | CLI oficial del ecosistema Nova para emisión de comandos estructurados |
 | `interaction-manager` | Docker | `danuser2018/interaction-manager:latest` | Coordina el flujo completo |
+| `security-service` | Docker | `danuser2018/security-service:latest` | Autoridad central de autorización User -> Service |
 | `stt-capability` | Docker | `danuser2018/stt-capability:latest` | Convierte voz a texto (STT) |
 | `orchestrator` | Docker | `danuser2018/orchestrator:latest` | Selecciona y ejecuta la acción adecuada |
 | `tts-capability` | Docker | `danuser2018/tts-capability:latest` | Convierte texto a voz (TTS) |
@@ -251,6 +252,23 @@ Estos servicios se ejecutan en contenedores Docker gestionados por el `docker-co
 | `PROCESSING_DIR` | Carpeta de procesamiento (por defecto: `/data/processing`) |
 | `OUTPUT_DIR` | Carpeta de salida (por defecto: `/data/output`) |
 | `ERROR_DIR` | Carpeta de errores (por defecto: `/data/error`) |
+
+---
+
+### security-service
+
+**Imagen:** `danuser2018/security-service:latest`  
+**Puerto interno:** `8000` (expuesto en puerto host `8010` para depuración/desarrollo)
+
+**Propósito:** Autoridad central de autorización User → Service en el ecosistema Nova. Evalúa el nivel de riesgo de las acciones contenidas en un `ExecutionPlan` contra el canal de origen (`voice`, `cli`, `api`) bajo el principio de **Fail Closed Absoluto**. Si el plan es autorizado (`ALLOW`), emite tokens criptográficos HMAC-SHA256 de único uso.
+
+**Endpoints principales:**
+
+* **Registrar acciones de plugins:** `POST /v1/security/actions/register`
+* **Registrar catálogo de comandos host:** `POST /v1/security/tables/{table_name}`
+* **Autorizar ExecutionPlan:** `POST /v1/security/authorize`
+* **Gestión de políticas por canal:** `GET / PUT /v1/security/channels`
+* **Healthcheck:** `GET /health`
 
 ---
 

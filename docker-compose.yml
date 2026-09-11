@@ -9,6 +9,7 @@ services:
       STT_BASE_URL: http://stt:8000
       ORCHESTRATOR_BASE_URL: http://orchestrator:8000
       TTS_BASE_URL: http://tts:8000
+      SECURITY_SERVICE_BASE_URL: http://security-service:8000
       NATS_URL: nats://nats:4222
       INPUT_DIR: /data/input
       PROCESSING_DIR: /data/processing
@@ -20,6 +21,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
     depends_on:
+      security-service:
+        condition: service_healthy
       stt:
         condition: service_started
       orchestrator:
@@ -28,6 +31,25 @@ services:
         condition: service_started
       nats:
         condition: service_healthy
+    networks:
+      - assistant-network
+
+  security-service:
+    image: danuser2018/security-service:latest
+    container_name: security-service
+    env_file:
+      - config/security-service.env
+    ports:
+      - "8010:8000"  # Expuesto para healthcheck y depuración local
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - assistant-network
 
@@ -53,6 +75,7 @@ services:
       - config/orchestrator.env
     environment:
       SYSTEM_SERVICE_BASE_URL: http://system-service:8000
+      SECURITY_SERVICE_BASE_URL: http://security-service:8000
       MAIL_PENDING_DIR: /shared/mail/pending
       WEATHER_SERVICE_BASE_URL: http://weather-service:8000
       CALENDAR_SERVICE_BASE_URL: http://calendar-service:8000
@@ -69,6 +92,8 @@ services:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
     depends_on:
+      security-service:
+        condition: service_healthy
       system-service:
         condition: service_started
       weather-service:
