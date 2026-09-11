@@ -235,7 +235,6 @@ Estos servicios se ejecutan en contenedores Docker gestionados por el `docker-co
 
 | Variable | Valor por defecto | Descripción |
 |---|---|---|
-| `NATS_URL` | `nats://nats:4222` | URL del servidor broker NATS |
 | `DEFAULT_LANGUAGE` | `es` | Código de idioma predeterminado para transcripción y procesamiento |
 | `TTS_TIMEOUT` | `30` | Tiempo de espera máximo en segundos para peticiones a tts-capability |
 | `LOG_LEVEL` | `INFO` | Nivel de logging (detalle de registros) |
@@ -247,6 +246,7 @@ Estos servicios se ejecutan en contenedores Docker gestionados por el `docker-co
 | `STT_BASE_URL` | URL del servicio STT para comunicación interna en la red Docker (ej. `http://stt:8000`) |
 | `ORCHESTRATOR_BASE_URL` | URL del Orchestrator para comunicación interna en la red Docker (ej. `http://orchestrator:8000`) |
 | `TTS_BASE_URL` | URL del servicio TTS para comunicación interna en la red Docker (ej. `http://tts:8000`) |
+| `SECURITY_SERVICE_BASE_URL` | URL del servicio Security Service para autorización de planes (ej. `http://security-service:8000`) |
 | `NATS_URL` | URL del servidor broker NATS (ej. `nats://nats:4222`) |
 | `INPUT_DIR` | Carpeta de entrada (por defecto: `/data/input`) |
 | `PROCESSING_DIR` | Carpeta de procesamiento (por defecto: `/data/processing`) |
@@ -801,33 +801,35 @@ Ejemplo de flujo registrado por el contenedor:
 ## Comunicación entre Servicios
 
 ```text
-                    ┌──────────────────────────────────────────────────┐
-                    │      Red Docker: assistant-network               │
-                    │                                                  │
-                    │  interaction-manager                             │
-                    │      │                                           │
-                    │      ├──► stt:8000                               │
-                    │      ├──► orchestrator:8000 ───► system-service:8000
-                    │      │         │     ├─────────► weather-service:8000
-                    │      │         │     └─────────► calendar-service:8000
-                    │      │         │                                 │
-                    │      │         └───────(host.docker.internal:8007)┐
-                    │      └──► tts:8000                                │
-                    │                                                   │
-                    │  mail-watchdog ──► identity-service:8000          │
-                    │  mail-watchdog ──► Servidor SMTP (exterior)       │
-                    │  weather-service ──► API Open-Meteo (exterior)    │
-                    │  nats (Bus de eventos: pub/sub asíncrono)         │
-                    └───────────────────────────────────────────────────┘
-                               │           │                            │
-                        Volumen Docker: ./data / ./calendar-data         │
-                               │           │                            │
-                    ┌─────────┴───────────┴──────────┐                  │
-                    │         HOST (Linux)             │◄───────────────┘
+                    ┌─────────────────────────────────────────────────────────────┐
+                    │      Red Docker: assistant-network                          │
+                    │                                                             │
+                    │  interaction-manager                                        │
+                    │      │                                                      │
+                    │      ├──► stt:8000                                          │
+                    │      ├──► security-service:8000 (autorización)              │
+                    │      ├──► orchestrator:8000 ───► system-service:8000        │
+                    │      │         │     ├─────────► weather-service:8000       │
+                    │      │         │     ├─────────► calendar-service:8000      │
+                    │      │         │     ├─────────► context-service:8000       │
+                    │      │         │     ├─────────► security-service:8000      │
+                    │      │         │     └─────────(host.docker.internal:8007)─┐│
+                    │      └──► tts:8000                                         ││
+                    │                                                            ││
+                    │  mail-watchdog ──► identity-service:8000                   ││
+                    │  mail-watchdog ──► Servidor SMTP (exterior)                ││
+                    │  weather-service ──► API Open-Meteo (exterior)             ││
+                    │  nats (Bus de eventos: pub/sub asíncrono)                  ││
+                    └────────────────────────────────────────────────────────────┼┘
+                               │           │                                     │
+                        Volumen Docker: ./data / ./calendar-data                 │
+                               │           │                                     │
+                    ┌──────────┴───────────┴──────────┐                          │
+                    │         HOST (Linux)            │◄─────────────────────────┘
                     │                                 │
                     │  mic-daemon ──► data/input/     │
-                    │  speaker-watchdog ◄── data/output/│
-                    │  plugins ──► data/mail/pending/  │
-                    │  host-service:8007 (HAL / Audio)│
+                    │  speaker-watchdog ◄── data/output/
+                    │  plugins ──► data/mail/pending/ │
+                    │  host-service:8007 (HAL / Audio)│──► security-service:8010
                     └─────────────────────────────────┘
 ```

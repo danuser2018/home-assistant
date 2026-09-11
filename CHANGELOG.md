@@ -145,6 +145,11 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Corregido
 
+- Corrección de inconsistencias y deuda documental identificadas en el ecosistema:
+  - Incorporación de `ADR-023` en la tabla resumen del registro central de decisiones arquitectónicas en `docs/adr/README.md`.
+  - Actualización de los diagramas de arquitectura de red y comunicación entre servicios en `docs/architecture.md` y `docs/services.md` para reflejar el microservicio `security-service`, `context-service` y el broker NATS.
+  - Sincronización del catálogo de skills en `.agent/skills/README.md` incorporando la skill transversal `event-driven-architecture` y la skill de dominio `security-domain`.
+  - Corrección de la documentación de variables de entorno de `interaction-manager` en `docs/services.md`, removiendo `NATS_URL` del listado de `.env` (declarada inline en compose) e incorporando `SECURITY_SERVICE_BASE_URL`.
 - Corrección del diagrama de red interna de Docker en `docs/architecture.md` (sección "Red Interna de Docker") para reflejar la ruta de salida `orchestrator → host.docker.internal:8007 → host-service (HAL)`, haciéndolo consistente con el diagrama equivalente ya correcto en `docs/services.md`.
 - Corrección del desfase horario en todos los contenedores Docker del ecosistema Nova-2 mediante el montaje en modo lectura de los ficheros `/etc/localtime` y `/etc/timezone` del host en `docker-compose.yml`, sincronizando el entorno de ejecución (incluyendo los plugins de fecha y hora del `orchestrator`) con la zona horaria del sistema host (Europe/Madrid).
 - Se corrigen pequeños errores y discrepancias encontrados en algunas de las skills.

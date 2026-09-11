@@ -75,11 +75,13 @@ $$\text{Transversal} > \text{Domain Rules} > \text{Subsystem Rules} > \text{Plug
 *   [`system-deployment`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/system-deployment/SKILL.md): Variables de entorno, docker-compose local y systemd de usuario.
 *   [`architecture-decisions`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/architecture-decisions/SKILL.md): Triggers para redactar y sugerir Architectural Decision Records (ADRs).
 *   [`feature-refinement`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/feature-refinement/SKILL.md): Reglas y plantilla para el refinamiento técnico y de negocio de nuevas features.
+*   [`event-driven-architecture`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/transversal/event-driven-architecture/SKILL.md): Reglas y directrices para el diseño, publicación y consumo de eventos consistentes y tipados en el ecosistema Nova-2.
 
 
 ### Skills de Dominio (Reglas de Negocio)
 *   [`identity-domain`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/domains/identity-domain/SKILL.md): Privacidad de datos del usuario, propiedad y correo primario.
 *   [`system-domain`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/domains/system-domain/SKILL.md): Registro global de metadatos, capacidades de servicios y feature flags.
+*   [`security-domain`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/domains/security-domain/SKILL.md): Reglas de arquitectura, gobernanza y seguridad para la autorización User -> Service en el ecosistema Nova.
 *   [`mail-domain`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/domains/mail-domain/SKILL.md): Transiciones y fiabilidad anti-pérdida de la cola física de correo.
 *   [`plugin-domain`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/domains/plugin-domain/SKILL.md): Contrato de plugins de intenciones y estilo de respuestas de voz Nova-2.
 *   [`audio-subsystem`](file:///home/danuser2018/workspace/home-assistant/.agent/skills/domains/audio-subsystem/SKILL.md): PipeWire/PulseAudio en el host, secuenciación en cola única de audios y archivo bandera.
