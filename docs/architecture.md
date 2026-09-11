@@ -119,8 +119,8 @@ Usuario          mic-daemon           NATS        data/input   interaction-manag
 #### `host-service`
 - **Repositorio:** `danuser2018/host-service`
 - **Lenguaje:** Python 3.10+
-- **Rol:** Actúa como la Capa de Abstracción del Host (HAL). Expone una API REST local en el puerto `8007` para controlar de manera segura recursos físicos del host como el volumen del sistema (lectura, incrementos, decrementos y fijación de nivel objetivo absoluto vía `POST /v1/audio/volume/set`) y su estado de silencio mediante la utilidad `pactl`.
-- **Principio clave:** Capa intermedia segura que aísla las herramientas y dependencias del sistema operativo del plano de procesamiento en Docker.
+- **Rol:** Actúa como la Capa de Abstracción del Host (HAL). Expone una API REST local en el puerto `8007` para controlar de manera segura recursos físicos del host como el volumen del sistema (lectura, incrementos, decrementos y fijación de nivel objetivo absoluto vía `POST /v1/audio/volume/set`) y su estado de silencio mediante la utilidad `pactl`, así como la ejecución asíncrona y segura de aplicaciones locales (`POST /v1/commands/execute`) mediante identificadores lógicos y un catálogo cerrado (`config/host_commands.yaml`) sin invocación de shell.
+- **Principio clave:** Capa intermedia segura (Zero Trust / No Shell) que aísla las herramientas y dependencias del sistema operativo del plano de procesamiento en Docker y publica dinámicamente los niveles de riesgo hacia `security-service`.
 
 #### `novactl`
 - **Repositorio:** `danuser2018/novactl`

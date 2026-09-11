@@ -29,4 +29,5 @@
 | ADR-023 | Estandarización del Identificador de Plugin en el Modelo ExecutionPlan | 02-08-2026 | Aceptado | [adr-023-estandarizacion-identificador-plugin-execution-plan.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-023-estandarizacion-identificador-plugin-execution-plan.md) |
 | ADR-024 | Arquitectura e Interfaces de Resolución de Parámetros en Orchestrator | 08-08-2026 | Aceptado | [adr-024-interfaces-resolucion-parametros-orquestador.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-024-interfaces-resolucion-parametros-orquestador.md) |
 | ADR-025 | Autorización User → Service (Security Service MVP) | 30-08-2026 | Aceptado | [adr-025-security-service-user-authorization.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-025-security-service-user-authorization.md) |
+| ADR-026 | Ejecución Segura de Comandos de Host en Host Service | 11-09-2026 | Aceptado | [adr-026-host-service-command-execution.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-026-host-service-command-execution.md) |
 

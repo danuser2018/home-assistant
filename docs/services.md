@@ -11,7 +11,7 @@ El sistema Home Assistant está compuesto por **17 microservicios** (12 en Docke
 | `mic-daemon` | Host (Systemd) | `danuser2018/mic-daemon` | Graba voz del micrófono |
 | `speaker-watchdog` | Host (Systemd) | `danuser2018/speaker-watchdog` | Reproduce respuestas de audio |
 | `hid-daemon` | Host (Systemd) | `danuser2018/hid-daemon` | Escucha eventos HID y ejecuta comandos del sistema |
-| `host-service` | Host (Systemd) | `danuser2018/host-service` | Capa de Abstracción de Host (HAL) y API de Audio |
+| `host-service` | Host (Systemd) | `danuser2018/host-service` | Capa de Abstracción de Host (HAL), API de Audio y Ejecución de Comandos |
 | `novactl` | Host (CLI) | `danuser2018/novactl` | CLI oficial del ecosistema Nova para emisión de comandos estructurados |
 | `interaction-manager` | Docker | `danuser2018/interaction-manager:latest` | Coordina el flujo completo |
 | `security-service` | Docker | `danuser2018/security-service:latest` | Autoridad central de autorización User -> Service |
@@ -132,13 +132,14 @@ journalctl --user -u hid-daemon -f
 
 **Repositorio:** `danuser2018/host-service`
 
-**Propósito:** Actúa como la Capa de Abstracción del Host (HAL), exponiendo una API REST local para controlar de manera segura recursos físicos del host como el volumen de audio del sistema y su estado de silencio.
+**Propósito:** Actúa como la Capa de Abstracción del Host (HAL), exponiendo una API REST local para controlar de manera segura recursos físicos del host (volumen y estado de silencio de audio del sistema) y ejecutar aplicaciones locales del sistema operativo host mediante un identificador lógico canónico y un catálogo cerrado sin acceso a shell.
 
 **Cómo funciona:**
 1. Escucha peticiones HTTP locales en el puerto `8007`.
-2. Al recibir peticiones REST, ejecuta la utilidad nativa `pactl` mediante subprocesos efímeros en el host.
-3. Parsea y devuelve en formato JSON estructurado el volumen y estado de silencio actual de PulseAudio/PipeWire.
-4. Valida los parámetros mediante Pydantic y unifica el manejo de errores.
+2. Al recibir peticiones de audio, ejecuta la utilidad nativa `pactl` mediante subprocesos efímeros en el host y devuelve en formato JSON estructurado el volumen y silencio actual de PulseAudio/PipeWire.
+3. Al recibir peticiones de ejecución de comandos (`POST /v1/commands/execute`), recupera la definición física (`argv`) desde el catálogo cerrado `config/host_commands.yaml` y la lanza de forma desacoplada y no bloqueante mediante `subprocess.Popen(argv, shell=False, start_new_session=True)`.
+4. Durante el arranque, valida de forma estricta (política Fail Closed) el catálogo unificado `config/host_commands.yaml` y publica automáticamente la tabla de riesgos (`name` + `risk`) a `security-service` (`POST /v1/security/tables/host_commands`), habiendo sustituido por completo al archivo obsoleto `config/host_commands_risk.yaml`.
+5. Valida los parámetros mediante Pydantic y estandariza el manejo de errores conforme a ADR-004.
 
 **Configuración relevante** (`config/host-service.env`):
 
@@ -147,6 +148,8 @@ journalctl --user -u hid-daemon -f
 | `HOST` | ❌ No | `0.0.0.0` | Dirección IP de red a la que se vincula el servidor |
 | `PORT` | ❌ No | `8007` | Puerto en el que escucha el servidor |
 | `LOG_LEVEL` | ❌ No | `INFO` | Nivel de logs (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
+| `SECURITY_SERVICE_BASE_URL` | ❌ No | `http://security-service:8000` | URL base del microservicio `security-service` para publicar el catálogo dinámico de riesgos |
+| `HOST_COMMANDS_FILE` | ❌ No | `config/host_commands.yaml` | Ruta al fichero YAML que contiene el catálogo unificado y cerrado de comandos de host |
 
 **Gestión:**
 ```bash
@@ -170,6 +173,23 @@ Content-Type: application/json
 {
   "volume": 80,
   "muted": false
+}
+```
+
+* **Ejecutar comando del host por identificador lógico:**
+```http
+POST /v1/commands/execute
+Content-Type: application/json
+
+{"command": "calculator"}
+```
+
+**Respuesta:**
+```json
+{
+  "command": "calculator",
+  "status": "started",
+  "pid": 48219
 }
 ```
 
@@ -830,6 +850,6 @@ Ejemplo de flujo registrado por el contenedor:
                     │  mic-daemon ──► data/input/     │
                     │  speaker-watchdog ◄── data/output/
                     │  plugins ──► data/mail/pending/ │
-                    │  host-service:8007 (HAL / Audio)│──► security-service:8010
-                    └─────────────────────────────────┘
+                    │  host-service:8007 (HAL / Audio / Comandos)│──► security-service:8010
+                    └────────────────────────────────────────────┘
 ```

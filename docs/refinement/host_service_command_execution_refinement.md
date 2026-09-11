@@ -592,36 +592,36 @@ sequenceDiagram
 ## 7. Plan de Implementación
 
 ### Fase 1: Preparación de Configuración y Modelos de Datos
-- [ ] **Tarea 1.1**: Añadir la dependencia `pyyaml>=6.0.1` en `host-service/requirements.txt`.
-- [ ] **Tarea 1.2**: Crear el archivo de configuración declarativo `host-service/config/host_commands.yaml` conteniendo el catálogo canónico unificado (`calculator`, `github`, `backup`, `format-disk`).
-- [ ] **Tarea 1.3**: Modificar `src/config.py` en `host-service` para añadir la variable `HOST_COMMANDS_FILE: str = "config/host_commands.yaml"` en la clase `Settings`.
-- [ ] **Tarea 1.4**: Crear el módulo `src/models/commands.py` implementando los modelos Pydantic: `RiskLevel`, `HostCommand`, `ExecuteCommandRequest`, `ExecuteCommandResponse`, `SecurityCommandEntry` y `SecurityCatalogPublishPayload`.
-- [ ] **Tarea 1.5**: Registrar los códigos de error `COMMAND_NOT_FOUND` y `COMMAND_EXECUTION_FAILED` en `src/models/error.py` para asegurar consistencia con ADR-004.
+- [x] **Tarea 1.1**: Añadir la dependencia `pyyaml>=6.0.1` en `host-service/requirements.txt`.
+- [x] **Tarea 1.2**: Crear el archivo de configuración declarativo `host-service/config/host_commands.yaml` conteniendo el catálogo canónico unificado (`calculator`, `github`, `backup`, `format-disk`).
+- [x] **Tarea 1.3**: Modificar `src/config.py` en `host-service` para añadir la variable `HOST_COMMANDS_FILE: str = "config/host_commands.yaml"` en la clase `Settings`.
+- [x] **Tarea 1.4**: Crear el módulo `src/models/commands.py` implementando los modelos Pydantic: `RiskLevel`, `HostCommand`, `ExecuteCommandRequest`, `ExecuteCommandResponse`, `SecurityCommandEntry` y `SecurityCatalogPublishPayload`.
+- [x] **Tarea 1.5**: Registrar los códigos de error `COMMAND_NOT_FOUND` y `COMMAND_EXECUTION_FAILED` en `src/models/error.py` para asegurar consistencia con ADR-004.
 
 ### Fase 2: Implementación de CommandRegistry y Validación Fail Closed
-- [ ] **Tarea 2.1**: Implementar la clase de excepción `InvalidCatalogError` y la clase `CommandRegistry` en `src/services/command_registry.py`, con métodos `load_from_file`, `get`, `list_all` y `export_security_catalog`.
-- [ ] **Tarea 2.2**: Implementar las validaciones estrictas en `CommandRegistry.load_from_file`: existencia de archivo, sintaxis YAML, estructura de lista no vacía, validación de modelos Pydantic y detección de identificadores duplicados.
-- [ ] **Tarea 2.3**: Crear la suite de pruebas unitarias `tests/test_command_registry.py` cubriendo carga nominal, casos de fallo sintáctico, duplicados, campos vacíos y exportación de seguridad.
+- [x] **Tarea 2.1**: Implementar la clase de excepción `InvalidCatalogError` y la clase `CommandRegistry` en `src/services/command_registry.py`, con métodos `load_from_file`, `get`, `list_all` y `export_security_catalog`.
+- [x] **Tarea 2.2**: Implementar las validaciones estrictas en `CommandRegistry.load_from_file`: existencia de archivo, sintaxis YAML, estructura de lista no vacía, validación de modelos Pydantic y detección de identificadores duplicados.
+- [x] **Tarea 2.3**: Crear la suite de pruebas unitarias `tests/test_command_registry.py` cubriendo carga nominal, casos de fallo sintáctico, duplicados, campos vacíos y exportación de seguridad.
 
 ### Fase 3: Implementación de CommandExecutor y Lanzamiento de Procesos
-- [ ] **Tarea 3.1**: Implementar la clase `CommandExecutor` y la excepción `CommandExecutionError` en `src/services/command_executor.py`.
-- [ ] **Tarea 3.2**: Configurar la llamada a `subprocess.Popen` con argumentos explícitos: `shell=False`, `start_new_session=True` y streams redirigidos a `subprocess.DEVNULL`.
-- [ ] **Tarea 3.3**: Incorporar el manejo de excepciones del sistema operativo (`FileNotFoundError`, `PermissionError`, `OSError`) traduciéndolas a `CommandExecutionError`.
-- [ ] **Tarea 3.4**: Crear la suite de pruebas unitarias `tests/test_command_executor.py` utilizando mocks de `subprocess.Popen` y validando aislamiento de sesión y gestión de errores.
+- [x] **Tarea 3.1**: Implementar la clase `CommandExecutor` y la excepción `CommandExecutionError` en `src/services/command_executor.py`.
+- [x] **Tarea 3.2**: Configurar la llamada a `subprocess.Popen` con argumentos explícitos: `shell=False`, `start_new_session=True` y streams redirigidos a `subprocess.DEVNULL`.
+- [x] **Tarea 3.3**: Incorporar el manejo de excepciones del sistema operativo (`FileNotFoundError`, `PermissionError`, `OSError`) traduciéndolas a `CommandExecutionError`.
+- [x] **Tarea 3.4**: Crear la suite de pruebas unitarias `tests/test_command_executor.py` utilizando mocks de `subprocess.Popen` y validando aislamiento de sesión y gestión de errores.
 
 ### Fase 4: Endpoints REST, Ciclo de Vida y Migración de Publicación
-- [ ] **Tarea 4.1**: Crear el router de FastAPI `src/routes/commands.py` con el endpoint `POST /v1/commands/execute`, inyectando las instancias de `CommandRegistry` y `CommandExecutor`.
-- [ ] **Tarea 4.2**: Migrar la función de publicación a `security-service` (`publish_command_catalog`) dentro de `src/services/command_registry.py` para consumir directamente los datos de `CommandRegistry`, publicando el payload filtrado en `POST /v1/security/tables/host_commands`.
-- [ ] **Tarea 4.3**: Modificar `src/app.py`:
+- [x] **Tarea 4.1**: Crear el router de FastAPI `src/routes/commands.py` con el endpoint `POST /v1/commands/execute`, inyectando las instancias de `CommandRegistry` y `CommandExecutor`.
+- [x] **Tarea 4.2**: Migrar la función de publicación a `security-service` (`publish_command_catalog`) dentro de `src/services/command_registry.py` para consumir directamente los datos de `CommandRegistry`, publicando el payload filtrado en `POST /v1/security/tables/host_commands`.
+- [x] **Tarea 4.3**: Modificar `src/app.py`:
   - En el `lifespan`: inicializar `CommandRegistry`, ejecutar `load_from_file` (fallando el arranque si el catálogo es inválido), configurar `signal.signal(signal.SIGCHLD, signal.SIG_IGN)` e invocar la publicación a `security-service`.
   - Registrar los manejadores globales de excepción para `CommandExecutionError` (500).
   - Incluir el router `commands_router` bajo el prefijo `/v1/commands`.
-- [ ] **Tarea 4.4**: Eliminar el archivo obsoleto `host-service/config/host_commands_risk.yaml` y deprecar `src/services/command_catalog.py`.
-- [ ] **Tarea 4.5**: Crear la suite de pruebas de integración `tests/test_commands_api.py` y actualizar `tests/test_command_catalog.py`.
-- [ ] **Tarea 4.6**: Ejecutar la suite completa de pruebas en `host-service` (`pytest`) validando 100% de éxito y ausencia de regresiones en las APIs de audio existentes.
+- [x] **Tarea 4.4**: Eliminar el archivo obsoleto `host-service/config/host_commands_risk.yaml` y deprecar `src/services/command_catalog.py`.
+- [x] **Tarea 4.5**: Crear la suite de pruebas de integración `tests/test_commands_api.py` y actualizar `tests/test_command_catalog.py`.
+- [x] **Tarea 4.6**: Ejecutar la suite completa de pruebas en `host-service` (`pytest`) validando 100% de éxito y ausencia de regresiones en las APIs de audio existentes.
 
 ### Fase 5: Documentación, ADR y Catálogo de Servicios
-- [ ] **Tarea 5.1**: Redactar y registrar la decisión arquitectónica en `home-assistant/docs/adr/adr-026-host-service-command-execution.md` documentando la ampliación de responsabilidades de `host-service` hacia la ejecución segura de comandos por identificador lógico.
-- [ ] **Tarea 5.2**: Actualizar la documentación de `host-service` en `home-assistant/docs/services.md` documentando los nuevos endpoints de comandos, el archivo `config/host_commands.yaml` y la eliminación de `host_commands_risk.yaml`.
-- [ ] **Tarea 5.3**: Actualizar la sección de la Capa de Abstracción de Host (HAL) en `home-assistant/docs/architecture.md`.
-- [ ] **Tarea 5.4**: Actualizar el `README.md` y `CHANGELOG.md` en el repositorio `host-service` registrando los nuevos endpoints y el modelo de ejecución.
+- [x] **Tarea 5.1**: Redactar y registrar la decisión arquitectónica en `home-assistant/docs/adr/adr-026-host-service-command-execution.md` documentando la ampliación de responsabilidades de `host-service` hacia la ejecución segura de comandos por identificador lógico.
+- [x] **Tarea 5.2**: Actualizar la documentación de `host-service` en `home-assistant/docs/services.md` documentando los nuevos endpoints de comandos, el archivo `config/host_commands.yaml` y la eliminación de `host_commands_risk.yaml`.
+- [x] **Tarea 5.3**: Actualizar la sección de la Capa de Abstracción de Host (HAL) en `home-assistant/docs/architecture.md`.
+- [x] **Tarea 5.4**: Actualizar el `README.md` y `CHANGELOG.md` en el repositorio `host-service` registrando los nuevos endpoints y el modelo de ejecución.
