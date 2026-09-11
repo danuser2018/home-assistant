@@ -13,7 +13,7 @@ El sistema se divide en dos planos de ejecución:
 | Plano | Tipo | Servicios |
 |---|---|---|
 | **Hardware** | Systemd User Services (host) | `mic-daemon`, `speaker-watchdog`, `hid-daemon`, `host-service` |
-| **Procesamiento** | Contenedores Docker | `interaction-manager`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service`, `calendar-service`, `context-service`, `nats` |
+| **Procesamiento** | Contenedores Docker | `interaction-manager`, `security-service`, `stt-capability`, `orchestrator`, `tts-capability`, `system-service`, `mail-watchdog`, `identity-service`, `weather-service`, `calendar-service`, `context-service`, `nats` |
 
 
 ### ¿Por qué esta separación?
@@ -133,9 +133,14 @@ Usuario          mic-daemon           NATS        data/input   interaction-manag
 #### `interaction-manager`
 - **Imagen:** `danuser2018/interaction-manager:latest`
 - **Puerto:** ninguno expuesto al host
-- **Rol:** Coordinador del flujo completo. Reacciona de forma asíncrona al evento `SpeechCapturedEvent` publicado por `mic-daemon` en NATS (`event.speech.captured`) o a órdenes de ejecución directa `ExecuteShortcutCommand` desde la CLI (`novactl execute`) en `command.interaction.execute-shortcut`. Para el flujo de voz, orquesta las llamadas síncronas STT → Orchestrator → TTS. Para el flujo de shortcuts, construye directamente un `ExecutionPlan` (confidence=100.0) e invoca `POST /api/v1/execute-plan` en Orchestrator → TTS. El resultado se guarda en `output/` o, en caso de error, en `error/`.
-
+- **Rol:** Coordinador del flujo completo. Reacciona de forma asíncrona al evento `SpeechCapturedEvent` publicado por `mic-daemon` en NATS (`event.speech.captured`) o a órdenes de ejecución directa `ExecuteShortcutCommand` desde la CLI (`novactl execute`) en `command.interaction.execute-shortcut`. Para el flujo de voz, orquesta las llamadas síncronas STT → Orchestrator → Security → TTS. Para el flujo de shortcuts, construye directamente un `ExecutionPlan` (confidence=100.0), solicita autorización a `security-service` e invoca `POST /api/v1/execute-plan` en Orchestrator → TTS. El resultado se guarda en `output/` o, en caso de error, en `error/`.
 - **Comunicación:** Eventos NATS vía `nova-event-bus`, volumen Docker compartido para los directorios `data/`, HTTP/REST para los servicios internos.
+
+#### `security-service`
+- **Imagen:** `danuser2018/security-service:latest`
+- **Puerto interno:** `8000` (expuesto en puerto host `8010`)
+- **Rol:** Autoridad centralizada de autorización User → Service. Evalúa el riesgo de cada acción del `ExecutionPlan` frente a la política del canal solicitante (`voice`, `cli`, `api`). Aplica el principio de **Fail Closed Absoluto** y evaluación atómica del plan. En caso de autorización exitosa (`ALLOW`), genera tokens criptográficos HMAC-SHA256 de único uso acotados al `execution_id` y `action_id`.
+- **API:** `POST /v1/security/actions/register`, `POST /v1/security/tables/{table_name}`, `POST /v1/security/authorize`, `GET/PUT /v1/security/channels` y `GET /health`.
 
 #### `stt-capability`
 - **Imagen:** `danuser2018/stt-capability:latest`

@@ -23,6 +23,14 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Integración del nuevo microservicio **Security Service** (`security-service`) como autoridad central de autorización **User → Service** (MVP) en el ecosistema Nova:
+  - Definición del contenedor `security-service` (`danuser2018/security-service:latest`) en `docker-compose.yml`, con puerto host `8010:8000`, red `assistant-network` y healthcheck en `GET /health`.
+  - Configuración de dependencias de arranque (`depends_on: security-service: condition: service_healthy`) y variable `SECURITY_SERVICE_BASE_URL: http://security-service:8000` en los servicios `interaction-manager` y `orchestrator`.
+  - Nuevo archivo de variables de entorno `config/security-service.env` para configurar la clave de firma `SECURITY_HMAC_SECRET`, `LOG_LEVEL` y tiempo de vida `TOKEN_TTL_SECONDS`.
+  - Nuevo registro de decisión arquitectónica `docs/adr/adr-025-security-service-user-authorization.md` formalizando la autorización User → Service, el principio Fail Closed, la emisión de tokens HMAC-SHA256 y la publicación síncrona vía HTTP REST en el arranque.
+  - Actualización del índice de decisiones arquitectónicas en `docs/adr/README.md` indexando el `ADR-025`.
+  - Nueva skill de dominio de seguridad `.agent/skills/domains/security-domain/SKILL.md` estableciendo las leyes, invariantes (Fail Closed, atomicidad del plan, single-use tokens), reglas y antipatrones del subsistema de seguridad.
+  - Nueva especificación de requisitos en `docs/features/security-service-user-authorization-requirements.md` y documento de refinamiento técnico en `docs/refinement/security_service_user_authorization_refinement.md`.
 - Implementación del plugin de intenciones `VolumeSetPlugin` (identificador canónico `volume-set`) en `orchestrator` para permitir el ajuste de volumen objetivo absoluto entre 0 y 100%, delegando en `POST /v1/audio/volume/set` de `host-service`.
 
 - Implementación del resolver especializado `IntegerResolver` en `orchestrator` para extracción determinista de enteros en español y dígitos, junto con la adaptación de `RandomNumberPlugin` (`max: Integer`).
@@ -36,7 +44,7 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Cambiado
 
-- Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para incorporar la resolución de parámetros en el orquestador, el registro del ADR-024, el flujo de shortcuts en `interaction-manager` y unificar los payloads de respuesta con `plugin.id`.
+- Actualización de la documentación central del ecosistema (`docs/architecture.md` y `docs/services.md`) para incorporar el microservicio `security-service`, documentar sus endpoints REST, sus responsabilidades como autoridad de seguridad User → Service, la resolución de parámetros en el orquestador, el registro del ADR-024 y ADR-025, el flujo de shortcuts en `interaction-manager` y unificar los payloads de respuesta con `plugin.id`.
 
 - Sincronización de las skills transversales y de dominio (`api-contracts`, `service-responsibilities`, `architecture-decisions` y `plugin-domain`) incorporando referencias a `ADR-023` y `ADR-024`.
 
