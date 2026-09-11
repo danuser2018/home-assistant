@@ -15,7 +15,7 @@ Garantizar la evaluación determinista del riesgo de las acciones de los usuario
 - Al verificar tokens de autorización antes de ejecutar acciones en `orchestrator`.
 
 ## Responsabilidades
-Registro de acciones y catálogos de comandos host, gestión de políticas por canal (`voice`, `cli`, `api`), evaluación atómica de riesgo y generación/validación de tokens criptográficos HMAC-SHA256 de único uso.
+Registro de acciones y catálogos de comandos host, gestión de políticas por canal (`voice`, `cli`, `hotkey`, `api`), evaluación atómica de riesgo y generación/validación de tokens criptográficos HMAC-SHA256 de único uso.
 
 ## Invariantes (Leyes — 🔴 Críticas — Hard Constraints)
 - **Fail Closed Absoluto:** Ante la falta o invalidez de datos de autorización, canal no registrado o política no calculable, la decisión por defecto es siempre `DENY`.
