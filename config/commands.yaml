@@ -1,0 +1,43 @@
+# =============================================================================
+# NOVA Central Command Catalog (Single Source of Truth)
+# Defines logical commands, user-configured risk, natural language phrases,
+# and private physical execution commands for host-service.
+# =============================================================================
+
+commands:
+  - name: calculator
+    command:
+      - gnome-calculator
+    risk: low
+    phrases:
+      - calculadora
+      - maquina de calcular
+      - el programa de cuentas
+      - abre la calculadora
+
+  - name: github
+    command:
+      - github
+    risk: low
+    phrases:
+      - github
+      - abrir github
+      - git hub
+
+  - name: backup
+    command:
+      - /usr/local/bin/nova-backup
+      - --quick
+    risk: medium
+    phrases:
+      - copia de seguridad
+      - hacer backup
+      - respaldar datos
+
+  - name: format-disk
+    command:
+      - /usr/local/bin/nova-format-disk
+    risk: high
+    phrases:
+      - formatear disco externo
+      - formatear unidad usb

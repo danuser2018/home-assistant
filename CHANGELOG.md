@@ -24,6 +24,13 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Implementación del Catálogo Centralizado de Comandos (`config/commands.yaml`), distribución asíncrona periódica vía NATS (`event.host.commands.available`) y resolución determinista de comandos ponderada por riesgo (`CommandResolver`) en Nova-2:
+  - Nuevo archivo de configuración global `config/commands.yaml` como única fuente de verdad (*Single Source of Truth*) para identificadores lógicos, ejecutables físicos de host, niveles de riesgo y frases en lenguaje natural.
+  - Nuevo registro de decisión arquitectónica `docs/adr/adr-027-command-resolver-catalogo-comandos-nats.md` formalizando la arquitectura desacoplada por eventos, el aislamiento de ejecutables físicos y la resolución ponderada por riesgo.
+  - Actualización del índice de decisiones arquitectónicas en `docs/adr/README.md` indexando el `ADR-027`.
+  - Configuración de conexión NATS en `security-service` con `NATS_URL=nats://nats:4222` directamente en `docker-compose.yml` (variable de infraestructura según ADR-010) y dependencia `depends_on: nats: condition: service_healthy`.
+  - Configuración de `COMMANDS_FILE=config/commands.yaml` y `NATS_URL=nats://localhost:4222` en `config/host-service.env`.
+  - Actualización de `docs/services.md` y `docs/architecture.md` incorporando la topología de distribución de catálogo y la tabla oficial de eventos NATS del sistema.
 - Ampliación de las capacidades de la Capa de Abstracción de Host (**Host Service** / HAL) para la ejecución segura y desacoplada de comandos y aplicaciones locales del host:
   - Nuevo registro de decisión arquitectónica `docs/adr/adr-026-host-service-command-execution.md` formalizando la ejecución controlada mediante identificador lógico canónico (`name`), catálogo cerrado declarativo (`config/host_commands.yaml`), ejecución sin shell (`shell=False`), política Fail Closed en el arranque y prevención de procesos zombies (`SIGCHLD`).
   - Actualización del índice central de Architectural Decision Records en `docs/adr/README.md` indexando el `ADR-026`.

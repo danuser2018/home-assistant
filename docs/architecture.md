@@ -119,8 +119,8 @@ Usuario          mic-daemon           NATS        data/input   interaction-manag
 #### `host-service`
 - **Repositorio:** `danuser2018/host-service`
 - **Lenguaje:** Python 3.10+
-- **Rol:** Actúa como la Capa de Abstracción del Host (HAL). Expone una API REST local en el puerto `8007` para controlar de manera segura recursos físicos del host como el volumen del sistema (lectura, incrementos, decrementos y fijación de nivel objetivo absoluto vía `POST /v1/audio/volume/set`) y su estado de silencio mediante la utilidad `pactl`, así como la ejecución asíncrona y segura de aplicaciones locales (`POST /v1/commands/execute`) mediante identificadores lógicos y un catálogo cerrado (`config/host_commands.yaml`) sin invocación de shell.
-- **Principio clave:** Capa intermedia segura (Zero Trust / No Shell) que aísla las herramientas y dependencias del sistema operativo del plano de procesamiento en Docker y publica dinámicamente los niveles de riesgo hacia `security-service`.
+- **Rol:** Actúa como la Capa de Abstracción del Host (HAL). Expone una API REST local en el puerto `8007` para controlar de manera segura recursos físicos del host como el volumen del sistema (lectura, incrementos, decrementos y fijación de nivel objetivo absoluto vía `POST /v1/audio/volume/set`) y su estado de silencio mediante la utilidad `pactl`, así como la ejecución asíncrona y segura de aplicaciones locales (`POST /v1/commands/execute`) mediante identificadores lógicos y el catálogo centralizado de Nova (`config/commands.yaml`) sin invocación de shell.
+- **Principio clave:** Capa intermedia segura (Zero Trust / No Shell) que aísla las herramientas y dependencias físicas del sistema operativo del plano de procesamiento en Docker y distribuye asíncronamente la proyección pública del catálogo vía NATS (`event.host.commands.available`) hacia `orchestrator` y `security-service`.
 
 #### `novactl`
 - **Repositorio:** `danuser2018/novactl`
@@ -139,8 +139,9 @@ Usuario          mic-daemon           NATS        data/input   interaction-manag
 #### `security-service`
 - **Imagen:** `danuser2018/security-service:latest`
 - **Puerto interno:** `8000` (expuesto en puerto host `8010`)
-- **Rol:** Autoridad centralizada de autorización User → Service. Evalúa el riesgo de cada acción del `ExecutionPlan` frente a la política del canal solicitante (`voice`, `cli`, `api`). Aplica el principio de **Fail Closed Absoluto** y evaluación atómica del plan. En caso de autorización exitosa (`ALLOW`), genera tokens criptográficos HMAC-SHA256 de único uso acotados al `execution_id` y `action_id`.
-- **API:** `POST /v1/security/actions/register`, `POST /v1/security/tables/{table_name}`, `POST /v1/security/authorize`, `GET/PUT /v1/security/channels` y `GET /health`.
+- **Rol:** Autoridad centralizada de autorización User → Service. Evalúa el riesgo de cada acción del `ExecutionPlan` frente a la política del canal solicitante (`voice`, `cli`, `api`). Sincroniza dinámicamente el catálogo de comandos y riesgos suscribiéndose al evento NATS `event.host.commands.available`. Aplica el principio de **Fail Closed Absoluto** y evaluación atómica del plan. En caso de autorización exitosa (`ALLOW`), genera tokens criptográficos HMAC-SHA256 de único uso acotados al `execution_id` y `action_id`.
+- **API:** `POST /v1/security/actions/register`, `POST /v1/security/tables/{table_name}` (para administración y tests), `POST /v1/security/authorize`, `GET/PUT /v1/security/channels` y `GET /health`.
+- **Eventos NATS:** Consumidor de `event.host.commands.available` para alimentar de forma reactiva la tabla de riesgos `host_commands` en memoria.
 
 #### `stt-capability`
 - **Imagen:** `danuser2018/stt-capability:latest`
@@ -228,6 +229,7 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 │                      ──► security-service:8000              │
 │                      ──► tts:8000                           │
 │                      ──► nats:4222                          │
+│  security-service    ──► nats:4222 (suscriptor catálogo)    │
 │  orchestrator        ──► security-service:8000              │
 │  orchestrator        ──► system-service:8000                │
 │  orchestrator        ──► weather-service:8000               │
@@ -239,9 +241,62 @@ Todos los contenedores se conectan a través de una red Docker privada (`assista
 │  mail-watchdog       ──► identity-service:8000              │
 │  mail-watchdog (salida SMTP al exterior)                    │
 │  nats (puerto 4222 clientes / 8222 healthz)                 │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+│       ▲                                                     │
+└───────┼─────────────────────────────────────────────────────┘
+        │
+        └── host-service (publicador NATS: event.host.commands.available)
 ```
+
+---
+
+## Distribución del Catálogo de Comandos y Resolución Determinista (NATS)
+
+Para la ejecución segura de utilidades locales en el host ([ADR-026](adr/adr-026-host-service-command-execution.md)), Nova-2 desacopla la definición y resolución de órdenes en lenguaje natural de la invocación física de ejecutables:
+
+```text
+                       config/commands.yaml (Nova Global SSoT)
+                                │
+                                ▼
+                         ┌─────────────┐
+                         │ host-service│ (Capa HAL / Ejecución en Host)
+                         └──────┬──────┘
+                                │
+                 publica al inicio y cada 60s
+                                │
+                                ▼
+                               NATS
+                                │
+                  event.host.commands.available
+                                │
+                       ┌────────┴────────┐
+                       ▼                 ▼
+                orchestrator       security-service
+                       │                 │
+                command catalog    security catalog
+                       │                 │
+                       ▼                 │
+               CommandResolver           │
+                       │                 │
+                  logical name           │
+                       │                 │
+                       ▼                 ▼
+                 ExecutionPlan ───► Security Check (Fail-Closed)
+                                         │
+                                    ALLOW / DENY
+                                         │
+                                         ▼
+                                   host-service
+                                         │
+                                  physical command
+                                         │
+                                         ▼
+                                  Popen (no shell)
+```
+
+1. **Catálogo Central como Recurso Global (`config/commands.yaml`)**: Define los comandos lógicos, vector físico de ejecución (`argv`), nivel de riesgo (`low`, `medium`, `high`) y frases naturales de activación.
+2. **Distribución Periódica sin Fugas**: `host-service` emite a NATS el evento `HostCommandsAvailableEvent` (`event.host.commands.available`) conteniendo únicamente la proyección pública (`name`, `risk`, `phrases`), aislando completamente los argumentos físicos `command`.
+3. **Resolución Determinista Ponderada por Riesgo**: `CommandResolver` en `orchestrator` aplica normalización léxica estricta, coincidencia exacta prioritaria, similitud difusa RapidFuzz ponderada por riesgo (`low: 60.0`, `medium: 65.0`, `high: 70.0`) y descarte por ambigüedad (`AMBIGUITY_DELTA = 5.0`), sin LLMs ni inferencia semántica.
+4. **Sincronización Reactiva Fail-Closed**: `security-service` actualiza dinámicamente su tabla de riesgo en memoria y deniega de inmediato (`DENY`) cualquier comando desconocido o si no ha recibido el catálogo.
 
 ---
 
@@ -270,5 +325,8 @@ Las decisiones arquitectónicas críticas del ecosistema están formalizadas e i
 | [ADR-022: Estandarización de Nomenclatura para Comunicaciones Asíncronas](adr/adr-022-estandarizacion-nomenclatura-mensajeria-asincrona.md) | Nombres heterogéneos y `novactl.command.*` | Define la taxonomía `command.{dominio}.{petición}` y `event.{dominio}.{notificación}`, e integra `SpeechCapturedEvent`. |
 | [ADR-023: Estandarización de Identificador de Plugin en ExecutionPlan](adr/adr-023-estandarizacion-identificador-plugin-execution-plan.md) | Uso inconsistente de nombres de clase o IDs heterogéneos | Estandariza `plugin.id` en `ExecutionPlanStep` (ej. `"random-number"`). |
 | [ADR-024: Interfaces de Resolución de Parámetros en Orchestrator](adr/adr-024-interfaces-resolucion-parametros-orquestador.md) | Acoplamiento por tipo de parámetro en ExecutionPlanner | Establece la infraestructura contractual desacoplada por registros (`ParameterResolverRegistry` y `BaseParameterResolver`) para la extracción determinista de parámetros. |
+| [ADR-025: Autorización de Usuario y Verificación de Acciones en Security Service](adr/adr-025-security-service-user-authorization.md) | Confianza ciega o autorización local en cada servicio | Centraliza la autorización de acciones basada en canal y riesgo, emitiendo tokens HMAC-SHA256 bajo principio Fail-Closed. |
+| [ADR-026: Ejecución Segura de Comandos de Host mediante Identificador Lógico](adr/adr-026-host-service-command-execution.md) | Ejecución arbitraria de binarios desde clientes HTTP | Aísla la ejecución en el host mediante catálogo cerrado y seguro sin shell, recibiendo sólo identificadores lógicos. |
+| [ADR-027: Catálogo Centralizado de Comandos, Distribución NATS y Resolución Ponderada por Riesgo](adr/adr-027-command-resolver-catalogo-comandos-nats.md) | Configuración privada en host-service y sincronización HTTP síncrona | Centraliza el catálogo en config/commands.yaml, distribuye proyecciones públicas vía NATS periódicamente y resuelve parámetros Command en Orchestrator sin LLMs con tolerancia adaptativa a riesgo. |
 
 

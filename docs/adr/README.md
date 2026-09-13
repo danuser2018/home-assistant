@@ -30,4 +30,5 @@
 | ADR-024 | Arquitectura e Interfaces de Resolución de Parámetros en Orchestrator | 08-08-2026 | Aceptado | [adr-024-interfaces-resolucion-parametros-orquestador.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-024-interfaces-resolucion-parametros-orquestador.md) |
 | ADR-025 | Autorización User → Service (Security Service MVP) | 30-08-2026 | Aceptado | [adr-025-security-service-user-authorization.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-025-security-service-user-authorization.md) |
 | ADR-026 | Ejecución Segura de Comandos de Host en Host Service | 11-09-2026 | Aceptado | [adr-026-host-service-command-execution.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-026-host-service-command-execution.md) |
+| ADR-027 | Catálogo Centralizado de Comandos, Distribución Asíncrona NATS y Resolución Determinista Ponderada por Riesgo | 12-09-2026 | Aceptado | [adr-027-command-resolver-catalogo-comandos-nats.md](file:///home/danuser2018/workspace/home-assistant/docs/adr/adr-027-command-resolver-catalogo-comandos-nats.md) |
 
