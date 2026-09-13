@@ -384,6 +384,15 @@ Integran al orquestador con `calendar-service` para resolver consultas sobre dí
 3. **DaysUntilNextHolidayPlugin (`days_until_next_holiday`)**: Devuelve de forma simplificada en lenguaje natural el tiempo que queda para el siguiente festivo (ej. "Falta una semana.").
 4. **HolidaysOfYearPlugin (`holidays_of_year`)**: Obtiene el listado completo de festivos del año actual, genera un reporte estructurado en HTML y lo envía por correo electrónico (escribiendo un archivo en `MAIL_PENDING_DIR` sin destinatario `"to"`, delegando la entrega en `mail-watchdog`).
 
+**Plugin de Lanzamiento de Aplicaciones (AppLauncherPlugin / `open_app`):**
+Permite abrir y ejecutar aplicaciones locales del host sin acceso a shell:
+1. Se activa mediante matching semántico RapidFuzz sobre frases de ejemplo dinámicas.
+2. Contiene frases de contingencia estáticas para arranque en frío (*cold-start fallback*) y actualiza reactivamente su catálogo de frases en memoria suscribiéndose al evento NATS `event.host.commands.available` emitido periódicamente por `host-service`.
+3. Requiere el parámetro obligatorio `command: Command`, el cual es resuelto por `CommandResolver` contra la proyección del catálogo de comandos.
+4. Delega la ejecución en `host-service` vía `POST /v1/commands/execute` mediante `HostServiceClient.execute_command(command)`.
+5. Declara una política de riesgo de tipo `lookup` vinculada a la tabla `host_commands` en `security-service`.
+6. Responde verbalmente de forma determinista e impersonal según el Tone Guide (*"Aplicación abierta."*, *"Servicio no disponible."*, *"No he podido abrir la aplicación."*).
+
 **Variables de entorno relevantes:**
 
 *Cargadas vía `config/orchestrator.env`:*
@@ -566,7 +575,8 @@ Content-Type: application/json
     {"id": "today_holiday", "description": "Determina si la fecha actual es festiva"},
     {"id": "next_holiday", "description": "Informa del siguiente festivo"},
     {"id": "days_until_next_holiday", "description": "Informa únicamente del tiempo restante hasta el siguiente festivo"},
-    {"id": "holidays_of_year", "description": "Obtiene el listado completo de festivos del año y lo envía por correo"}
+    {"id": "holidays_of_year", "description": "Obtiene el listado completo de festivos del año y lo envía por correo"},
+    {"id": "open_app", "description": "Abre y ejecuta aplicaciones del entorno host local"}
   ]
 }
 ```
@@ -606,7 +616,8 @@ GET /v1/system/capabilities
     {"id": "today_holiday", "description": "Determina si la fecha actual es festiva"},
     {"id": "next_holiday", "description": "Informa del siguiente festivo"},
     {"id": "days_until_next_holiday", "description": "Informa únicamente del tiempo restante hasta el siguiente festivo"},
-    {"id": "holidays_of_year", "description": "Obtiene el listado completo de festivos del año y lo envía por correo"}
+    {"id": "holidays_of_year", "description": "Obtiene el listado completo de festivos del año y lo envía por correo"},
+    {"id": "open_app", "description": "Abre y ejecuta aplicaciones del entorno host local"}
   ]
 }
 ```
