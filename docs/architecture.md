@@ -297,6 +297,7 @@ Para la ejecución segura de utilidades locales en el host ([ADR-026](adr/adr-02
 2. **Distribución Periódica sin Fugas**: `host-service` emite a NATS el evento `HostCommandsAvailableEvent` (`event.host.commands.available`) conteniendo únicamente la proyección pública (`name`, `risk`, `phrases`), aislando completamente los argumentos físicos `command`.
 3. **Resolución Determinista Ponderada por Riesgo**: `CommandResolver` en `orchestrator` aplica normalización léxica estricta, coincidencia exacta prioritaria, similitud difusa RapidFuzz ponderada por riesgo (`low: 60.0`, `medium: 65.0`, `high: 70.0`) y descarte por ambigüedad (`AMBIGUITY_DELTA = 5.0`), sin LLMs ni inferencia semántica.
 4. **Sincronización Reactiva Fail-Closed**: `security-service` actualiza dinámicamente su tabla de riesgo en memoria y deniega de inmediato (`DENY`) cualquier comando desconocido o si no ha recibido el catálogo.
+5. **Ejecución Segura vía Plugin AppLauncherPlugin (`open_app`)**: Tras la autorización del plan, `PlanExecutor` despacha la acción a `AppLauncherPlugin`, que invoca `POST /v1/commands/execute` en `host-service` sin acceso a shell y emite confirmaciones breves acordes al Tone Guide (*"Aplicación abierta."*).
 
 ---
 

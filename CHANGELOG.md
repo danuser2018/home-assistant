@@ -24,6 +24,13 @@ Los cambios se agrupan en las siguientes categorías:
 
 ### Añadido
 
+- Implementación del plugin de intenciones `AppLauncherPlugin` (identificador canónico `open_app`) en `orchestrator` para lanzamiento y ejecución de aplicaciones locales de host:
+  - Activación semántica en `ExecutionPlanner` mediante `RapidFuzzSimilarityEngine`, combinando ejemplos estáticos de contingencia (*cold-start*) y actualización reactiva de frases en tiempo de ejecución vía NATS (`event.host.commands.available`).
+  - Declaración del parámetro obligatorio `command: Command` resuelto por `CommandResolver` contra la proyección del catálogo de comandos.
+  - Delegación de la ejecución física sin shell en `host-service` vía `POST /v1/commands/execute`.
+  - Declaración de política de riesgo dinámica por consulta en tabla `host_commands` (`policy="lookup"`, `source="command"`, `table="host_commands"`).
+  - Respuestas deterministas y breves según el Tone Guide de Nova-2 (*"Aplicación abierta."*, *"Servicio no disponible."*, *"No he podido abrir la aplicación."*).
+  - Documento de especificación `docs/features/app_launcher_plugin_specification.md` y documento de refinamiento técnico `docs/refinement/app_launcher_plugin_refinement.md`.
 - Implementación del Catálogo Centralizado de Comandos (`config/commands.yaml`), distribución asíncrona periódica vía NATS (`event.host.commands.available`) y resolución determinista de comandos ponderada por riesgo (`CommandResolver`) en Nova-2:
   - Nuevo archivo de configuración global `config/commands.yaml` como única fuente de verdad (*Single Source of Truth*) para identificadores lógicos, ejecutables físicos de host, niveles de riesgo y frases en lenguaje natural.
   - Nuevo registro de decisión arquitectónica `docs/adr/adr-027-command-resolver-catalogo-comandos-nats.md` formalizando la arquitectura desacoplada por eventos, el aislamiento de ejecutables físicos y la resolución ponderada por riesgo.
