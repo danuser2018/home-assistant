@@ -137,8 +137,8 @@ journalctl --user -u hid-daemon -f
 **Cómo funciona:**
 1. Escucha peticiones HTTP locales en el puerto `8007`.
 2. Al recibir peticiones de audio, ejecuta la utilidad nativa `pactl` mediante subprocesos efímeros en el host y devuelve en formato JSON estructurado el volumen y silencio actual de PulseAudio/PipeWire.
-3. Al recibir peticiones de ejecución de comandos (`POST /v1/commands/execute`), recupera la definición física (`argv`) desde el catálogo cerrado `config/host_commands.yaml` y la lanza de forma desacoplada y no bloqueante mediante `subprocess.Popen(argv, shell=False, start_new_session=True)`.
-4. Durante el arranque, valida de forma estricta (política Fail Closed) el catálogo unificado `config/host_commands.yaml` y publica automáticamente la tabla de riesgos (`name` + `risk`) a `security-service` (`POST /v1/security/tables/host_commands`), habiendo sustituido por completo al archivo obsoleto `config/host_commands_risk.yaml`.
+3. Al recibir peticiones de ejecución de comandos (`POST /v1/commands/execute`), recupera la definición física (`argv`) desde el catálogo centralizado `config/commands.yaml` y la lanza de forma desacoplada y no bloqueante mediante `subprocess.Popen(argv, shell=False, start_new_session=True)`.
+4. Durante el arranque, valida de forma estricta (política Fail Closed) el catálogo global `config/commands.yaml` y publica automáticamente en NATS la proyección pública (`name`, `risk` y `phrases`) en `event.host.commands.available` al inicio y cada 60 segundos (omitiendo estrictamente el comando físico `command`), sustituyendo la antigua sincronización síncrona HTTP hacia `security-service`.
 5. Valida los parámetros mediante Pydantic y estandariza el manejo de errores conforme a ADR-004.
 
 **Configuración relevante** (`config/host-service.env`):
@@ -148,8 +148,9 @@ journalctl --user -u hid-daemon -f
 | `HOST` | ❌ No | `0.0.0.0` | Dirección IP de red a la que se vincula el servidor |
 | `PORT` | ❌ No | `8007` | Puerto en el que escucha el servidor |
 | `LOG_LEVEL` | ❌ No | `INFO` | Nivel de logs (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
-| `SECURITY_SERVICE_BASE_URL` | ❌ No | `http://security-service:8000` | URL base del microservicio `security-service` para publicar el catálogo dinámico de riesgos |
-| `HOST_COMMANDS_FILE` | ❌ No | `config/host_commands.yaml` | Ruta al fichero YAML que contiene el catálogo unificado y cerrado de comandos de host |
+| `NATS_URL` | ❌ No | `nats://localhost:4222` | URL de conexión al broker NATS para la publicación del catálogo |
+| `CATALOG_PUBLISH_INTERVAL_SECONDS` | ❌ No | `60.0` | Intervalo en segundos entre publicaciones periódicas del catálogo |
+| `COMMANDS_FILE` | ❌ No | `config/commands.yaml` | Ruta al catálogo unificado central de comandos de Nova |
 
 **Gestión:**
 ```bash
@@ -282,13 +283,24 @@ Estos servicios se ejecutan en contenedores Docker gestionados por el `docker-co
 
 **Propósito:** Autoridad central de autorización User → Service en el ecosistema Nova. Evalúa el nivel de riesgo de las acciones contenidas en un `ExecutionPlan` contra el canal de origen (`voice`, `cli`, `api`) bajo el principio de **Fail Closed Absoluto**. Si el plan es autorizado (`ALLOW`), emite tokens criptográficos HMAC-SHA256 de único uso.
 
-**Endpoints principales:**
+**Endpoints y eventos principales:**
 
 * **Registrar acciones de plugins:** `POST /v1/security/actions/register`
-* **Registrar catálogo de comandos host:** `POST /v1/security/tables/{table_name}`
+* **Registrar tablas en memoria (tests / administración):** `POST /v1/security/tables/{table_name}`
 * **Autorizar ExecutionPlan:** `POST /v1/security/authorize`
 * **Gestión de políticas por canal:** `GET / PUT /v1/security/channels`
 * **Healthcheck:** `GET /health`
+* **Suscripción NATS:** `event.host.commands.available` (mantiene actualizada la tabla dinámica `host_commands` en memoria sin acoplamiento HTTP con `host-service`).
+
+**Configuración relevante** (`config/security-service.env`):
+
+| Variable | Requerida | Valor por defecto | Descripción |
+|---|---|---|---|
+| `SECURITY_HMAC_SECRET` | ✅ Sí | - | Secreto criptográfico HMAC-SHA256 para firma de tokens JWT |
+| `LOG_LEVEL` | ❌ No | `INFO` | Nivel de detalle de los logs (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`) |
+| `TOKEN_TTL_SECONDS` | ❌ No | `300` | Tiempo de vida de los tokens de autorización en segundos (5 minutos) |
+
+*Nota:* Las variables de infraestructura como `NATS_URL` se configuran directamente bajo la directiva `environment:` en `docker-compose.yml` conforme a [ADR-010](adr/adr-010.md).
 
 ---
 
@@ -816,6 +828,16 @@ Ejemplo de flujo registrado por el contenedor:
 2. Expone el puerto `4222` en `localhost` para desarrollo y depuración desde el host.
 3. Habilita el puerto `8222` internamente para comprobar el estado de salud del servicio a través del endpoint `/healthz` de NATS sin exponerlo al exterior.
 
+### Catálogo de Eventos del Sistema (NATS)
+
+| Subject | Tipo de Mensaje / Evento | Productor | Consumidores | Propósito |
+|---|---|---|---|---|
+| `event.speech.captured` | `SpeechCapturedEvent` | `mic-daemon` | `interaction-manager` | Notificación de captura de audio completada |
+| `command.speech.stop-capture` | `StopSpeechCaptureCommand` | `novactl` | `mic-daemon` | Orden para detener la captura de audio en curso |
+| `command.interaction.execute-shortcut` | `ExecuteShortcutCommand` | `novactl` | `interaction-manager` | Disparo directo de atajos de texto |
+| `event.interaction.response-generated` | `ResponseGeneratedEvent` | `orchestrator` | `system-service` | Registro y métricas de respuestas generadas |
+| `event.host.commands.available` | `HostCommandsAvailableEvent` (v1) | `host-service` | `orchestrator`, `security-service` | Proyección pública periódica del catálogo central de comandos (`name`, `risk`, `phrases`) |
+
 ---
 
 ## Comunicación entre Servicios
@@ -840,16 +862,19 @@ Ejemplo de flujo registrado por el contenedor:
                     │  mail-watchdog ──► Servidor SMTP (exterior)                ││
                     │  weather-service ──► API Open-Meteo (exterior)             ││
                     │  nats (Bus de eventos: pub/sub asíncrono)                  ││
-                    └────────────────────────────────────────────────────────────┼┘
-                               │           │                                     │
-                        Volumen Docker: ./data / ./calendar-data                 │
-                               │           │                                     │
-                    ┌──────────┴───────────┴──────────┐                          │
-                    │         HOST (Linux)            │◄─────────────────────────┘
-                    │                                 │
-                    │  mic-daemon ──► data/input/     │
-                    │  speaker-watchdog ◄── data/output/
-                    │  plugins ──► data/mail/pending/ │
-                    │  host-service:8007 (HAL / Audio / Comandos)│──► security-service:8010
-                    └────────────────────────────────────────────┘
+                    │      ├──► orchestrator:8000 (catálogo comandos proyección) ││
+                    │      └──► security-service:8000 (catálogo comandos riesgos)││
+                    └───────────────────▲────────────────────────────────────────┼┘
+                                │       │   │                                     │
+                         Volumen Docker:│./data / ./calendar-data                 │
+                                │       │   │                                     │
+                     ┌──────────┴───────┼───┴──────────┐                          │
+                     │         HOST (Linux)            │◄─────────────────────────┘
+                     │                  │              │
+                     │  mic-daemon ──► data/input/     │
+                     │  speaker-watchdog ◄── data/output/
+                     │  plugins ──► data/mail/pending/ │
+                     │  host-service:8007 (HAL / Audio / Comandos)
+                     │      └──► NATS (localhost:4222): event.host.commands.available
+                     └─────────────────────────────────┘
 ```
